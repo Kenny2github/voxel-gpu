@@ -57,22 +57,6 @@
          type = "boolean";
       }
    }
-   element Audio_Subsystem
-   {
-      datum _sortIndex
-      {
-         value = "28";
-         type = "int";
-      }
-   }
-   element Audio_Subsystem.audio_slave
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
    element Char_DMA_Addr_Translation
    {
       datum _sortIndex
@@ -141,7 +125,7 @@
    {
       datum _sortIndex
       {
-         value = "31";
+         value = "28";
          type = "int";
       }
    }
@@ -157,7 +141,7 @@
    {
       datum _sortIndex
       {
-         value = "32";
+         value = "29";
          type = "int";
       }
    }
@@ -494,46 +478,6 @@
          type = "boolean";
       }
    }
-   element Video_In_DMA_Addr_Translation
-   {
-      datum _sortIndex
-      {
-         value = "29";
-         type = "int";
-      }
-   }
-   element Video_In_DMA_Addr_Translation.slave
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
-   element Video_In_Subsystem
-   {
-      datum _sortIndex
-      {
-         value = "30";
-         type = "int";
-      }
-   }
-   element Video_In_Subsystem.video_in_dma_control_slave
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
-   element Video_In_Subsystem.video_in_edge_detection_control_slave
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
    element Video_PLL
    {
       datum _sortIndex
@@ -564,26 +508,6 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="adc" internal="ADC.external_interface" type="conduit" dir="end" />
- <interface
-   name="audio"
-   internal="Audio_Subsystem.audio"
-   type="conduit"
-   dir="end" />
- <interface
-   name="audio_pll_clk"
-   internal="Audio_Subsystem.audio_pll_clk"
-   type="clock"
-   dir="start" />
- <interface
-   name="audio_pll_ref_clk"
-   internal="Audio_Subsystem.audio_pll_ref_clk"
-   type="clock"
-   dir="end" />
- <interface
-   name="audio_pll_ref_reset"
-   internal="Audio_Subsystem.audio_pll_ref_reset"
-   type="reset"
-   dir="end" />
  <interface
    name="av_config"
    internal="AV_Config.external_interface"
@@ -658,11 +582,6 @@
    type="reset"
    dir="end" />
  <interface name="vga" internal="VGA_Subsystem.vga" type="conduit" dir="end" />
- <interface
-   name="video_in"
-   internal="Video_In_Subsystem.video_in"
-   type="conduit"
-   dir="end" />
  <interface
    name="video_pll_ref_clk"
    internal="Video_PLL.ref_clk"
@@ -1234,23 +1153,6 @@
   <parameter name="video_format" value="NTSC" />
  </module>
  <module
-   name="Audio_Subsystem"
-   kind="Audio_Subsystem"
-   version="1.0"
-   enabled="1">
-  <parameter name="AUTO_AUDIO_PLL_REF_CLK_CLOCK_DOMAIN" value="2" />
-  <parameter name="AUTO_AUDIO_PLL_REF_CLK_CLOCK_RATE" value="0" />
-  <parameter name="AUTO_AUDIO_PLL_REF_CLK_RESET_DOMAIN" value="2" />
-  <parameter name="AUTO_DEVICE" value="5CSEMA5F31C6" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
-  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="6" />
-  <parameter name="AUTO_GENERATION_ID" value="0" />
-  <parameter name="AUTO_SYS_CLK_CLOCK_DOMAIN" value="11" />
-  <parameter name="AUTO_SYS_CLK_CLOCK_RATE" value="100000000" />
-  <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="11" />
-  <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_Audio_Subsystem</parameter>
- </module>
- <module
    name="Char_DMA_Addr_Translation"
    kind="altera_up_avalon_video_dma_ctrl_addr_trans"
    version="18.0"
@@ -1610,38 +1512,13 @@
   <parameter name="AUTO_GENERATION_ID" value="0" />
   <parameter name="AUTO_PIXEL_DMA_MASTER_ADDRESS_MAP"><![CDATA[<address-map><slave name='SDRAM.s1' start='0x0' end='0x4000000' /><slave name='Onchip_SRAM.s2' start='0x8000000' end='0x8040000' /></address-map>]]></parameter>
   <parameter name="AUTO_PIXEL_DMA_MASTER_ADDRESS_WIDTH" value="AddressWidth = 28" />
-  <parameter name="AUTO_SYS_CLK_CLOCK_DOMAIN" value="11" />
+  <parameter name="AUTO_SYS_CLK_CLOCK_DOMAIN" value="8" />
   <parameter name="AUTO_SYS_CLK_CLOCK_RATE" value="100000000" />
-  <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="11" />
+  <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="8" />
   <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_VGA_Subsystem</parameter>
-  <parameter name="AUTO_VGA_CLK_CLOCK_DOMAIN" value="13" />
+  <parameter name="AUTO_VGA_CLK_CLOCK_DOMAIN" value="10" />
   <parameter name="AUTO_VGA_CLK_CLOCK_RATE" value="25000000" />
-  <parameter name="AUTO_VGA_CLK_RESET_DOMAIN" value="13" />
- </module>
- <module
-   name="Video_In_DMA_Addr_Translation"
-   kind="altera_up_avalon_video_dma_ctrl_addr_trans"
-   version="18.0"
-   enabled="1">
-  <parameter name="ADDRESS_TRANSLATION_MASK" value="3221225472" />
- </module>
- <module
-   name="Video_In_Subsystem"
-   kind="Video_In_Subsystem"
-   version="1.0"
-   enabled="1">
-  <parameter name="AUTO_DEVICE" value="5CSEMA5F31C6" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
-  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="6" />
-  <parameter name="AUTO_GENERATION_ID" value="0" />
-  <parameter name="AUTO_SYS_CLK_CLOCK_DOMAIN" value="11" />
-  <parameter name="AUTO_SYS_CLK_CLOCK_RATE" value="100000000" />
-  <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="11" />
-  <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_Video_In_Subsystem</parameter>
-  <parameter name="AUTO_VIDEO_IN_DMA_MASTER_ADDRESS_MAP"><![CDATA[<address-map><slave name='SDRAM.s1' start='0x0' end='0x4000000' /><slave name='Onchip_SRAM.s1' start='0x8000000' end='0x8040000' /></address-map>]]></parameter>
-  <parameter
-     name="AUTO_VIDEO_IN_DMA_MASTER_ADDRESS_WIDTH"
-     value="AddressWidth = 28" />
+  <parameter name="AUTO_VGA_CLK_RESET_DOMAIN" value="10" />
  </module>
  <module
    name="Video_PLL"
@@ -1720,15 +1597,6 @@
    end="ADC.adc_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x4000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="Audio_Subsystem.audio_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x3040" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1905,37 +1773,10 @@
  <connection
    kind="avalon"
    version="24.1"
-   start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="Video_In_DMA_Addr_Translation.slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x3060" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="Video_In_Subsystem.video_in_edge_detection_control_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x3070" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
    start="JTAG_to_FPGA_Bridge.master"
    end="ADC.adc_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0xff204000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="JTAG_to_FPGA_Bridge.master"
-   end="Audio_Subsystem.audio_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff203040" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -2149,33 +1990,6 @@
    kind="avalon"
    version="24.1"
    start="JTAG_to_FPGA_Bridge.master"
-   end="Video_In_Subsystem.video_in_dma_control_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff203060" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="Video_In_DMA_Addr_Translation.master"
-   end="Video_In_Subsystem.video_in_dma_control_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="JTAG_to_FPGA_Bridge.master"
-   end="Video_In_Subsystem.video_in_edge_detection_control_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff203070" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="JTAG_to_FPGA_Bridge.master"
    end="F2H_Mem_Window_00000000.windowed_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x40000000" />
@@ -2215,24 +2029,6 @@
    end="Onchip_SRAM.s2">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x08000000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="Video_In_Subsystem.video_in_dma_master"
-   end="Onchip_SRAM.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x08000000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="Video_In_Subsystem.video_in_dma_master"
-   end="SDRAM.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -2347,11 +2143,6 @@
    kind="clock"
    version="24.1"
    start="System_PLL.sys_clk"
-   end="Video_In_DMA_Addr_Translation.clock" />
- <connection
-   kind="clock"
-   version="24.1"
-   start="System_PLL.sys_clk"
    end="F2H_Mem_Window_FF600000.clock" />
  <connection
    kind="clock"
@@ -2381,25 +2172,8 @@
  <connection
    kind="clock"
    version="24.1"
-   start="System_PLL.sys_clk"
-   end="Audio_Subsystem.sys_clk" />
- <connection
-   kind="clock"
-   version="24.1"
-   start="System_PLL.sys_clk"
-   end="Video_In_Subsystem.sys_clk" />
- <connection
-   kind="clock"
-   version="24.1"
    start="Video_PLL.vga_clk"
    end="VGA_Subsystem.vga_clk" />
- <connection
-   kind="interrupt"
-   version="24.1"
-   start="ARM_A9_HPS.f2h_irq0"
-   end="Audio_Subsystem.audio_irq">
-  <parameter name="irqNumber" value="6" />
- </connection>
  <connection
    kind="interrupt"
    version="24.1"
@@ -2589,11 +2363,6 @@
    kind="reset"
    version="24.1"
    start="ARM_A9_HPS.h2f_reset"
-   end="Video_In_DMA_Addr_Translation.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_reset"
    end="F2H_Mem_Window_FF600000.reset" />
  <connection
    kind="reset"
@@ -2610,16 +2379,6 @@
    version="24.1"
    start="ARM_A9_HPS.h2f_reset"
    end="VGA_Subsystem.sys_reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_reset"
-   end="Audio_Subsystem.sys_reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_reset"
-   end="Video_In_Subsystem.sys_reset" />
  <connection
    kind="reset"
    version="24.1"
@@ -2739,11 +2498,6 @@
    kind="reset"
    version="24.1"
    start="System_PLL.reset_source"
-   end="Video_In_DMA_Addr_Translation.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="System_PLL.reset_source"
    end="F2H_Mem_Window_FF600000.reset" />
  <connection
    kind="reset"
@@ -2760,16 +2514,6 @@
    version="24.1"
    start="System_PLL.reset_source"
    end="VGA_Subsystem.sys_reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="System_PLL.reset_source"
-   end="Audio_Subsystem.sys_reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="System_PLL.reset_source"
-   end="Video_In_Subsystem.sys_reset" />
  <connection
    kind="reset"
    version="24.1"
