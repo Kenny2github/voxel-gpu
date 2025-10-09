@@ -4,6 +4,7 @@
 *.BAK.*
 *.done
 *.smsg
+*.sopcinfo
 *.summary
 *.jdi
 *.pin
