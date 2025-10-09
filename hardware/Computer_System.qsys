@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "24";
+         value = "21";
          type = "int";
       }
    }
@@ -45,7 +45,7 @@
    {
       datum _sortIndex
       {
-         value = "23";
+         value = "20";
          type = "int";
       }
    }
@@ -61,43 +61,11 @@
    {
       datum _sortIndex
       {
-         value = "26";
+         value = "23";
          type = "int";
       }
    }
    element Char_DMA_Addr_Translation.slave
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
-   element Expansion_JP1
-   {
-      datum _sortIndex
-      {
-         value = "13";
-         type = "int";
-      }
-   }
-   element Expansion_JP1.s1
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
-   element Expansion_JP2
-   {
-      datum _sortIndex
-      {
-         value = "14";
-         type = "int";
-      }
-   }
-   element Expansion_JP2.s1
    {
       datum _lockedAddress
       {
@@ -125,7 +93,7 @@
    {
       datum _sortIndex
       {
-         value = "28";
+         value = "25";
          type = "int";
       }
    }
@@ -141,7 +109,7 @@
    {
       datum _sortIndex
       {
-         value = "29";
+         value = "26";
          type = "int";
       }
    }
@@ -189,7 +157,7 @@
    {
       datum _sortIndex
       {
-         value = "20";
+         value = "17";
          type = "int";
       }
    }
@@ -205,7 +173,7 @@
    {
       datum _sortIndex
       {
-         value = "21";
+         value = "18";
          type = "int";
       }
    }
@@ -217,27 +185,11 @@
          type = "boolean";
       }
    }
-   element IrDA
-   {
-      datum _sortIndex
-      {
-         value = "19";
-         type = "int";
-      }
-   }
-   element IrDA.avalon_irda_slave
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
    element JTAG_UART_for_ARM_0
    {
       datum _sortIndex
       {
-         value = "17";
+         value = "15";
          type = "int";
       }
    }
@@ -253,7 +205,7 @@
    {
       datum _sortIndex
       {
-         value = "18";
+         value = "16";
          type = "int";
       }
    }
@@ -325,7 +277,7 @@
    {
       datum _sortIndex
       {
-         value = "15";
+         value = "13";
          type = "int";
       }
    }
@@ -341,7 +293,7 @@
    {
       datum _sortIndex
       {
-         value = "16";
+         value = "14";
          type = "int";
       }
    }
@@ -357,7 +309,7 @@
    {
       datum _sortIndex
       {
-         value = "25";
+         value = "22";
          type = "int";
       }
    }
@@ -421,7 +373,7 @@
    {
       datum _sortIndex
       {
-         value = "22";
+         value = "19";
          type = "int";
       }
    }
@@ -445,7 +397,7 @@
    {
       datum _sortIndex
       {
-         value = "27";
+         value = "24";
          type = "int";
       }
       datum sopceditor_expanded
@@ -514,16 +466,6 @@
    type="conduit"
    dir="end" />
  <interface
-   name="expansion_jp1"
-   internal="Expansion_JP1.external_connection"
-   type="conduit"
-   dir="end" />
- <interface
-   name="expansion_jp2"
-   internal="Expansion_JP2.external_connection"
-   type="conduit"
-   dir="end" />
- <interface
    name="hex3_hex0"
    internal="HEX3_HEX0.external_connection"
    type="conduit"
@@ -534,11 +476,6 @@
    type="conduit"
    dir="end" />
  <interface name="hps_io" internal="ARM_A9_HPS.hps_io" type="conduit" dir="end" />
- <interface
-   name="irda"
-   internal="IrDA.external_interface"
-   type="conduit"
-   dir="end" />
  <interface
    name="leds"
    internal="LEDs.external_connection"
@@ -1160,42 +1097,6 @@
   <parameter name="ADDRESS_TRANSLATION_MASK" value="3221225472" />
  </module>
  <module
-   name="Expansion_JP1"
-   kind="altera_avalon_pio"
-   version="24.1"
-   enabled="1">
-  <parameter name="bitClearingEdgeCapReg" value="true" />
-  <parameter name="bitModifyingOutReg" value="false" />
-  <parameter name="captureEdge" value="true" />
-  <parameter name="clockRate" value="100000000" />
-  <parameter name="direction" value="Bidir" />
-  <parameter name="edgeType" value="FALLING" />
-  <parameter name="generateIRQ" value="true" />
-  <parameter name="irqType" value="EDGE" />
-  <parameter name="resetValue" value="0" />
-  <parameter name="simDoTestBenchWiring" value="true" />
-  <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="32" />
- </module>
- <module
-   name="Expansion_JP2"
-   kind="altera_avalon_pio"
-   version="24.1"
-   enabled="1">
-  <parameter name="bitClearingEdgeCapReg" value="true" />
-  <parameter name="bitModifyingOutReg" value="false" />
-  <parameter name="captureEdge" value="true" />
-  <parameter name="clockRate" value="100000000" />
-  <parameter name="direction" value="Bidir" />
-  <parameter name="edgeType" value="FALLING" />
-  <parameter name="generateIRQ" value="true" />
-  <parameter name="irqType" value="EDGE" />
-  <parameter name="resetValue" value="0" />
-  <parameter name="simDoTestBenchWiring" value="true" />
-  <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="32" />
- </module>
- <module
    name="F2H_Mem_Window_00000000"
    kind="altera_address_span_extender"
    version="24.1"
@@ -1296,15 +1197,6 @@
   <parameter name="systemFrequency" value="100000000" />
   <parameter name="timeoutPulseOutput" value="false" />
   <parameter name="watchdogPulse" value="2" />
- </module>
- <module name="IrDA" kind="altera_up_avalon_irda" version="18.0" enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
-  <parameter name="avalon_bus_type" value="Memory Mapped" />
-  <parameter name="baud" value="115200" />
-  <parameter name="data_bits" value="8" />
-  <parameter name="parity" value="None" />
-  <parameter name="stop_bits" value="1" />
  </module>
  <module
    name="JTAG_UART_for_ARM_0"
@@ -1612,15 +1504,6 @@
    kind="avalon"
    version="24.1"
    start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="IrDA.avalon_irda_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x1020" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_lw_axi_master"
    end="JTAG_UART_for_ARM_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x1000" />
@@ -1720,24 +1603,6 @@
    kind="avalon"
    version="24.1"
    start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="Expansion_JP1.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0060" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="Expansion_JP2.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0070" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_lw_axi_master"
    end="Interval_Timer.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x2000" />
@@ -1786,15 +1651,6 @@
    end="AV_Config.avalon_av_config_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0xff203000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="JTAG_to_FPGA_Bridge.master"
-   end="IrDA.avalon_irda_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff201020" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1954,24 +1810,6 @@
    kind="avalon"
    version="24.1"
    start="JTAG_to_FPGA_Bridge.master"
-   end="Expansion_JP1.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff200060" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="JTAG_to_FPGA_Bridge.master"
-   end="Expansion_JP2.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff200070" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="24.1"
-   start="JTAG_to_FPGA_Bridge.master"
    end="Interval_Timer.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0xff202000" />
@@ -2071,16 +1909,6 @@
    kind="clock"
    version="24.1"
    start="System_PLL.sys_clk"
-   end="Expansion_JP1.clk" />
- <connection
-   kind="clock"
-   version="24.1"
-   start="System_PLL.sys_clk"
-   end="Expansion_JP2.clk" />
- <connection
-   kind="clock"
-   version="24.1"
-   start="System_PLL.sys_clk"
    end="PS2_Port.clk" />
  <connection
    kind="clock"
@@ -2097,7 +1925,6 @@
    version="24.1"
    start="System_PLL.sys_clk"
    end="JTAG_UART_for_ARM_1.clk" />
- <connection kind="clock" version="24.1" start="System_PLL.sys_clk" end="IrDA.clk" />
  <connection
    kind="clock"
    version="24.1"
@@ -2192,29 +2019,8 @@
    kind="interrupt"
    version="24.1"
    start="ARM_A9_HPS.f2h_irq0"
-   end="IrDA.interrupt">
-  <parameter name="irqNumber" value="9" />
- </connection>
- <connection
-   kind="interrupt"
-   version="24.1"
-   start="ARM_A9_HPS.f2h_irq0"
    end="Pushbuttons.irq">
   <parameter name="irqNumber" value="1" />
- </connection>
- <connection
-   kind="interrupt"
-   version="24.1"
-   start="ARM_A9_HPS.f2h_irq0"
-   end="Expansion_JP1.irq">
-  <parameter name="irqNumber" value="11" />
- </connection>
- <connection
-   kind="interrupt"
-   version="24.1"
-   start="ARM_A9_HPS.f2h_irq0"
-   end="Expansion_JP2.irq">
-  <parameter name="irqNumber" value="12" />
  </connection>
  <connection
    kind="interrupt"
@@ -2293,16 +2099,6 @@
    kind="reset"
    version="24.1"
    start="ARM_A9_HPS.h2f_reset"
-   end="Expansion_JP1.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_reset"
-   end="Expansion_JP2.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_reset"
    end="PS2_Port.reset" />
  <connection
    kind="reset"
@@ -2319,11 +2115,6 @@
    version="24.1"
    start="ARM_A9_HPS.h2f_reset"
    end="JTAG_UART_for_ARM_1.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="ARM_A9_HPS.h2f_reset"
-   end="IrDA.reset" />
  <connection
    kind="reset"
    version="24.1"
@@ -2428,16 +2219,6 @@
    kind="reset"
    version="24.1"
    start="System_PLL.reset_source"
-   end="Expansion_JP1.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="System_PLL.reset_source"
-   end="Expansion_JP2.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="System_PLL.reset_source"
    end="PS2_Port.reset" />
  <connection
    kind="reset"
@@ -2454,11 +2235,6 @@
    version="24.1"
    start="System_PLL.reset_source"
    end="JTAG_UART_for_ARM_1.reset" />
- <connection
-   kind="reset"
-   version="24.1"
-   start="System_PLL.reset_source"
-   end="IrDA.reset" />
  <connection
    kind="reset"
    version="24.1"
