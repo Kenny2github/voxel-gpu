@@ -12,6 +12,7 @@
 *.rbf
 *.sld
 *.qdf
+*.qws
 *.csv
 *.txt
 !src/
