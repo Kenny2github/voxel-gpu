@@ -1,4 +1,6 @@
-*.o 
-*.axf 
-*.srec 
+*.o
+*.axf
+*.srec
+*~
 amp.mk
+_hdl_checker/
