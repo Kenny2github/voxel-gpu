@@ -73,6 +73,38 @@
          type = "boolean";
       }
    }
+   element Computer_System
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
+   element Computer_System
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
+   element Computer_System
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
+   element Computer_System
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element F2H_Mem_Window_00000000
    {
       datum _sortIndex
@@ -436,6 +468,27 @@
       {
          value = "1";
          type = "int";
+      }
+   }
+   element deadbeef_0
+   {
+      datum _sortIndex
+      {
+         value = "27";
+         type = "int";
+      }
+   }
+   element deadbeef_0.s1
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "4280336112";
+         type = "String";
       }
    }
 }
@@ -1428,6 +1481,9 @@
   <parameter name="vga_clk_en" value="true" />
   <parameter name="video_in_clk_en" value="false" />
  </module>
+ <module name="deadbeef_0" kind="deadbeef" version="1.0" enabled="1">
+  <parameter name="VALUE" value="3735928559" />
+ </module>
  <connection
    kind="avalon"
    version="24.1"
@@ -1615,6 +1671,15 @@
    end="Interval_Timer_2.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x2020" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="24.1"
+   start="ARM_A9_HPS.h2f_lw_axi_master"
+   end="deadbeef_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xbef0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1828,6 +1893,15 @@
    kind="avalon"
    version="24.1"
    start="JTAG_to_FPGA_Bridge.master"
+   end="deadbeef_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xff20bef0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="24.1"
+   start="JTAG_to_FPGA_Bridge.master"
    end="F2H_Mem_Window_00000000.windowed_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x40000000" />
@@ -1976,6 +2050,11 @@
    version="24.1"
    start="System_PLL.sys_clk"
    end="F2H_Mem_Window_FF800000.clock" />
+ <connection
+   kind="clock"
+   version="24.1"
+   start="System_PLL.sys_clk"
+   end="deadbeef_0.clock" />
  <connection
    kind="clock"
    version="24.1"
@@ -2164,6 +2243,11 @@
    kind="reset"
    version="24.1"
    start="ARM_A9_HPS.h2f_reset"
+   end="deadbeef_0.reset" />
+ <connection
+   kind="reset"
+   version="24.1"
+   start="ARM_A9_HPS.h2f_reset"
    end="Onchip_SRAM.reset1" />
  <connection
    kind="reset"
@@ -2280,6 +2364,11 @@
    version="24.1"
    start="System_PLL.reset_source"
    end="F2H_Mem_Window_FF800000.reset" />
+ <connection
+   kind="reset"
+   version="24.1"
+   start="System_PLL.reset_source"
+   end="deadbeef_0.reset" />
  <connection
    kind="reset"
    version="24.1"
