@@ -386,27 +386,11 @@ Computer_System The_System (
 	.av_config_SCLK							(FPGA_I2C_SCLK),
 	.av_config_SDAT							(FPGA_I2C_SDAT),
 
-	// Audio Subsystem
-	.audio_pll_ref_clk_clk					(CLOCK3_50),
-	.audio_pll_ref_reset_reset				(1'b0),
-	.audio_pll_clk_clk						(AUD_XCK),
-	.audio_ADCDAT							(AUD_ADCDAT),
-	.audio_ADCLRCK							(AUD_ADCLRCK),
-	.audio_BCLK								(AUD_BCLK),
-	.audio_DACDAT							(AUD_DACDAT),
-	.audio_DACLRCK							(AUD_DACLRCK),
-
 	// Slider Switches
 	.slider_switches_export					(SW),
 
 	// Pushbuttons
 	.pushbuttons_export						(~KEY[3:0]),
-
-	// Expansion JP1
-	.expansion_jp1_export					({GPIO_0[35:19], GPIO_0[17], GPIO_0[15:3], GPIO_0[1]}),
-
-	// Expansion JP2
-	.expansion_jp2_export					({GPIO_1[35:19], GPIO_1[17], GPIO_1[15:3], GPIO_1[1]}),
 
 	// LEDs
 	.leds_export								(LEDR),
@@ -421,9 +405,6 @@ Computer_System The_System (
 	.ps2_port_dual_CLK						(PS2_CLK2),
 	.ps2_port_dual_DAT						(PS2_DAT2),
 
-	// IrDA
-	.irda_RXD									(IRDA_RXD),
-	.irda_TXD									(IRDA_TXD),
 
 	// VGA Subsystem
 	.vga_CLK										(VGA_CLK),
@@ -434,15 +415,6 @@ Computer_System The_System (
 	.vga_R										(VGA_R),
 	.vga_G										(VGA_G),
 	.vga_B										(VGA_B),
-	
-	// Video In Subsystem
-	.video_in_TD_CLK27 						(TD_CLK27),
-	.video_in_TD_DATA							(TD_DATA),
-	.video_in_TD_HS							(TD_HS),
-	.video_in_TD_VS							(TD_VS),
-	.video_in_clk27_reset					(),
-	.video_in_TD_RESET						(TD_RESET_N),
-	.video_in_overflow_flag					(),
 	
 	// SDRAM
 	.sdram_clk_clk								(DRAM_CLK),
