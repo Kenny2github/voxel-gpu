@@ -2,5 +2,6 @@
 *.axf
 *.srec
 *~
+*.bak
 amp.mk
 _hdl_checker/
