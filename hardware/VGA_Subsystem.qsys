@@ -6,7 +6,7 @@
    version="1.0"
    description=""
    tags=""
-   categories="System" />
+   categories="" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
    element Char_Buf_Subsystem
@@ -103,7 +103,7 @@
  <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="lockedInterfaceDefinition" value="" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName">DE1_SoC_Computer.qpf</parameter>
+ <parameter name="projectName" value="" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="testBenchDutName" value="" />
@@ -164,9 +164,9 @@
   <parameter name="AUTO_SYS_CLK_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_SYS_CLK_CLOCK_RATE" value="0" />
   <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="1" />
-  <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_Char_Buf_Subsystem</parameter>
+  <parameter name="AUTO_UNIQUE_ID">VGA_Subsystem_Char_Buf_Subsystem</parameter>
  </module>
- <module name="Sys_Clk" kind="clock_source" version="24.1" enabled="1">
+ <module name="Sys_Clk" kind="clock_source" version="21.1" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="false" />
   <parameter name="inputClockFrequency" value="0" />
@@ -181,7 +181,7 @@
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="mode" value="Simple" />
  </module>
- <module name="VGA_Clk" kind="clock_source" version="24.1" enabled="1">
+ <module name="VGA_Clk" kind="clock_source" version="21.1" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="false" />
   <parameter name="inputClockFrequency" value="0" />
@@ -266,137 +266,137 @@
  </module>
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="VGA_Alpha_Blender.avalon_blended_source"
    end="VGA_Dual_Clock_FIFO.avalon_dc_buffer_sink" />
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="Char_Buf_Subsystem.avalon_char_source"
    end="VGA_Alpha_Blender.avalon_foreground_sink" />
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="VGA_Pixel_FIFO.avalon_dc_buffer_source"
    end="VGA_Pixel_RGB_Resampler.avalon_rgb_sink" />
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="VGA_Dual_Clock_FIFO.avalon_dc_buffer_source"
    end="VGA_Controller.avalon_vga_sink" />
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="VGA_Pixel_DMA.avalon_pixel_source"
    end="VGA_Pixel_FIFO.avalon_dc_buffer_sink" />
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="VGA_Pixel_RGB_Resampler.avalon_rgb_source"
    end="VGA_Pixel_Scaler.avalon_scaler_sink" />
  <connection
    kind="avalon_streaming"
-   version="24.1"
+   version="21.1"
    start="VGA_Pixel_Scaler.avalon_scaler_source"
    end="VGA_Alpha_Blender.avalon_background_sink" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Pixel_DMA.clk" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Pixel_RGB_Resampler.clk" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Pixel_Scaler.clk" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Alpha_Blender.clk" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="VGA_Clk.clk"
    end="VGA_Controller.clk" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Pixel_FIFO.clock_stream_in" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Dual_Clock_FIFO.clock_stream_in" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Pixel_FIFO.clock_stream_out" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="VGA_Clk.clk"
    end="VGA_Dual_Clock_FIFO.clock_stream_out" />
  <connection
    kind="clock"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk"
    end="Char_Buf_Subsystem.sys_clk" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Pixel_DMA.reset" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Pixel_RGB_Resampler.reset" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Pixel_Scaler.reset" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Alpha_Blender.reset" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="VGA_Clk.clk_reset"
    end="VGA_Controller.reset" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Pixel_FIFO.reset_stream_in" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Dual_Clock_FIFO.reset_stream_in" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Pixel_FIFO.reset_stream_out" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="VGA_Clk.clk_reset"
    end="VGA_Dual_Clock_FIFO.reset_stream_out" />
  <connection
    kind="reset"
-   version="24.1"
+   version="21.1"
    start="Sys_Clk.clk_reset"
    end="Char_Buf_Subsystem.sys_reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
