@@ -3,5 +3,6 @@
 *.srec
 *~
 *.bak
+*.vs*
 amp.mk
 _hdl_checker/
