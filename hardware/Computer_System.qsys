@@ -81,6 +81,14 @@
          type = "String";
       }
    }
+   element Computer_System
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element F2H_Mem_Window_00000000
    {
       datum _sortIndex
@@ -441,7 +449,7 @@
          type = "int";
       }
    }
-   element voxel_gpu_0
+   element gpu
    {
       datum _sortIndex
       {
@@ -449,7 +457,7 @@
          type = "int";
       }
    }
-   element voxel_gpu_0.s1
+   element gpu.s1
    {
       datum _lockedAddress
       {
@@ -1450,7 +1458,10 @@
   <parameter name="vga_clk_en" value="true" />
   <parameter name="video_in_clk_en" value="false" />
  </module>
- <module name="voxel_gpu_0" kind="voxel_gpu" version="0.0" enabled="1" />
+ <module name="gpu" kind="voxel_gpu" version="0.0" enabled="1">
+  <parameter name="DEFAULT_BACK_BUFFER" value="134217728" />
+  <parameter name="DEFAULT_BUFFER" value="134217728" />
+ </module>
  <connection
    kind="avalon"
    version="21.1"
@@ -1644,7 +1655,7 @@
    kind="avalon"
    version="21.1"
    start="ARM_A9_HPS.h2f_lw_axi_master"
-   end="voxel_gpu_0.s1">
+   end="gpu.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x5800" />
   <parameter name="defaultConnection" value="false" />
@@ -1665,6 +1676,16 @@
    end="Char_DMA_Addr_Translation.slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x3030" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="21.1" start="gpu.m1" end="SDRAM.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="21.1" start="gpu.m1" end="Onchip_SRAM.s2">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08000000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1860,7 +1881,7 @@
    kind="avalon"
    version="21.1"
    start="JTAG_to_FPGA_Bridge.master"
-   end="voxel_gpu_0.s1">
+   end="gpu.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0xff565800" />
   <parameter name="defaultConnection" value="false" />
@@ -2021,7 +2042,7 @@
    kind="clock"
    version="21.1"
    start="System_PLL.sys_clk"
-   end="voxel_gpu_0.clock_sink" />
+   end="gpu.clock" />
  <connection
    kind="clock"
    version="21.1"
@@ -2065,13 +2086,6 @@
    kind="interrupt"
    version="21.1"
    start="ARM_A9_HPS.f2h_irq0"
-   end="voxel_gpu_0.interrupt_sender">
-  <parameter name="irqNumber" value="16" />
- </connection>
- <connection
-   kind="interrupt"
-   version="21.1"
-   start="ARM_A9_HPS.f2h_irq0"
    end="Pushbuttons.irq">
   <parameter name="irqNumber" value="1" />
  </connection>
@@ -2095,6 +2109,13 @@
    start="ARM_A9_HPS.f2h_irq0"
    end="Interval_Timer_2.irq">
   <parameter name="irqNumber" value="2" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="21.1"
+   start="ARM_A9_HPS.f2h_irq0"
+   end="gpu.irq">
+  <parameter name="irqNumber" value="16" />
  </connection>
  <connection
    kind="interrupt"
@@ -2217,12 +2238,12 @@
    kind="reset"
    version="21.1"
    start="ARM_A9_HPS.h2f_reset"
-   end="Onchip_SRAM.reset1" />
+   end="gpu.reset" />
  <connection
    kind="reset"
    version="21.1"
    start="ARM_A9_HPS.h2f_reset"
-   end="voxel_gpu_0.reset_sink" />
+   end="Onchip_SRAM.reset1" />
  <connection
    kind="reset"
    version="21.1"
@@ -2342,12 +2363,12 @@
    kind="reset"
    version="21.1"
    start="System_PLL.reset_source"
-   end="Onchip_SRAM.reset1" />
+   end="gpu.reset" />
  <connection
    kind="reset"
    version="21.1"
    start="System_PLL.reset_source"
-   end="voxel_gpu_0.reset_sink" />
+   end="Onchip_SRAM.reset1" />
  <connection
    kind="reset"
    version="21.1"
