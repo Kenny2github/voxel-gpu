@@ -89,6 +89,14 @@
          type = "String";
       }
    }
+   element Computer_System
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element F2H_Mem_Window_00000000
    {
       datum _sortIndex
