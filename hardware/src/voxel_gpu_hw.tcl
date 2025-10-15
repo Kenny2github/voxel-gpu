@@ -34,7 +34,22 @@ add_fileset_file voxel_gpu.sv VERILOG PATH voxel_gpu.sv TOP_LEVEL_FILE
 #
 # parameters
 #
-
+add_parameter DEFAULT_BUFFER STD_LOGIC_VECTOR 134217728 ""
+set_parameter_property DEFAULT_BUFFER DEFAULT_VALUE 134217728
+set_parameter_property DEFAULT_BUFFER DISPLAY_NAME "Default Pixel Buffer Address"
+set_parameter_property DEFAULT_BUFFER WIDTH 32
+set_parameter_property DEFAULT_BUFFER TYPE STD_LOGIC_VECTOR
+set_parameter_property DEFAULT_BUFFER UNITS None
+set_parameter_property DEFAULT_BUFFER DESCRIPTION ""
+set_parameter_property DEFAULT_BUFFER HDL_PARAMETER true
+add_parameter DEFAULT_BACK_BUFFER STD_LOGIC_VECTOR 134217728 ""
+set_parameter_property DEFAULT_BACK_BUFFER DEFAULT_VALUE 134217728
+set_parameter_property DEFAULT_BACK_BUFFER DISPLAY_NAME "Default Back Buffer Address"
+set_parameter_property DEFAULT_BACK_BUFFER WIDTH 32
+set_parameter_property DEFAULT_BACK_BUFFER TYPE STD_LOGIC_VECTOR
+set_parameter_property DEFAULT_BACK_BUFFER UNITS None
+set_parameter_property DEFAULT_BACK_BUFFER DESCRIPTION ""
+set_parameter_property DEFAULT_BACK_BUFFER HDL_PARAMETER true
 
 #
 # display items
@@ -42,41 +57,12 @@ add_fileset_file voxel_gpu.sv VERILOG PATH voxel_gpu.sv TOP_LEVEL_FILE
 
 
 #
-# connection point clock_sink
-#
-add_interface clock_sink clock end
-set_interface_property clock_sink clockRate 0
-set_interface_property clock_sink ENABLED true
-set_interface_property clock_sink EXPORT_OF ""
-set_interface_property clock_sink PORT_NAME_MAP ""
-set_interface_property clock_sink CMSIS_SVD_VARIABLES ""
-set_interface_property clock_sink SVD_ADDRESS_GROUP ""
-
-add_interface_port clock_sink clock clk Input 1
-
-
-#
-# connection point reset_sink
-#
-add_interface reset_sink reset end
-set_interface_property reset_sink associatedClock clock_sink
-set_interface_property reset_sink synchronousEdges DEASSERT
-set_interface_property reset_sink ENABLED true
-set_interface_property reset_sink EXPORT_OF ""
-set_interface_property reset_sink PORT_NAME_MAP ""
-set_interface_property reset_sink CMSIS_SVD_VARIABLES ""
-set_interface_property reset_sink SVD_ADDRESS_GROUP ""
-
-add_interface_port reset_sink reset reset Input 1
-
-
-#
 # connection point s1
 #
 add_interface s1 avalon end
 set_interface_property s1 addressUnits WORDS
-set_interface_property s1 associatedClock clock_sink
-set_interface_property s1 associatedReset reset_sink
+set_interface_property s1 associatedClock clock
+set_interface_property s1 associatedReset reset
 set_interface_property s1 bitsPerSymbol 8
 set_interface_property s1 burstOnBurstBoundariesOnly false
 set_interface_property s1 burstcountUnits WORDS
@@ -108,18 +94,83 @@ set_interface_assignment s1 embeddedsw.configuration.isPrintableDevice 0
 
 
 #
-# connection point interrupt_sender
+# connection point reset
 #
-add_interface interrupt_sender interrupt end
-set_interface_property interrupt_sender associatedAddressablePoint ""
-set_interface_property interrupt_sender associatedClock clock_sink
-set_interface_property interrupt_sender associatedReset reset_sink
-set_interface_property interrupt_sender bridgedReceiverOffset ""
-set_interface_property interrupt_sender bridgesToReceiver ""
-set_interface_property interrupt_sender ENABLED true
-set_interface_property interrupt_sender EXPORT_OF ""
-set_interface_property interrupt_sender PORT_NAME_MAP ""
-set_interface_property interrupt_sender CMSIS_SVD_VARIABLES ""
-set_interface_property interrupt_sender SVD_ADDRESS_GROUP ""
+add_interface reset reset end
+set_interface_property reset associatedClock clock
+set_interface_property reset synchronousEdges DEASSERT
+set_interface_property reset ENABLED true
+set_interface_property reset EXPORT_OF ""
+set_interface_property reset PORT_NAME_MAP ""
+set_interface_property reset CMSIS_SVD_VARIABLES ""
+set_interface_property reset SVD_ADDRESS_GROUP ""
 
-add_interface_port interrupt_sender interrupt_sender_irq irq Output 1
+add_interface_port reset reset reset Input 1
+
+
+#
+# connection point clock
+#
+add_interface clock clock end
+set_interface_property clock clockRate 0
+set_interface_property clock ENABLED true
+set_interface_property clock EXPORT_OF ""
+set_interface_property clock PORT_NAME_MAP ""
+set_interface_property clock CMSIS_SVD_VARIABLES ""
+set_interface_property clock SVD_ADDRESS_GROUP ""
+
+add_interface_port clock clock clk Input 1
+
+
+#
+# connection point irq
+#
+add_interface irq interrupt end
+set_interface_property irq associatedAddressablePoint ""
+set_interface_property irq associatedClock clock
+set_interface_property irq associatedReset reset
+set_interface_property irq bridgedReceiverOffset ""
+set_interface_property irq bridgesToReceiver ""
+set_interface_property irq ENABLED true
+set_interface_property irq EXPORT_OF ""
+set_interface_property irq PORT_NAME_MAP ""
+set_interface_property irq CMSIS_SVD_VARIABLES ""
+set_interface_property irq SVD_ADDRESS_GROUP ""
+
+add_interface_port irq irq irq Output 1
+
+
+#
+# connection point m1
+#
+add_interface m1 avalon start
+set_interface_property m1 addressUnits SYMBOLS
+set_interface_property m1 associatedClock clock
+set_interface_property m1 associatedReset reset
+set_interface_property m1 bitsPerSymbol 8
+set_interface_property m1 burstOnBurstBoundariesOnly false
+set_interface_property m1 burstcountUnits WORDS
+set_interface_property m1 doStreamReads false
+set_interface_property m1 doStreamWrites false
+set_interface_property m1 holdTime 0
+set_interface_property m1 linewrapBursts false
+set_interface_property m1 maximumPendingReadTransactions 0
+set_interface_property m1 maximumPendingWriteTransactions 0
+set_interface_property m1 readLatency 0
+set_interface_property m1 readWaitTime 1
+set_interface_property m1 setupTime 0
+set_interface_property m1 timingUnits Cycles
+set_interface_property m1 writeWaitTime 0
+set_interface_property m1 ENABLED true
+set_interface_property m1 EXPORT_OF ""
+set_interface_property m1 PORT_NAME_MAP ""
+set_interface_property m1 CMSIS_SVD_VARIABLES ""
+set_interface_property m1 SVD_ADDRESS_GROUP ""
+
+add_interface_port m1 m1_address address Output 32
+add_interface_port m1 m1_writedata writedata Output 32
+add_interface_port m1 m1_write write Output 1
+add_interface_port m1 m1_waitrequest waitrequest Input 1
+add_interface_port m1 m1_readdata readdata Input 32
+add_interface_port m1 m1_read read Output 1
+add_interface_port m1 m1_readdatavalid readdatavalid Input 1
