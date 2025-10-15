@@ -6,7 +6,7 @@
    version="1.0"
    description=""
    tags=""
-   categories="" />
+   categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
    element Char_Buf_Subsystem
@@ -113,6 +113,11 @@
    type="avalon"
    dir="end" />
  <interface
+   name="char_slave"
+   internal="Char_Buf_Subsystem.char_slave"
+   type="avalon"
+   dir="end" />
+ <interface
    name="pixel_dma_control_slave"
    internal="VGA_Pixel_DMA.avalon_dma_control_slave"
    type="avalon"
@@ -154,13 +159,13 @@
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="6" />
   <parameter name="AUTO_GENERATION_ID" value="0" />
   <parameter name="AUTO_SYS_CLK_CLOCK_DOMAIN" value="1" />
-  <parameter name="AUTO_SYS_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_SYS_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="1" />
   <parameter name="AUTO_UNIQUE_ID">VGA_Subsystem_Char_Buf_Subsystem</parameter>
  </module>
  <module name="Sys_Clk" kind="clock_source" version="21.1" enabled="1">
-  <parameter name="clockFrequency" value="50000000" />
-  <parameter name="clockFrequencyKnown" value="false" />
+  <parameter name="clockFrequency" value="100000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
@@ -169,22 +174,22 @@
    kind="altera_up_avalon_video_alpha_blender"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="mode" value="Simple" />
  </module>
  <module name="VGA_Clk" kind="clock_source" version="21.1" enabled="1">
-  <parameter name="clockFrequency" value="50000000" />
-  <parameter name="clockFrequencyKnown" value="false" />
+  <parameter name="clockFrequency" value="25000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
  <module
    name="VGA_Controller"
    kind="altera_up_avalon_video_vga_controller"
-   version="18.0"
+   version="18.1"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="25000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="board" value="DE1-SoC" />
   <parameter name="device" value="VGA Connector" />
@@ -196,8 +201,8 @@
    kind="altera_up_avalon_video_dual_clock_buffer"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLOCK_STREAM_IN_CLOCK_RATE" value="0" />
-  <parameter name="AUTO_CLOCK_STREAM_OUT_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLOCK_STREAM_IN_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_CLOCK_STREAM_OUT_CLOCK_RATE" value="25000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="color_bits" value="10" />
   <parameter name="color_planes" value="3" />
@@ -207,25 +212,25 @@
    kind="altera_up_avalon_video_dma_controller"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="addr_mode" value="X-Y" />
   <parameter name="back_start_address" value="134217728" />
   <parameter name="color_bits" value="16" />
   <parameter name="color_planes" value="1" />
   <parameter name="dma_enabled" value="true" />
-  <parameter name="height" value="240" />
+  <parameter name="height" value="480" />
   <parameter name="mode">From Memory to Stream</parameter>
   <parameter name="start_address" value="134217728" />
-  <parameter name="width" value="320" />
+  <parameter name="width" value="640" />
  </module>
  <module
    name="VGA_Pixel_FIFO"
    kind="altera_up_avalon_video_dual_clock_buffer"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLOCK_STREAM_IN_CLOCK_RATE" value="0" />
-  <parameter name="AUTO_CLOCK_STREAM_OUT_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLOCK_STREAM_IN_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_CLOCK_STREAM_OUT_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="color_bits" value="16" />
   <parameter name="color_planes" value="1" />
@@ -235,7 +240,7 @@
    kind="altera_up_avalon_video_rgb_resampler"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="alpha" value="1023" />
   <parameter name="input_type" value="16-bit RGB" />
