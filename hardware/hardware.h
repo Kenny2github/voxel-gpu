@@ -1,7 +1,7 @@
 #ifndef GPU_ADDR_H
 #define GPU_ADDR_H
 
-static volatile struct {
+static volatile struct __attribute__((__packed__)) {
 	/**
 	 * Address of first pixel buffer
 	 */
