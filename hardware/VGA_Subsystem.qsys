@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "6";
+         value = "5";
          type = "int";
       }
    }
@@ -29,7 +29,7 @@
    {
       datum _sortIndex
       {
-         value = "7";
+         value = "6";
          type = "int";
       }
    }
@@ -45,7 +45,7 @@
    {
       datum _sortIndex
       {
-         value = "9";
+         value = "8";
          type = "int";
       }
    }
@@ -53,7 +53,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "7";
          type = "int";
       }
    }
@@ -78,14 +78,6 @@
       datum _sortIndex
       {
          value = "4";
-         type = "int";
-      }
-   }
-   element VGA_Pixel_Scaler
-   {
-      datum _sortIndex
-      {
-         value = "5";
          type = "int";
       }
    }
@@ -249,21 +241,6 @@
   <parameter name="input_type" value="16-bit RGB" />
   <parameter name="output_type" value="30-bit RGB" />
  </module>
- <module
-   name="VGA_Pixel_Scaler"
-   kind="altera_up_avalon_video_scaler"
-   version="18.0"
-   enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
-  <parameter name="color_bits" value="10" />
-  <parameter name="color_planes" value="3" />
-  <parameter name="height_in" value="240" />
-  <parameter name="height_scaling" value="2" />
-  <parameter name="include_channel" value="false" />
-  <parameter name="width_in" value="320" />
-  <parameter name="width_scaling" value="2" />
- </module>
  <connection
    kind="avalon_streaming"
    version="21.1"
@@ -293,11 +270,6 @@
    kind="avalon_streaming"
    version="21.1"
    start="VGA_Pixel_RGB_Resampler.avalon_rgb_source"
-   end="VGA_Pixel_Scaler.avalon_scaler_sink" />
- <connection
-   kind="avalon_streaming"
-   version="21.1"
-   start="VGA_Pixel_Scaler.avalon_scaler_source"
    end="VGA_Alpha_Blender.avalon_background_sink" />
  <connection
    kind="clock"
@@ -309,11 +281,6 @@
    version="21.1"
    start="Sys_Clk.clk"
    end="VGA_Pixel_RGB_Resampler.clk" />
- <connection
-   kind="clock"
-   version="21.1"
-   start="Sys_Clk.clk"
-   end="VGA_Pixel_Scaler.clk" />
  <connection
    kind="clock"
    version="21.1"
@@ -359,11 +326,6 @@
    version="21.1"
    start="Sys_Clk.clk_reset"
    end="VGA_Pixel_RGB_Resampler.reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="Sys_Clk.clk_reset"
-   end="VGA_Pixel_Scaler.reset" />
  <connection
    kind="reset"
    version="21.1"
