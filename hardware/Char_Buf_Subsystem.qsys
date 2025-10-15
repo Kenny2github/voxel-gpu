@@ -6,7 +6,7 @@
    version="1.0"
    description=""
    tags=""
-   categories="" />
+   categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
    element ASCII_to_Image
@@ -109,6 +109,11 @@
    internal="Onchip_SRAM.s1"
    type="avalon"
    dir="end" />
+ <interface
+   name="char_slave"
+   internal="Char_Buf_RGB_Resampler.avalon_rgb_slave"
+   type="avalon"
+   dir="end" />
  <interface name="sys_clk" internal="Sys_Clk.clk_in" type="clock" dir="end" />
  <interface
    name="sys_reset"
@@ -120,7 +125,7 @@
    kind="altera_up_avalon_video_ascii_to_image"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="colour_format" value="1-bit Black/White" />
  </module>
@@ -129,7 +134,7 @@
    kind="altera_up_avalon_video_dma_controller"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="addr_mode" value="X-Y" />
   <parameter name="back_start_address" value="150994944" />
@@ -146,7 +151,7 @@
    kind="altera_up_avalon_video_rgb_resampler"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="alpha" value="1023" />
   <parameter name="input_type" value="1-bit Black/White" />
@@ -157,7 +162,7 @@
    kind="altera_up_avalon_video_scaler"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="color_bits" value="8" />
   <parameter name="color_planes" value="1" />
@@ -173,7 +178,7 @@
    version="21.1"
    enabled="1">
   <parameter name="allowInSystemMemoryContentEditor" value="false" />
-  <parameter name="autoInitializationFileName">Char_Buf_Subsystem_Onchip_SRAM</parameter>
+  <parameter name="autoInitializationFileName">$${FILENAME}_Onchip_SRAM</parameter>
   <parameter name="blockType" value="AUTO" />
   <parameter name="copyInitFile" value="false" />
   <parameter name="dataWidth" value="32" />
@@ -204,7 +209,7 @@
    kind="altera_up_avalon_video_change_alpha"
    version="18.0"
    enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="alpha" value="0" />
   <parameter name="color" value="0" />
@@ -212,8 +217,8 @@
   <parameter name="color_planes" value="4" />
  </module>
  <module name="Sys_Clk" kind="clock_source" version="21.1" enabled="1">
-  <parameter name="clockFrequency" value="50000000" />
-  <parameter name="clockFrequencyKnown" value="false" />
+  <parameter name="clockFrequency" value="100000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
