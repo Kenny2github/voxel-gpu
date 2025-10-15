@@ -1574,6 +1574,15 @@
    kind="avalon"
    version="21.1"
    start="ARM_A9_HPS.h2f_lw_axi_master"
+   end="VGA_Subsystem.char_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x3014" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="21.1"
+   start="ARM_A9_HPS.h2f_lw_axi_master"
    end="SysID.control_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x2040" />
@@ -1749,6 +1758,15 @@
    end="VGA_Subsystem.char_buffer_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x09000000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="21.1"
+   start="JTAG_to_FPGA_Bridge.master"
+   end="VGA_Subsystem.char_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xff203014" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
