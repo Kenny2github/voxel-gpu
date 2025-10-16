@@ -1,0 +1,13 @@
+IndentWidth: 4
+AlignOperands: Align
+AlignAfterOpenBracket: BlockIndent
+BreakBeforeBinaryOperators: true
+# InsertBraces: true
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakComment: 1000000
+PenaltyBreakOpenParenthesis: 0
+PenaltyReturnTypeOnItsOwnLine: 10000
+ReflowComments: false
+SortIncludes: false
+ColumnLimit: 80
