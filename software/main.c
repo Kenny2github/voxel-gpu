@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../hardware/hardware.h"
+#include "hardware/hardware.h"
 
 int main(void) {
     printf(

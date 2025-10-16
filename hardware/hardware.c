@@ -1,4 +1,4 @@
-#include "hardware.h"
+#include "hardware/hardware.h"
 
 volatile struct gpu_registers *const GPU = (void *)0xFF565800;
 
