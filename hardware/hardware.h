@@ -1,17 +1,225 @@
-#ifndef GPU_ADDR_H
-#define GPU_ADDR_H
+#ifndef HARDWARE_H
+#define HARDWARE_H
 
-static volatile struct __attribute__((__packed__)) {
-	/**
+#include <stdint.h>
+
+// NOTE: In little-endian ARM, struct bitfields are in LSB-to-MSB order;
+// volatile structs make all their members volatile; and
+// volatile ints must always be accessed by their whole width.
+// Remember that unused bits and paddings are wasted by the MMIO allocations,
+// not by global variable allocation.
+
+struct __attribute__((__packed__)) gpu_registers {
+    /**
 	 * Address of first pixel buffer
 	 */
-	unsigned char * pixel_buffer1;
-	/**
+    unsigned char *pixel_buffer1;
+    /**
 	 * Address of second pixel buffer
 	 */
-	unsigned char * pixel_buffer2;
-} * const GPU = (void *)0xFF565800;
-
+    unsigned char *pixel_buffer2;
+};
+extern volatile struct gpu_registers *const GPU;
 #define GPU_IRQ 16U
+
+extern volatile unsigned char *const DDR_BASE;
+#define DDR_END 0x3FFFFFFF
+
+extern volatile unsigned char *const A9_ONCHIP_BASE;
+#define A9_ONCHIP_END 0xFFFFFFFF
+
+extern volatile unsigned char *const SDRAM_BASE;
+#define SDRAM_END 0xC3FFFFFF
+
+extern volatile unsigned char *const FPGA_PIXEL_BUF_BASE;
+#define FPGA_PIXEL_BUF_END 0xC803FFFF
+
+extern volatile unsigned char *const FPGA_CHAR_BASE;
+#define FPGA_CHAR_END 0xC9001FFF
+
+struct __attribute__((__packed__)) ledr_registers {
+    uint32_t ledr : 10;
+    uint32_t _unused : 22;
+};
+extern volatile struct ledr_registers *const LED;
+extern volatile struct ledr_registers *const LEDR;
+
+struct __attribute__((__packed__)) hex3_hex0_registers {
+    uint32_t hex0 : 8;
+    uint32_t hex1 : 8;
+    uint32_t hex2 : 8;
+    uint32_t hex3 : 8;
+};
+extern volatile struct hex3_hex0_registers *const HEX3_HEX0;
+
+struct __attribute__((__packed__)) hex5_hex4_registers {
+    uint32_t hex4 : 8;
+    uint32_t hex5 : 8;
+    uint32_t _unused : 16;
+};
+extern volatile struct hex5_hex4_registers *const HEX5_HEX4;
+
+struct __attribute__((__packed__)) sw_registers {
+    uint32_t sw : 10;
+    uint32_t _unused : 22;
+};
+extern volatile struct sw_registers *const SW;
+
+struct __attribute__((__packed__)) key_registers {
+    uint32_t key : 4;
+    uint32_t : 28;
+    uint32_t : 32;
+    uint32_t mask : 4;
+    uint32_t : 28;
+    uint32_t edge : 4;
+    uint32_t : 28;
+};
+extern volatile struct key_registers *const KEY;
+
+struct __attribute__((__packed__)) ps2_registers {
+    uint32_t data : 8;
+    uint32_t : 7;
+    uint32_t rvalid : 1;
+    uint32_t ravail : 16;
+    uint32_t re : 1;
+    uint32_t : 7;
+    uint32_t ri : 1;
+    uint32_t : 1;
+    uint32_t ce : 1;
+    uint32_t : 21;
+};
+extern volatile struct ps2_registers *const PS2;
+extern volatile struct ps2_registers *const PS2_DUAL;
+
+struct __attribute__((__packed__)) jtag_uart_registers {
+    uint32_t data : 8;
+    uint32_t : 7;
+    uint32_t rvalid : 1;
+    uint32_t ravail : 16;
+    uint32_t re : 1;
+    uint32_t we : 1;
+    uint32_t : 6;
+    uint32_t ri : 1;
+    uint32_t wi : 1;
+    uint32_t ac : 1;
+    uint32_t : 5;
+    uint32_t wspace : 16;
+};
+extern volatile struct jtag_uart_registers *const JTAG_UART;
+extern volatile struct jtag_uart_registers *const JTAG_UART_2;
+
+struct __attribute__((__packed__)) timer_registers {
+    uint32_t to : 1;
+    uint32_t run : 1;
+    uint32_t : 30;
+    uint32_t ito : 1;
+    uint32_t cont : 1;
+    uint32_t start : 1;
+    uint32_t stop : 1;
+    uint32_t : 28;
+    uint32_t start_low : 16;
+    uint32_t : 16;
+    uint32_t start_high : 16;
+    uint32_t : 16;
+    uint32_t snapshot_low : 16;
+    uint32_t : 16;
+    uint32_t snapshot_high : 16;
+    uint32_t : 16;
+};
+extern volatile struct timer_registers *const TIMER;
+extern volatile struct timer_registers *const TIMER_2;
+
+struct __attribute__((__packed__)) buf_ctrl_registers {
+    unsigned char *buffer;
+    unsigned char *back_buffer;
+    uint32_t x_resolution : 16;
+    uint32_t y_resolution : 16;
+    struct __attribute__((__packed__)) {
+        uint32_t s : 1;
+        uint32_t a : 1;
+        uint32_t en : 1;
+        uint32_t : 3;
+        uint32_t sb : 2;
+        uint32_t bs : 4;
+        uint32_t : 4;
+        uint32_t n : 8;
+        uint32_t m : 8;
+    } status;
+};
+extern volatile struct buf_ctrl_registers *const PIXEL_BUF_CTRL;
+extern volatile struct buf_ctrl_registers *const CHAR_BUF_CTRL;
+
+struct __attribute__((__packed__)) hps_timer_registers {
+    uint32_t load;
+    uint32_t counter;
+    uint32_t e : 1;
+    uint32_t m : 1;
+    uint32_t i : 1;
+    uint32_t : 29;
+    uint32_t f : 1;
+    uint32_t : 31;
+    uint32_t s : 1;
+    uint32_t : 31;
+};
+extern volatile struct hps_timer_registers *const HPS_TIMER[4];
+
+struct __attribute__((__packed__)) fpga_bridge_registers {
+    uint32_t hps2fpga_reset : 1;
+    uint32_t lwhps2fpga_reset : 1;
+    uint32_t fpga2hps_reset : 1;
+	uint32_t : 29;
+};
+extern volatile struct fpga_bridge_registers *const FPGA_BRIDGE;
+
+struct __attribute__((__packed__)) private_timer_registers {
+    uint32_t load;
+    uint32_t counter;
+    uint32_t e : 1;
+    uint32_t a : 1;
+    uint32_t i : 1;
+	uint32_t : 5;
+	uint32_t prescaler : 8;
+    uint32_t : 16;
+    uint32_t f : 1;
+    uint32_t : 31;
+};
+extern volatile struct private_timer_registers *const MPCORE_PRIV_TIMER;
+
+struct __attribute__((__packed__)) gic_cpuif_registers {
+	/* CPU interface control register */
+	uint32_t iccicr;
+	/* interrupt priority mask register */
+	uint32_t iccpmr;
+	/* interrupt acknowledge register */
+	uint32_t icciar;
+	/* end of interrupt register */
+	uint32_t icceoir;
+};
+extern volatile struct gic_cpuif_registers *const MPCORE_GIC_CPUIF;
+
+struct __attribute__((__packed__)) gic_dist_registers {
+	/* distributor control register */
+	uint32_t icddcr;
+	uint32_t icdictr;
+	uint32_t icdiidr;
+	uint32_t _reserved_0x00C_0x07C[(0x07C - 0x00C) / 4 + 1];
+	uint32_t icdisr[32];
+	/* interrupt set-enable registers */
+	uint32_t icdiser[32];
+	/* interrupt clear-enable registers */
+	uint32_t icdicer[32];
+	uint32_t icdispr[32];
+	uint32_t icdicpr[32];
+	uint32_t icdabr[32];
+	uint32_t _reserved_0x380_0x3FC[(0x3FC - 0x380) / 4 + 1];
+	uint32_t icdipr[255];
+	uint32_t _reserved_0x7FC_0x7FC[(0x7FC - 0x7FC) / 4 + 1];
+	/* interrupt processor targets registers */
+	uint8_t icdiptr[255];
+	uint32_t _reserved_0xBFC_0xBFC[(0xBFC - 0xBFC) / 4 + 1];
+	/* interrupt configuration registers */
+	uint8_t icdicfr[256];
+};
+extern volatile struct gic_dist_registers *const MPCORE_GIC_DIST;
 
 #endif
