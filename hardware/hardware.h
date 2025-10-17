@@ -1,6 +1,7 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 // NOTE: In little-endian ARM, struct bitfields are in LSB-to-MSB order;
@@ -212,15 +213,30 @@ struct __attribute__((__packed__)) gic_dist_registers {
 	uint32_t icdicpr[32];
 	uint32_t icdabr[32];
 	uint32_t _reserved_0x380_0x3FC[(0x3FC - 0x380) / 4 + 1];
-	uint32_t icdipr[255];
+	uint8_t icdipr[1020];
 	uint32_t _reserved_0x7FC_0x7FC[(0x7FC - 0x7FC) / 4 + 1];
 	/* interrupt processor targets registers */
-	uint8_t icdiptr[255];
+	uint8_t icdiptr[1020];
 	uint32_t _reserved_0xBFC_0xBFC[(0xBFC - 0xBFC) / 4 + 1];
 	/* interrupt configuration registers */
-	uint8_t icdicfr[256];
+	uint32_t icdicfr[64];
 };
 extern volatile struct gic_dist_registers *const MPCORE_GIC_DIST;
+_Static_assert(
+    offsetof(struct gic_dist_registers, icddcr) == 0, "Wrong ICDDCR offset"
+);
+_Static_assert(
+    offsetof(struct gic_dist_registers, icdiser) == 0x100, "Wrong ICDISER offset"
+);
+_Static_assert(
+    offsetof(struct gic_dist_registers, icdicer) == 0x180, "Wrong ICDICER offset"
+);
+_Static_assert(
+    offsetof(struct gic_dist_registers, icdiptr) == 0x800, "Wrong ICDIPTR offset"
+);
+_Static_assert(
+    offsetof(struct gic_dist_registers, icdicfr) == 0xC00, "Wrong ICDICFR offset"
+);
 
 union cpsr_t {
     uint32_t value;
