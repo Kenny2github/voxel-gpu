@@ -27,7 +27,7 @@ OCFLAGS		:= -O srec
 
 # Files
 HDRS		:= firmware/firmware.h hardware/hardware.h
-SRCS		:= software/main.c hardware/hardware.c
+SRCS		:= software/main.c hardware/hardware.c firmware/interrupts.c
 OBJS		:= $(patsubst %, %.o, $(SRCS))
 
 # Targets
