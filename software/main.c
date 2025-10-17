@@ -12,6 +12,5 @@ int main(void) {
     printf(
         "%p: pixel_buffer2 = %p\n", &((*GPU).pixel_buffer2), GPU->pixel_buffer2
     );
-    while (1) {
-    }
+    while (1);
 }

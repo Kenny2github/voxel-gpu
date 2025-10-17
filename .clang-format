@@ -1,8 +1,10 @@
 IndentWidth: 4
 AlignOperands: Align
 AlignAfterOpenBracket: BlockIndent
+AllowShortBlocksOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: false
 BreakBeforeBinaryOperators: true
-# InsertBraces: true
 PenaltyBreakAssignment: 100
 PenaltyBreakBeforeFirstCallParameter: 0
 PenaltyBreakComment: 1000000
