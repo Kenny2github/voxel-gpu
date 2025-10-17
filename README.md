@@ -14,8 +14,9 @@ For building:
 - [Quartus Prime Lite Edition version 21.1](https://www.intel.com/content/www/us/en/software-kit/684215/intel-quartus-prime-lite-edition-design-software-version-21-1-for-linux.html) installed in `~/intelFPGA_lite/21.1`
 - Monitor Program version 18.1 from [FPGAcademy](https://fpgacademy.org/tools.html) installed in `~/intelFPGA_lite/21.1/`
 - Optionally, for `clangd` support:
-	- `python3`
+	- `python3`, `clang`, and `clangd`
 	- Run `make cc` on clone
+	- IDE support to pass `--query-driver=**/arm-altera-eabi-gcc` as an argument to `clangd`
 
 For running:
 - Any system
