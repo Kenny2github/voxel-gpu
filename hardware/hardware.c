@@ -1,6 +1,6 @@
 #include "hardware/hardware.h"
 
-volatile struct gpu_registers *const GPU = (void *)0xFF565800;
+volatile struct gpu_registers *const GPU = (void *)0xFF205800;
 
 volatile unsigned char *const DDR_BASE = (void *)0x00000000;
 volatile unsigned char *const A9_ONCHIP_BASE = (void *)0xFFFF0000;

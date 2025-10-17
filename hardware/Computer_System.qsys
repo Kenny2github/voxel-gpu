@@ -1909,7 +1909,7 @@
    start="JTAG_to_FPGA_Bridge.master"
    end="gpu.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0xff565800" />
+  <parameter name="baseAddress" value="0xff205800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
