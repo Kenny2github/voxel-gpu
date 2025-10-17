@@ -8,19 +8,15 @@ The complexity of the project will likely come from multiple sources:
 - The software used to demonstrate all the above
 
 ## Requirements
-For building:
 - Linux system
+	- If on WSL, Windows drivers for the programming cable need to be installed
 - `make`
 - [Quartus Prime Lite Edition version 21.1](https://www.intel.com/content/www/us/en/software-kit/684215/intel-quartus-prime-lite-edition-design-software-version-21-1-for-linux.html) installed in `~/intelFPGA_lite/21.1`
 - Monitor Program version 18.1 from [FPGAcademy](https://fpgacademy.org/tools.html) installed in `~/intelFPGA_lite/21.1/`
 - Optionally, for `clangd` support:
 	- `python3`, `clang`, and `clangd`
-	- Run `make cc` on clone
+	- Run `make cc` on clone and whenever files are added
 	- IDE support to pass `--query-driver=**/arm-altera-eabi-gcc` as an argument to `clangd`
-
-For running:
-- Any system
-- Monitor Program version 18.1
 
 ## Build
 1. Open `hardware/DE1_SoC_Computer.qpf` in Quartus and compile.
