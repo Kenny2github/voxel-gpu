@@ -26,8 +26,8 @@ LDFLAGS		:= $(patsubst %, -Wl$(DEFINE_COMMA)%, $(ARCHLDFLAGS)) $(ARCHLDSCRIPT)
 OCFLAGS		:= -O srec
 
 # Files
-HDRS		:= firmware/firmware.h hardware/hardware.h
-SRCS		:= software/main.c hardware/hardware.c firmware/interrupts.c
+HDRS		:= $(wildcard */*.h)
+SRCS		:= $(wildcard */*.c)
 OBJS		:= $(patsubst %, %.o, $(SRCS))
 
 # Targets
