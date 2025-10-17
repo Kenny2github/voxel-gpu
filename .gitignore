@@ -1,5 +1,6 @@
 *.o
 *.axf
+*.objdump
 *.srec
 *~
 *.bak
