@@ -222,4 +222,43 @@ struct __attribute__((__packed__)) gic_dist_registers {
 };
 extern volatile struct gic_dist_registers *const MPCORE_GIC_DIST;
 
+union cpsr_t {
+    uint32_t value;
+    struct {
+        // processor mode
+        uint32_t M : 5;
+        // shall I enable Thumb execution?
+        uint32_t T : 1;
+        // shall I mask (disable) FIQ (fast-execution interrupts)?
+        uint32_t F : 1;
+        // shall I mask (disable) IRQ (interrupts)?
+        uint32_t I : 1;
+        // shall I mask (disable) asynchronous aborts?
+        uint32_t A : 1;
+        // shall I use big-endian operation?
+        uint32_t E : 1;
+        // used in Thumb execution
+        uint32_t IT_7_2 : 6;
+        // Greater than or Equal flags
+        uint32_t GE : 4;
+        uint32_t _reserved : 4;
+        // shall I enable Jazelle execution?
+        uint32_t J : 1;
+        // used in Thumb execution
+        uint32_t IT_1_0 : 2;
+        // saturation flag
+        uint32_t Q : 1;
+        // overflow flag
+        uint32_t V : 1;
+        // carry flag
+        uint32_t C : 1;
+        // zero flag
+        uint32_t Z : 1;
+        // negative flag
+        uint32_t N : 1;
+    } fields;
+};
+#define MODE_SVC 0b10011
+#define MODE_IRQ 0b10010
+
 #endif
