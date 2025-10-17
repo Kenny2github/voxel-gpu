@@ -48,12 +48,16 @@ module voxel_gpu #(
 				s1_readdata = pixel_buffer2;
 			end
 			default: begin
-				s1_readdata = 32'b00000000000000000000000000000000;
+				s1_readdata = 32'b0;
 			end
 		endcase
 	end
 
 	assign s1_waitrequest = 1'b0;
+	assign m1_write = 1'b0;
+	assign m1_writedata = 32'b0;
+	assign m1_address = 32'b0;
+	assign m1_read = 1'b0;
 	assign irq = 1'b0;
 
 endmodule
