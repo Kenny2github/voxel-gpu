@@ -15,7 +15,7 @@ OC		:= $(ARM_TOOLS)/arm-altera-eabi-objcopy
 RM		:= rm -f
 
 # Flags
-USERCCFLAGS	:= -g -O2 -std=gnu99
+USERCCFLAGS	:= -g -O2 -std=gnu11
 ARCHASFLAGS	:= -mfloat-abi=soft -march=armv7-a -mcpu=cortex-a9 --gstabs -I "$(ARM_TOOLS)/../arm-altera-eabi/include/"
 ARCHCCFLAGS	:= -mfloat-abi=soft -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9
 ARCHLDFLAGS	:= --defsym arm_program_mem=0x40 --defsym arm_available_mem_size=0x3fffffb8 --defsym __cs3_stack=0x3ffffff8 --section-start .vectors=0x0
