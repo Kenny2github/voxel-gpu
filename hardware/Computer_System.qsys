@@ -1447,7 +1447,7 @@
   <parameter name="AUTO_SYS_CLK_RESET_DOMAIN" value="8" />
   <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_VGA_Subsystem</parameter>
   <parameter name="AUTO_VGA_CLK_CLOCK_DOMAIN" value="10" />
-  <parameter name="AUTO_VGA_CLK_CLOCK_RATE" value="25000000" />
+  <parameter name="AUTO_VGA_CLK_CLOCK_RATE" value="65000000" />
   <parameter name="AUTO_VGA_CLK_RESET_DOMAIN" value="10" />
  </module>
  <module
@@ -1460,7 +1460,7 @@
   <parameter name="camera">5MP Digital Camera (THDB_D5M)</parameter>
   <parameter name="device_family" value="Cyclone V" />
   <parameter name="gui_refclk" value="50.0" />
-  <parameter name="gui_resolution" value="VGA 640x480" />
+  <parameter name="gui_resolution" value="XGA 1024x768" />
   <parameter name="lcd">7" LCD on VEEK-MT and MTL/MTL2 Modules</parameter>
   <parameter name="lcd_clk_en" value="false" />
   <parameter name="vga_clk_en" value="true" />
