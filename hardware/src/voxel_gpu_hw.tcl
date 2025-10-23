@@ -39,7 +39,7 @@ set_parameter_property DEFAULT_BUFFER DEFAULT_VALUE 134217728
 set_parameter_property DEFAULT_BUFFER DISPLAY_NAME "Default Pixel Buffer Address"
 set_parameter_property DEFAULT_BUFFER WIDTH 32
 set_parameter_property DEFAULT_BUFFER TYPE STD_LOGIC_VECTOR
-set_parameter_property DEFAULT_BUFFER UNITS None
+set_parameter_property DEFAULT_BUFFER UNITS Address
 set_parameter_property DEFAULT_BUFFER DESCRIPTION ""
 set_parameter_property DEFAULT_BUFFER HDL_PARAMETER true
 add_parameter DEFAULT_BACK_BUFFER STD_LOGIC_VECTOR 134217728 ""
@@ -47,9 +47,26 @@ set_parameter_property DEFAULT_BACK_BUFFER DEFAULT_VALUE 134217728
 set_parameter_property DEFAULT_BACK_BUFFER DISPLAY_NAME "Default Back Buffer Address"
 set_parameter_property DEFAULT_BACK_BUFFER WIDTH 32
 set_parameter_property DEFAULT_BACK_BUFFER TYPE STD_LOGIC_VECTOR
-set_parameter_property DEFAULT_BACK_BUFFER UNITS None
+set_parameter_property DEFAULT_BACK_BUFFER UNITS Address
 set_parameter_property DEFAULT_BACK_BUFFER DESCRIPTION ""
 set_parameter_property DEFAULT_BACK_BUFFER HDL_PARAMETER true
+
+add_parameter H_RESOLUTION STD_LOGIC_VECTOR 256 ""
+set_parameter_property H_RESOLUTION DEFAULT_VALUE 256
+set_parameter_property H_RESOLUTION DISPLAY_NAME "Horizontal Resolution"
+set_parameter_property H_RESOLUTION WIDTH 16
+set_parameter_property H_RESOLUTION TYPE STD_LOGIC_VECTOR
+set_parameter_property H_RESOLUTION UNITS None
+set_parameter_property H_RESOLUTION DESCRIPTION ""
+set_parameter_property H_RESOLUTION HDL_PARAMETER true
+add_parameter V_RESOLUTION STD_LOGIC_VECTOR 192 ""
+set_parameter_property V_RESOLUTION DEFAULT_VALUE 192
+set_parameter_property V_RESOLUTION DISPLAY_NAME "Vertical Resolution"
+set_parameter_property V_RESOLUTION WIDTH 16
+set_parameter_property V_RESOLUTION TYPE STD_LOGIC_VECTOR
+set_parameter_property V_RESOLUTION UNITS None
+set_parameter_property V_RESOLUTION DESCRIPTION ""
+set_parameter_property V_RESOLUTION HDL_PARAMETER true
 
 #
 # display items

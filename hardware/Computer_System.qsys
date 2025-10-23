@@ -1469,6 +1469,8 @@
  <module name="gpu" kind="voxel_gpu" version="0.0" enabled="1">
   <parameter name="DEFAULT_BACK_BUFFER" value="134217728" />
   <parameter name="DEFAULT_BUFFER" value="134217728" />
+  <parameter name="H_RESOLUTION" value="256" />
+  <parameter name="V_RESOLUTION" value="192" />
  </module>
  <connection
    kind="avalon"

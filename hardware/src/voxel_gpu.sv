@@ -2,7 +2,9 @@
 
 module voxel_gpu #(
 	parameter DEFAULT_BUFFER = 32'h0800_0000,
-	parameter DEFAULT_BACK_BUFFER = 32'h0800_0000
+	parameter DEFAULT_BACK_BUFFER = 32'h0800_0000,
+	parameter H_RESOLUTION = 16'd256,
+	parameter V_RESOLUTION = 16'd192
 ) (
 		input  wire [7:0]  s1_address,       //    s1.address
 		output wire [31:0] s1_readdata,      //      .readdata
