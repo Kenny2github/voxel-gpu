@@ -188,6 +188,10 @@ struct __attribute__((__packed__)) hps_timer_registers {
     uint32_t : 31;
 };
 extern volatile struct hps_timer_registers *const HPS_TIMER[4];
+#define HPS_TIMER_0_IRQ 199
+#define HPS_TIMER_1_IRQ 200
+#define HPS_TIMER_2_IRQ 201
+#define HPS_TIMER_3_IRQ 202
 
 struct __attribute__((__packed__)) fpga_bridge_registers {
     uint32_t hps2fpga_reset : 1;
@@ -210,6 +214,7 @@ struct __attribute__((__packed__)) private_timer_registers {
     uint32_t : 31;
 };
 extern volatile struct private_timer_registers *const MPCORE_PRIV_TIMER;
+#define PRIVATE_TIMER_IRQ 29
 
 struct __attribute__((__packed__)) gic_cpuif_registers {
 	/* CPU interface control register */
