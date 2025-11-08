@@ -95,6 +95,7 @@ struct __attribute__((__packed__)) key_registers {
     uint32_t : 28;
 };
 extern volatile struct key_registers *const KEY;
+#define KEY_IRQ 1U
 
 struct __attribute__((__packed__)) ps2_registers {
     uint32_t data : 8;
@@ -109,7 +110,9 @@ struct __attribute__((__packed__)) ps2_registers {
     uint32_t : 21;
 };
 extern volatile struct ps2_registers *const PS2;
+#define PS2_IRQ 7U
 extern volatile struct ps2_registers *const PS2_DUAL;
+#define PS2_DUAL_IRQ 23U
 
 struct __attribute__((__packed__)) jtag_uart_registers {
     uint32_t data : 8;
@@ -127,6 +130,7 @@ struct __attribute__((__packed__)) jtag_uart_registers {
 };
 extern volatile struct jtag_uart_registers *const JTAG_UART;
 extern volatile struct jtag_uart_registers *const JTAG_UART_2;
+#define JTAG_UART_IRQ 8U
 
 struct __attribute__((__packed__)) timer_registers {
     uint32_t to : 1;
@@ -148,6 +152,8 @@ struct __attribute__((__packed__)) timer_registers {
 };
 extern volatile struct timer_registers *const TIMER;
 extern volatile struct timer_registers *const TIMER_2;
+#define TIMER_IRQ 0U
+#define TIMER_2_IRQ 2U
 
 struct __attribute__((__packed__)) buf_ctrl_registers {
     unsigned char *buffer;
