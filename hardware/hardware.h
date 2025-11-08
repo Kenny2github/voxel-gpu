@@ -19,6 +19,25 @@ struct __attribute__((__packed__)) gpu_registers {
 	 * Address of second pixel buffer
 	 */
     unsigned char *pixel_buffer2;
+    /**
+     * Starting address of voxel data buffer
+     */
+    unsigned char *voxel_buffer;
+    /**
+     * Position and orientation of the camera
+     */
+    struct {
+        uint32_t x;
+        uint32_t y;
+        uint32_t z;
+        uint32_t pitch;
+        uint32_t yaw;
+        uint32_t roll;
+    } camera;
+    /**
+     * WRITE ONLY - write 1 to this register to begin rendering
+     */
+    uint32_t do_render;
 };
 extern volatile struct gpu_registers *const GPU;
 #define GPU_IRQ 16U
