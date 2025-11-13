@@ -1,4 +1,7 @@
 */
+!src/
+!docs/
+!ip/
 *.rpt
 *.amp
 *.BAK.*
@@ -15,6 +18,3 @@
 *.qws
 *.csv
 *.txt
-!src/
-!ip/
-db/
