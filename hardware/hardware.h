@@ -14,7 +14,7 @@ struct __attribute__((__packed__, __aligned__(4))) _vec3 {
     uint32_t x, y, z;
 };
 
-struct __attribute__((__packed__)) gpu_registers {
+struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
     /**
 	 * Address of first pixel buffer
 	 */
@@ -60,14 +60,14 @@ extern volatile unsigned char *const FPGA_PIXEL_BUF_BASE;
 extern volatile unsigned char *const FPGA_CHAR_BASE;
 #define FPGA_CHAR_END 0xC9001FFF
 
-struct __attribute__((__packed__)) ledr_registers {
+struct __attribute__((__packed__, __aligned__(4))) ledr_registers {
     uint32_t ledr : 10;
     uint32_t _unused : 22;
 };
 extern volatile struct ledr_registers *const LED;
 extern volatile struct ledr_registers *const LEDR;
 
-struct __attribute__((__packed__)) hex3_hex0_registers {
+struct __attribute__((__packed__, __aligned__(4))) hex3_hex0_registers {
     uint32_t hex0 : 8;
     uint32_t hex1 : 8;
     uint32_t hex2 : 8;
@@ -75,20 +75,20 @@ struct __attribute__((__packed__)) hex3_hex0_registers {
 };
 extern volatile struct hex3_hex0_registers *const HEX3_HEX0;
 
-struct __attribute__((__packed__)) hex5_hex4_registers {
+struct __attribute__((__packed__, __aligned__(4))) hex5_hex4_registers {
     uint32_t hex4 : 8;
     uint32_t hex5 : 8;
     uint32_t _unused : 16;
 };
 extern volatile struct hex5_hex4_registers *const HEX5_HEX4;
 
-struct __attribute__((__packed__)) sw_registers {
+struct __attribute__((__packed__, __aligned__(4))) sw_registers {
     uint32_t sw : 10;
     uint32_t _unused : 22;
 };
 extern volatile struct sw_registers *const SW;
 
-struct __attribute__((__packed__)) key_registers {
+struct __attribute__((__packed__, __aligned__(4))) key_registers {
     uint32_t key : 4;
     uint32_t : 28;
     uint32_t : 32;
@@ -100,7 +100,7 @@ struct __attribute__((__packed__)) key_registers {
 extern volatile struct key_registers *const KEY;
 #define KEY_IRQ 1U
 
-struct __attribute__((__packed__)) ps2_registers {
+struct __attribute__((__packed__, __aligned__(4))) ps2_registers {
     uint32_t data : 8;
     uint32_t : 7;
     uint32_t rvalid : 1;
@@ -117,7 +117,7 @@ extern volatile struct ps2_registers *const PS2;
 extern volatile struct ps2_registers *const PS2_DUAL;
 #define PS2_DUAL_IRQ 23U
 
-struct __attribute__((__packed__)) jtag_uart_registers {
+struct __attribute__((__packed__, __aligned__(4))) jtag_uart_registers {
     uint32_t data : 8;
     uint32_t : 7;
     uint32_t rvalid : 1;
@@ -135,7 +135,7 @@ extern volatile struct jtag_uart_registers *const JTAG_UART;
 extern volatile struct jtag_uart_registers *const JTAG_UART_2;
 #define JTAG_UART_IRQ 8U
 
-struct __attribute__((__packed__)) timer_registers {
+struct __attribute__((__packed__, __aligned__(4))) timer_registers {
     uint32_t to : 1;
     uint32_t run : 1;
     uint32_t : 30;
@@ -158,12 +158,12 @@ extern volatile struct timer_registers *const TIMER_2;
 #define TIMER_IRQ 0U
 #define TIMER_2_IRQ 2U
 
-struct __attribute__((__packed__)) buf_ctrl_registers {
+struct __attribute__((__packed__, __aligned__(4))) buf_ctrl_registers {
     unsigned char *buffer;
     unsigned char *back_buffer;
     uint32_t x_resolution : 16;
     uint32_t y_resolution : 16;
-    struct __attribute__((__packed__)) {
+    struct __attribute__((__packed__, __aligned__(4))) {
         uint32_t s : 1;
         uint32_t a : 1;
         uint32_t en : 1;
@@ -178,7 +178,7 @@ struct __attribute__((__packed__)) buf_ctrl_registers {
 extern volatile struct buf_ctrl_registers *const PIXEL_BUF_CTRL;
 extern volatile struct buf_ctrl_registers *const CHAR_BUF_CTRL;
 
-struct __attribute__((__packed__)) hps_timer_registers {
+struct __attribute__((__packed__, __aligned__(4))) hps_timer_registers {
     uint32_t load;
     uint32_t counter;
     uint32_t e : 1;
@@ -196,7 +196,7 @@ extern volatile struct hps_timer_registers *const HPS_TIMER[4];
 #define HPS_TIMER_2_IRQ 201
 #define HPS_TIMER_3_IRQ 202
 
-struct __attribute__((__packed__)) fpga_bridge_registers {
+struct __attribute__((__packed__, __aligned__(4))) fpga_bridge_registers {
     uint32_t hps2fpga_reset : 1;
     uint32_t lwhps2fpga_reset : 1;
     uint32_t fpga2hps_reset : 1;
@@ -204,7 +204,7 @@ struct __attribute__((__packed__)) fpga_bridge_registers {
 };
 extern volatile struct fpga_bridge_registers *const FPGA_BRIDGE;
 
-struct __attribute__((__packed__)) private_timer_registers {
+struct __attribute__((__packed__, __aligned__(4))) private_timer_registers {
     uint32_t load;
     uint32_t counter;
     uint32_t e : 1;
@@ -219,7 +219,7 @@ struct __attribute__((__packed__)) private_timer_registers {
 extern volatile struct private_timer_registers *const MPCORE_PRIV_TIMER;
 #define PRIVATE_TIMER_IRQ 29
 
-struct __attribute__((__packed__)) gic_cpuif_registers {
+struct __attribute__((__packed__, __aligned__(4))) gic_cpuif_registers {
 	/* CPU interface control register */
 	uint32_t iccicr;
 	/* interrupt priority mask register */
@@ -231,7 +231,7 @@ struct __attribute__((__packed__)) gic_cpuif_registers {
 };
 extern volatile struct gic_cpuif_registers *const MPCORE_GIC_CPUIF;
 
-struct __attribute__((__packed__)) gic_dist_registers {
+struct __attribute__((__packed__, __aligned__(4))) gic_dist_registers {
 	/* distributor control register */
 	uint32_t icddcr;
 	uint32_t icdictr;
