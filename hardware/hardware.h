@@ -26,12 +26,11 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
     /**
      * Position and orientation of the camera
      */
-    struct {
+    struct __attribute__((__packed__, __aligned__(4))) {
         struct _vec3 pos;
-        // "look-at" direction for top left pixel
-        struct _vec3 top_left;
-        // "look-at" direction for top left pixel
-        struct _vec3 bottom_right;
+        // "look-at" directions for top left, top right,
+        // and bottom left pixels, in that order
+        struct _vec3 look[3];
     } camera;
     /**
      * WRITE ONLY
