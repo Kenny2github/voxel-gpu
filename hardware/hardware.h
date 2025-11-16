@@ -10,6 +10,10 @@
 // Remember that unused bits and paddings are wasted by the MMIO allocations,
 // not by global variable allocation.
 
+struct __attribute__((__packed__, __aligned__(4))) _vec3 {
+    uint32_t x, y, z;
+};
+
 struct __attribute__((__packed__)) gpu_registers {
     /**
 	 * Address of first pixel buffer
@@ -27,12 +31,11 @@ struct __attribute__((__packed__)) gpu_registers {
      * Position and orientation of the camera
      */
     struct {
-        uint32_t x;
-        uint32_t y;
-        uint32_t z;
-        uint32_t pitch;
-        uint32_t yaw;
-        uint32_t roll;
+        struct _vec3 pos;
+        // "look-at" direction for top left pixel
+        struct _vec3 top_left;
+        // "look-at" direction for top left pixel
+        struct _vec3 bottom_right;
     } camera;
     /**
      * WRITE ONLY - write 1 to this register to begin rendering
