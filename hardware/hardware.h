@@ -201,7 +201,7 @@ struct __attribute__((__packed__, __aligned__(4))) fpga_bridge_registers {
     uint32_t hps2fpga_reset : 1;
     uint32_t lwhps2fpga_reset : 1;
     uint32_t fpga2hps_reset : 1;
-	uint32_t : 29;
+    uint32_t : 29;
 };
 extern volatile struct fpga_bridge_registers *const FPGA_BRIDGE;
 
@@ -211,8 +211,8 @@ struct __attribute__((__packed__, __aligned__(4))) private_timer_registers {
     uint32_t e : 1;
     uint32_t a : 1;
     uint32_t i : 1;
-	uint32_t : 5;
-	uint32_t prescaler : 8;
+    uint32_t : 5;
+    uint32_t prescaler : 8;
     uint32_t : 16;
     uint32_t f : 1;
     uint32_t : 31;
@@ -221,55 +221,59 @@ extern volatile struct private_timer_registers *const MPCORE_PRIV_TIMER;
 #define PRIVATE_TIMER_IRQ 29
 
 struct __attribute__((__packed__, __aligned__(4))) gic_cpuif_registers {
-	/* CPU interface control register */
-	uint32_t iccicr;
-	/* interrupt priority mask register */
-	uint32_t iccpmr;
-	/* interrupt acknowledge register */
-	uint32_t icciar;
-	/* end of interrupt register */
-	uint32_t icceoir;
+    /* CPU interface control register */
+    uint32_t iccicr;
+    /* interrupt priority mask register */
+    uint32_t iccpmr;
+    /* interrupt acknowledge register */
+    uint32_t icciar;
+    /* end of interrupt register */
+    uint32_t icceoir;
 };
 extern volatile struct gic_cpuif_registers *const MPCORE_GIC_CPUIF;
 
 struct __attribute__((__packed__, __aligned__(4))) gic_dist_registers {
-	/* distributor control register */
-	uint32_t icddcr;
-	uint32_t icdictr;
-	uint32_t icdiidr;
-	uint32_t _reserved_0x00C_0x07C[(0x07C - 0x00C) / 4 + 1];
-	uint32_t icdisr[32];
-	/* interrupt set-enable registers */
-	uint32_t icdiser[32];
-	/* interrupt clear-enable registers */
-	uint32_t icdicer[32];
-	uint32_t icdispr[32];
-	uint32_t icdicpr[32];
-	uint32_t icdabr[32];
-	uint32_t _reserved_0x380_0x3FC[(0x3FC - 0x380) / 4 + 1];
-	uint8_t icdipr[1020];
-	uint32_t _reserved_0x7FC_0x7FC[(0x7FC - 0x7FC) / 4 + 1];
-	/* interrupt processor targets registers */
-	uint8_t icdiptr[1020];
-	uint32_t _reserved_0xBFC_0xBFC[(0xBFC - 0xBFC) / 4 + 1];
-	/* interrupt configuration registers */
-	uint32_t icdicfr[64];
+    /* distributor control register */
+    uint32_t icddcr;
+    uint32_t icdictr;
+    uint32_t icdiidr;
+    uint32_t _reserved_0x00C_0x07C[(0x07C - 0x00C) / 4 + 1];
+    uint32_t icdisr[32];
+    /* interrupt set-enable registers */
+    uint32_t icdiser[32];
+    /* interrupt clear-enable registers */
+    uint32_t icdicer[32];
+    uint32_t icdispr[32];
+    uint32_t icdicpr[32];
+    uint32_t icdabr[32];
+    uint32_t _reserved_0x380_0x3FC[(0x3FC - 0x380) / 4 + 1];
+    uint8_t icdipr[1020];
+    uint32_t _reserved_0x7FC_0x7FC[(0x7FC - 0x7FC) / 4 + 1];
+    /* interrupt processor targets registers */
+    uint8_t icdiptr[1020];
+    uint32_t _reserved_0xBFC_0xBFC[(0xBFC - 0xBFC) / 4 + 1];
+    /* interrupt configuration registers */
+    uint32_t icdicfr[64];
 };
 extern volatile struct gic_dist_registers *const MPCORE_GIC_DIST;
 _Static_assert(
     offsetof(struct gic_dist_registers, icddcr) == 0, "Wrong ICDDCR offset"
 );
 _Static_assert(
-    offsetof(struct gic_dist_registers, icdiser) == 0x100, "Wrong ICDISER offset"
+    offsetof(struct gic_dist_registers, icdiser) == 0x100,
+    "Wrong ICDISER offset"
 );
 _Static_assert(
-    offsetof(struct gic_dist_registers, icdicer) == 0x180, "Wrong ICDICER offset"
+    offsetof(struct gic_dist_registers, icdicer) == 0x180,
+    "Wrong ICDICER offset"
 );
 _Static_assert(
-    offsetof(struct gic_dist_registers, icdiptr) == 0x800, "Wrong ICDIPTR offset"
+    offsetof(struct gic_dist_registers, icdiptr) == 0x800,
+    "Wrong ICDIPTR offset"
 );
 _Static_assert(
-    offsetof(struct gic_dist_registers, icdicfr) == 0xC00, "Wrong ICDICFR offset"
+    offsetof(struct gic_dist_registers, icdicfr) == 0xC00,
+    "Wrong ICDICFR offset"
 );
 
 union cpsr_t {
