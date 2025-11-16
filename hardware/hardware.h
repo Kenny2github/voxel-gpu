@@ -34,9 +34,14 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
         struct _vec3 bottom_right;
     } camera;
     /**
-     * WRITE ONLY - write 1 to this register to begin rendering
+     * WRITE ONLY
      */
-    uint32_t do_render;
+    union {
+        // write 1 to this register to begin rendering
+        uint32_t do_render;
+        // write 0 to this register to clear interrupt
+        uint32_t render_irq;
+    };
 };
 extern volatile struct gpu_registers *const GPU;
 #define GPU_IRQ 16U
