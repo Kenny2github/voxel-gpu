@@ -25,7 +25,7 @@ module voxel_gpu #(
 
 	logic [31:0] pixel_buffer1, pixel_buffer2;
 
-	always_ff @(posedge clock, posedge reset) begin
+	always_ff @(posedge clock or posedge reset) begin
 		if (reset) begin
 			pixel_buffer1 <= DEFAULT_BUFFER;
 			pixel_buffer2 <= DEFAULT_BACK_BUFFER;
