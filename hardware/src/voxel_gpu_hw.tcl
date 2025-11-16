@@ -42,14 +42,6 @@ set_parameter_property DEFAULT_BUFFER TYPE STD_LOGIC_VECTOR
 set_parameter_property DEFAULT_BUFFER UNITS Address
 set_parameter_property DEFAULT_BUFFER DESCRIPTION ""
 set_parameter_property DEFAULT_BUFFER HDL_PARAMETER true
-add_parameter DEFAULT_BACK_BUFFER STD_LOGIC_VECTOR 134217728 ""
-set_parameter_property DEFAULT_BACK_BUFFER DEFAULT_VALUE 134217728
-set_parameter_property DEFAULT_BACK_BUFFER DISPLAY_NAME "Default Back Buffer Address"
-set_parameter_property DEFAULT_BACK_BUFFER WIDTH 32
-set_parameter_property DEFAULT_BACK_BUFFER TYPE STD_LOGIC_VECTOR
-set_parameter_property DEFAULT_BACK_BUFFER UNITS Address
-set_parameter_property DEFAULT_BACK_BUFFER DESCRIPTION ""
-set_parameter_property DEFAULT_BACK_BUFFER HDL_PARAMETER true
 
 add_parameter H_RESOLUTION STD_LOGIC_VECTOR 256 ""
 set_parameter_property H_RESOLUTION DEFAULT_VALUE 256
