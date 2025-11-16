@@ -16,13 +16,9 @@ struct __attribute__((__packed__, __aligned__(4))) _vec3 {
 
 struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
     /**
-	 * Address of first pixel buffer
+	 * Starting address of back pixel buffer
 	 */
-    unsigned char *pixel_buffer1;
-    /**
-	 * Address of second pixel buffer
-	 */
-    unsigned char *pixel_buffer2;
+    unsigned char *pixel_buffer;
     /**
      * Starting address of voxel data buffer
      */
