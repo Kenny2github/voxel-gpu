@@ -191,6 +191,8 @@ struct __attribute__((__packed__)) gic_cpuif_registers {
 	uint32_t iccicr;
 	/* interrupt priority mask register */
 	uint32_t iccpmr;
+    /* 4-byte offset */
+    uint32_t _reserved0;
 	/* interrupt acknowledge register */
 	uint32_t icciar;
 	/* end of interrupt register */
