@@ -26,7 +26,9 @@ module voxel_gpu #(
 		// GPU.pixel_buffer
 		pixel_buffer,
 		// GPU.voxel_buffer
-		voxel_buffer;
+		voxel_buffer
+		// GPU.voxel_count
+		voxel_count;
 	// GPU.camera
 	camera cam;
 
@@ -44,39 +46,45 @@ module voxel_gpu #(
 					voxel_buffer <= s1_writedata;
 				end
 				8'h02: begin
+					voxel_count <= s1_writedata;
+				end
+				8'h0f: begin
+					// do nothing, this is a trigger signal
+				end
+				8'h10: begin
 					cam.pos.x <= s1_writedata;
 				end
-				8'h03: begin
+				8'h11: begin
 					cam.pos.y <= s1_writedata;
 				end
-				8'h04: begin
+				8'h12: begin
 					cam.pos.z <= s1_writedata;
 				end
-				8'h05: begin
+				8'h13: begin
 					cam.look0.x <= s1_writedata;
 				end
-				8'h06: begin
+				8'h14: begin
 					cam.look0.y <= s1_writedata;
 				end
-				8'h07: begin
+				8'h15: begin
 					cam.look0.z <= s1_writedata;
 				end
-				8'h08: begin
+				8'h16: begin
 					cam.look1.x <= s1_writedata;
 				end
-				8'h09: begin
+				8'h17: begin
 					cam.look1.y <= s1_writedata;
 				end
-				8'h0a: begin
+				8'h18: begin
 					cam.look1.z <= s1_writedata;
 				end
-				8'h0b: begin
+				8'h19: begin
 					cam.look2.x <= s1_writedata;
 				end
-				8'h0c: begin
+				8'h1a: begin
 					cam.look2.y <= s1_writedata;
 				end
-				8'h0d: begin
+				8'h1b: begin
 					cam.look2.z <= s1_writedata;
 				end
 			endcase
@@ -92,39 +100,42 @@ module voxel_gpu #(
 				s1_readdata = voxel_buffer;
 			end
 			8'h02: begin
+				s1_readdata = voxel_count;
+			end
+			8'h10: begin
 				s1_readdata = cam.pos.x;
 			end
-			8'h03: begin
+			8'h11: begin
 				s1_readdata = cam.pos.y;
 			end
-			8'h04: begin
+			8'h12: begin
 				s1_readdata = cam.pos.z;
 			end
-			8'h05: begin
+			8'h13: begin
 				s1_readdata = cam.look0.x;
 			end
-			8'h06: begin
+			8'h14: begin
 				s1_readdata = cam.look0.y;
 			end
-			8'h07: begin
+			8'h15: begin
 				s1_readdata = cam.look0.z;
 			end
-			8'h08: begin
+			8'h16: begin
 				s1_readdata = cam.look1.x;
 			end
-			8'h09: begin
+			8'h17: begin
 				s1_readdata = cam.look1.y;
 			end
-			8'h0a: begin
+			8'h18: begin
 				s1_readdata = cam.look1.z;
 			end
-			8'h0b: begin
+			8'h19: begin
 				s1_readdata = cam.look2.x;
 			end
-			8'h0c: begin
+			8'h1a: begin
 				s1_readdata = cam.look2.y;
 			end
-			8'h0d: begin
+			8'h1b: begin
 				s1_readdata = cam.look2.z;
 			end
 			default: begin

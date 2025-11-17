@@ -24,14 +24,11 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
      */
     unsigned char *voxel_buffer;
     /**
-     * Position and orientation of the camera
+     * Total number of (non-empty) voxels
      */
-    struct __attribute__((__packed__, __aligned__(4))) {
-        struct _vec3 pos;
-        // "look-at" directions for top left, top right,
-        // and bottom left pixels, in that order
-        struct _vec3 look[3];
-    } camera;
+    uint32_t voxel_count;
+    // reserved space
+    uint32_t _reserved_0x0C_0x3C[12];
     /**
      * WRITE ONLY
      */
@@ -41,7 +38,23 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
         // write 0 to this register to clear interrupt
         uint32_t render_irq;
     };
+    /**
+     * Position and orientation of the camera
+     */
+    struct __attribute__((__packed__, __aligned__(4))) {
+        struct _vec3 pos;
+        // "look-at" directions for top left, top right,
+        // and bottom left pixels, in that order
+        struct _vec3 look[3];
+    } camera;
 };
+_Static_assert(
+    offsetof(struct gpu_registers, do_render) == 0x0f * 4,
+    "Wrong register offset"
+);
+_Static_assert(
+    offsetof(struct gpu_registers, camera) == 0x10 * 4, "Wrong camera offset"
+);
 extern volatile struct gpu_registers *const GPU;
 #define GPU_IRQ 16U
 
