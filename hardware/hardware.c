@@ -1,5 +1,11 @@
 #include "hardware/hardware.h"
 
+void memcpy_32(volatile uint32_t *dest, uint32_t *src, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        *(dest++) = *(src++);
+    }
+}
+
 volatile struct gpu_registers *const GPU = (void *)0xFF205800;
 
 volatile unsigned char *const DDR_BASE = (void *)0x00000000;

@@ -10,6 +10,8 @@
 // Remember that unused bits and paddings are wasted by the MMIO allocations,
 // not by global variable allocation.
 
+void memcpy_32(volatile uint32_t *dest, uint32_t *src, size_t n);
+
 struct __attribute__((__packed__, __aligned__(4))) _vec3 {
     uint32_t x, y, z;
 };
