@@ -29,8 +29,16 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
      * Total number of (non-empty) voxels
      */
     uint32_t voxel_count;
+    /**
+     * Starting address of palette data buffer
+     */
+    unsigned char *palette_buffer;
+    /**
+     * Number of palette entries
+     */
+    uint32_t palette_length;
     // reserved space
-    uint32_t _reserved_0x0C_0x3C[12];
+    uint32_t _reserved_0x14_0x3C[10];
     /**
      * WRITE ONLY
      */
