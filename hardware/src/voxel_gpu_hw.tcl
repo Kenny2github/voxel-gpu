@@ -29,6 +29,8 @@ set_fileset_property QUARTUS_SYNTH TOP_LEVEL voxel_gpu
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file voxel_gpu.sv SYSTEM_VERILOG PATH voxel_gpu.sv TOP_LEVEL_FILE
+add_fileset_file gpu_controller.sv SYSTEM_VERILOG PATH gpu_controller.sv
+add_fileset_file pixel_shader.sv SYSTEM_VERILOG PATH pixel_shader.sv
 
 
 #
@@ -59,6 +61,13 @@ set_parameter_property V_RESOLUTION TYPE STD_LOGIC_VECTOR
 set_parameter_property V_RESOLUTION UNITS None
 set_parameter_property V_RESOLUTION DESCRIPTION ""
 set_parameter_property V_RESOLUTION HDL_PARAMETER true
+add_parameter PIXEL_BITS INTEGER 16 ""
+set_parameter_property PIXEL_BITS DEFAULT_VALUE 16
+set_parameter_property PIXEL_BITS DISPLAY_NAME "Bits per pixel"
+set_parameter_property PIXEL_BITS TYPE INTEGER
+set_parameter_property PIXEL_BITS UNITS Bits
+set_parameter_property PIXEL_BITS DESCRIPTION ""
+set_parameter_property PIXEL_BITS HDL_PARAMETER true
 
 #
 # display items
