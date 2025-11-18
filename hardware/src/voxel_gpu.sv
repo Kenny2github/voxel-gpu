@@ -22,7 +22,7 @@ module voxel_gpu #(
     input  wire        m1_readdatavalid  //      .readdatavalid
 );
   // GPU.*
-  logic [31:0] pixel_buffer, voxel_buffer, voxel_count;
+  logic [31:0] pixel_buffer, voxel_buffer, voxel_count, palette_buffer, palette_length;
   // GPU.camera
   camera cam;
 
@@ -30,6 +30,9 @@ module voxel_gpu #(
     if (reset) begin
       pixel_buffer <= DEFAULT_BUFFER;
       voxel_buffer <= '0;
+      voxel_count <= '0;
+      palette_buffer <= '0;
+      palette_length <= '0;
       cam <= '{default: 0};
     end else if (s1_write) begin
       case (s1_address)
@@ -41,6 +44,12 @@ module voxel_gpu #(
         end
         8'h02: begin
           voxel_count <= s1_writedata;
+        end
+        8'h03: begin
+          palette_buffer <= s1_writedata;
+        end
+        8'h04: begin
+          palette_length <= s1_writedata;
         end
         8'h0f: begin
           // do nothing, this is a trigger signal
@@ -95,6 +104,12 @@ module voxel_gpu #(
       end
       8'h02: begin
         s1_readdata = voxel_count;
+      end
+      8'h03: begin
+        s1_readdata = palette_buffer;
+      end
+      8'h04: begin
+        s1_readdata = palette_length;
       end
       8'h10: begin
         s1_readdata = cam.pos.x;
