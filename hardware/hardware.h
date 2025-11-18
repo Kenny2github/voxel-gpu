@@ -26,7 +26,7 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
      */
     unsigned char *voxel_buffer;
     /**
-     * Total number of (non-empty) voxels
+     * Minimum number of voxels containing all non-empty voxels
      */
     uint32_t voxel_count;
     /**
