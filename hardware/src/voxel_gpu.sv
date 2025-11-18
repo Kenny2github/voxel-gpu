@@ -1,10 +1,9 @@
 `include "common.svh"
 
 module voxel_gpu #(
-    parameter DEFAULT_BUFFER = 32'h0800_0000,
-    parameter H_RESOLUTION   = 16'd256,
-    parameter V_RESOLUTION   = 16'd192,
-		parameter PIXEL_BITS = 16
+    parameter H_RESOLUTION = 256,
+    parameter V_RESOLUTION = 192,
+    parameter PIXEL_BITS   = 16
 ) (
     input  wire [ 7:0] s1_address,       //    s1.address
     output wire [31:0] s1_readdata,      //      .readdata
@@ -29,13 +28,15 @@ module voxel_gpu #(
   // GPU.camera
   camera cam;
 
-	gpu_controller #(
-		.STOP_ROW(V_RESOLUTION),
-		.STOP_COL(H_RESOLUTION),
-		.TOTAL_ROWS(V_RESOLUTION),
-		.TOTAL_COLS(H_RESOLUTION),
-		.PIXEL_BITS(PIXEL_BITS)
-	) ctrl (.*);
+  gpu_controller #(
+      .STOP_ROW  (V_RESOLUTION),
+      .STOP_COL  (H_RESOLUTION),
+      .TOTAL_ROWS(V_RESOLUTION),
+      .TOTAL_COLS(H_RESOLUTION),
+      .PIXEL_BITS(PIXEL_BITS)
+  ) ctrl (
+      .*
+  );
 
   always_ff @(posedge clock or posedge reset) begin
     if (reset) begin
