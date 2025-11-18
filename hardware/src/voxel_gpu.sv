@@ -96,6 +96,15 @@ module voxel_gpu #(
         8'h1b: begin
           cam.look2.z <= s1_writedata;
         end
+        8'h1c: begin
+          cam.look3.x <= s1_writedata;
+        end
+        8'h1d: begin
+          cam.look3.y <= s1_writedata;
+        end
+        8'h1e: begin
+          cam.look3.z <= s1_writedata;
+        end
       endcase
     end else begin
       do_render <= 1'b0;
@@ -156,6 +165,15 @@ module voxel_gpu #(
       end
       8'h1b: begin
         s1_readdata = cam.look2.z;
+      end
+      8'h1c: begin
+        s1_readdata = cam.look3.x;
+      end
+      8'h1d: begin
+        s1_readdata = cam.look3.y;
+      end
+      8'h1e: begin
+        s1_readdata = cam.look3.z;
       end
       default: begin
         s1_readdata = 32'b0;

@@ -54,8 +54,8 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
     struct __attribute__((__packed__, __aligned__(4))) {
         struct _vec3 pos;
         // "look-at" directions for top left, top right,
-        // and bottom left pixels, in that order
-        struct _vec3 look[3];
+        // bottom left, and bottom right pixels, in that order
+        struct _vec3 look[4];
     } camera;
 };
 _Static_assert(
