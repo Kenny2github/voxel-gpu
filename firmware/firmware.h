@@ -9,6 +9,7 @@
 #define GRID_START 0xC3000000
 
 #define SIDE_LEN 256
+#define ASPECT_RATIO (4.0f/3.0f)
 
 /* main */
 void init_firmware();
@@ -19,8 +20,6 @@ typedef struct v_pos {
     uint8_t y;
     uint8_t z;
 } v_pos;
-
-void init_voxel_space();
 
 void set_voxel(v_pos pos, uint8_t palette);
 
@@ -33,10 +32,20 @@ typedef struct cam_pos {
     uint16_t z;
 } cam_pos;
 
+uint16_t clip_plane_x, clip_plane_y;
+uint16_t focal_length;
 /**
-* Sets the camera position and orientation in the voxel space.
+ * configures camera settings.
+ * @param _fov_degrees field of view in degrees
+ * @param _focal_length focal length in voxel units
+ */
+void set_camera_settings(uint16_t _fov_degrees, uint16_t _focal_length);
+
+/**
+* sets camera position and orientation in the voxel space.
 * the position of the camera and the top left / top right
-* / bottom left positions are written to HW
+* / bottom left positions are written to HW.
+* set_camera_settings must be called before this function.
 * @param cam The position of the camera.
 * @param lookAt The point the camera is looking at.
 * @param up The up direction for the camera.

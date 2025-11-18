@@ -3,15 +3,16 @@
 
 #define abs(x) ((x >= 0) ? (x) : (-x))
 
-
 void set_voxel(v_pos pos, uint8_t palette) {
-    *(GRID_START + pos.x + pos.y * SIDE_LEN + pos.z * SIDE_LEN * SIDE_LEN) = palette;
+    *(GPU->voxel_buffer + pos.x + pos.y * SIDE_LEN + pos.z * SIDE_LEN * SIDE_LEN) = palette;
+    ++GPU->voxel_count;
+    GPU->do_render = 1;
 }
 
 void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     v_pos start;
     v_pos end;
-    uint8_t dist_x;
+    uint8_t dist_x, dist_y, dist_z;
 
     if (corner0.x < corner1.x) {
         start.x = corner0.x;
@@ -29,6 +30,8 @@ void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
         start.y = corner1.y;
         end.y = corner0.y;
     }
+    dist_y = end.y - start.y + 1;
+
     if (corner0.z < corner1.z) {
         start.z = corner0.z;
         end.z = corner1.z;
@@ -36,13 +39,21 @@ void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
         start.z = corner1.z;
         end.z = corner0.z;
     }
+    dist_z = end.z - start.z + 1;
 
     /* xy horizontal, y vertical */
-    uint8_t offset;
+    unsigned char* y_offset;
+    unsigned char* voxel_offset;
     for (uint8_t y = start.y; y <= end.y; ++y) {
-        offset = GRID_START + y * SIDE_LEN * SIDE_LEN;
+        y_offset = GPU->voxel_buffer + y * SIDE_LEN * SIDE_LEN;
         for (uint8_t z = start.z; z <= end.z; ++z) {
-            memset(offset + z * SIDE_LEN, palette, dist_x);
+            voxel_offset = y_offset + z * SIDE_LEN;
+            memset(voxel_offset, palette, dist_x);
         }
     }
+
+    /* TODO: what to do when calling this function over a range that may already contain voxels? */
+    GPU->voxel_count += dist_x * dist_y * dist_z;
+
+    GPU->do_render = 1;
 }
