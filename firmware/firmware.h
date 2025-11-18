@@ -12,7 +12,12 @@
 #define ASPECT_RATIO (4.0f/3.0f)
 
 /* main */
+/**
+ * initializes firmware settings and hardware registers
+ */
 void init_firmware();
+
+
 
 /* voxels */
 typedef struct v_pos {
@@ -21,9 +26,23 @@ typedef struct v_pos {
     uint8_t z;
 } v_pos;
 
+/**
+ * sets voxel at pos to the given palette index.
+ * @param pos position of the voxel to set
+ * @param palette palette index to set the voxel to
+ */
 void set_voxel(v_pos pos, uint8_t palette);
 
+/**
+ * sets all voxels in cube defined by corner0 and corner1
+ * to the given palette index.
+ * @param corner0 one corner of cube
+ * @param corner1 opposite corner of cube
+ * @param palette palette index to set the voxels to
+ */
 void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
+
+
 
 /* camera */
 typedef struct cam_pos {
