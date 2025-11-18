@@ -47,7 +47,7 @@ module pixel_shader #(
 	assign tBy = ({voxel_y + 1'b1, 8'b0} - cam_pos_y) / Dy;
 	assign tBz = ({voxel_z + 1'b1, 8'b0} - cam_pos_z) / Dz;
 
-  always_ff @(posedge clock or posedge reset) begin
+  always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
       state <= IDLE;
     end else begin

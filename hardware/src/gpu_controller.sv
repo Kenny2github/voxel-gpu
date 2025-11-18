@@ -98,7 +98,7 @@ module gpu_controller #(
     end
   endgenerate
 
-  always_ff @(posedge clock or posedge reset) begin
+  always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
       state <= IDLE;
     end else begin
@@ -164,7 +164,7 @@ module gpu_controller #(
   assign {voxel_y, voxel_z, voxel_x} = voxel_num - 1'b1;
   assign {row, col} = pixel_num - 1'b1;
 
-  always_ff @(posedge clock or posedge reset) begin
+  always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
       m1_address <= '0;
       cycle_counter <= '0;
