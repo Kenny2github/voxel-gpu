@@ -23,6 +23,8 @@ module voxel_gpu #(
 );
   // GPU.*
   logic [31:0] pixel_buffer, voxel_buffer, voxel_count, palette_buffer, palette_length;
+  // write-only signals cleared automatically
+  logic do_render, clear_interrupt;
   // GPU.camera
   camera cam;
 
@@ -33,6 +35,8 @@ module voxel_gpu #(
       voxel_count <= '0;
       palette_buffer <= '0;
       palette_length <= '0;
+      do_render <= 1'b0;
+      clear_interrupt <= 1'b0;
       cam <= '{default: 0};
     end else if (s1_write) begin
       case (s1_address)
@@ -52,7 +56,9 @@ module voxel_gpu #(
           palette_length <= s1_writedata;
         end
         8'h0f: begin
-          // do nothing, this is a trigger signal
+          // write 1: do_render; write 0: clear_interrupt
+          if (s1_writedata) do_render <= 1'b1;
+          else clear_interrupt <= 1'b1;
         end
         8'h10: begin
           cam.pos.x <= s1_writedata;
@@ -91,10 +97,14 @@ module voxel_gpu #(
           cam.look2.z <= s1_writedata;
         end
       endcase
+    end else begin
+      do_render <= 1'b0;
+      clear_interrupt <= 1'b0;
     end
   end
 
   always_comb begin
+    s1_readdata = '0;
     case (s1_address)
       8'h00: begin
         s1_readdata = pixel_buffer;
