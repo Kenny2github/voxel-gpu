@@ -3,23 +3,12 @@
 
 #define abs(x) ((x >= 0) ? (x) : (-x))
 
-uint8_t side_len = 8;
-
-void init_voxel_space(uint8_t len) {
-    side_len = len;
-}
-
-inline bool within_range(v_pos pos) {
-    return (pos.x < side_len && pos.y < side_len && pos.z < side_len);
-} 
 
 void set_voxel(v_pos pos, uint8_t palette) {
-    *(GRID_START + pos.x + pos.y * side_len + pos.z * side_len * side_len) = palette;
+    *(GRID_START + pos.x + pos.y * SIDE_LEN + pos.z * SIDE_LEN * SIDE_LEN) = palette;
 }
 
 void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
-    assert (within_range(corner0) && within_range(corner1));
-
     v_pos start;
     v_pos end;
     uint8_t dist_x;
@@ -51,9 +40,9 @@ void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     /* xy horizontal, y vertical */
     uint8_t offset;
     for (uint8_t y = start.y; y <= end.y; ++y) {
-        offset = GRID_START + y * side_len * side_len;
+        offset = GRID_START + y * SIDE_LEN * SIDE_LEN;
         for (uint8_t z = start.z; z <= end.z; ++z) {
-            memset(offset + z * sidelen, palette, dist_x);
+            memset(offset + z * SIDE_LEN, palette, dist_x);
         }
     }
 }
