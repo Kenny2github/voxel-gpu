@@ -7,35 +7,35 @@ stateDiagram-v2
     shading: Shading phase
     writeout: Rendering phase
     %% end metastates
+    fetch_voxel: Fetch voxel
     rasterize: Rasterize voxel
-    next_voxel: Select next voxel
+    fetch_entry: Fetch palette entry
     shade: Shade voxel to pixel
-    next_entry: Select next palette entry
+    fetch_pixel: Fetch pixel
     write: Write pixel to buffer
-    next_pixel: Select next pixel
     interrupt: Interrupt HPS
 
     [*] --> idle
     idle --> rasterizing: Instructed by HPS
     state rasterizing {
-        [*] --> rasterize: Select first voxel
-        rasterize --> next_voxel
-        next_voxel --> rasterize
-        next_voxel --> [*]: Last voxel rasterized
+        [*] --> fetch_voxel: Select first voxel
+        fetch_voxel --> rasterize
+        rasterize --> fetch_voxel: Select next voxel
+        rasterize --> [*]: Last voxel rasterized
     }
     rasterizing --> shading
     state shading {
-        [*] --> shade: Select first palette entry
-        shade --> next_entry
-        next_entry --> shade
-        next_entry --> [*]: Last entry processed
+        [*] --> fetch_entry: Select first palette entry
+        fetch_entry --> shade
+        shade --> fetch_entry: Select next entry
+        shade --> [*]: Last entry processed
     }
     shading --> writeout
     state writeout {
-        [*] --> write: Select first pixel
-        write --> next_pixel
-        next_pixel --> write
-        next_pixel --> [*]: Last pixel shaded
+        [*] --> fetch_pixel: Select first pixel
+        fetch_pixel --> write
+        write --> fetch_pixel: Select next pixel
+        write --> [*]: Last pixel shaded
     }
     writeout --> interrupt
     interrupt --> idle: Interrupt cleared
