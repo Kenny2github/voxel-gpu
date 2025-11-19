@@ -20,6 +20,9 @@
  */
 void init_firmware();
 
+/**
+ * starts a render and waits for interrupt to signal completion
+ */
 void render();
 
 
@@ -45,7 +48,7 @@ void set_voxel(v_pos pos, uint8_t palette);
  * @param corner1 opposite corner of cube
  * @param palette palette index to set the voxels to
  */
-void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
+void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
 
 
 
@@ -59,6 +62,7 @@ typedef struct cam_pos {
 
 uint16_t clip_plane_x, clip_plane_y;
 uint16_t focal_length;
+
 /**
  * configures camera settings.
  * @param _fov_degrees field of view in degrees

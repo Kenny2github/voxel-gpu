@@ -9,7 +9,7 @@ void set_voxel(v_pos pos, uint8_t palette) {
     render();
 }
 
-void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
+void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     v_pos start;
     v_pos end;
     uint8_t dist_x, dist_y, dist_z;
