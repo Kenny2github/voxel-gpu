@@ -11,3 +11,7 @@ void init_firmware() {
     // memset(GPU->palette_buffer + 2, 0x0, 1);
     // memset(GPU->palette_buffer + 3, 0x1, 1); 
 }
+
+void render() {
+    GPU->do_render = 1;
+}

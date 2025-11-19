@@ -1,6 +1,8 @@
 #ifndef FIRMWARE_H
 #define FIRMWARE_H
 
+#include <stdint.h>
+
 /* defs */
 #define BLANK 0x0
 #define WHITE 0x1
@@ -12,14 +14,17 @@
 #define ASPECT_RATIO (4.0f/3.0f)
 
 /* main */
+
 /**
  * initializes firmware settings and hardware registers
  */
 void init_firmware();
 
+void render();
 
 
 /* voxels */
+
 typedef struct v_pos {
     uint8_t x;
     uint8_t y;
@@ -45,6 +50,7 @@ void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
 
 
 /* camera */
+
 typedef struct cam_pos {
     uint16_t x;
     uint16_t y;
