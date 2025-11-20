@@ -133,8 +133,8 @@ void mouse_input_handler() {
     /*** Movement of Camera Look */
     // Horizontal motion should rotate lookAt vector based on up-vector
     float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);
-    volatile uint32_t* test_x_angle = (volatile uint32_t*)(0xC80000C0);
-    *test_x_angle = convert_float_to_fixed(angle_x);
+    // volatile uint32_t* test_x_angle = (volatile uint32_t*)(0xC80000C0);
+    // *test_x_angle = convert_float_to_fixed(angle_x);
     if(angle_x != 0.0f) {
         struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
@@ -145,8 +145,8 @@ void mouse_input_handler() {
     
     // Vertical motion should rotate lookAt vector based on right-vector
     float angle_y = convert_mouse_val_to_rad(signedPos.y, SENSITIVITY_VERTICAL);
-    volatile int32_t* test_y_angle = (volatile int32_t*)(0xC80000D0);
-    *test_y_angle = convert_float_to_fixed(angle_y);
+    // volatile int32_t* test_y_angle = (volatile int32_t*)(0xC80000D0);
+    // *test_y_angle = convert_float_to_fixed(angle_y);
     if(angle_y != 0.0f) {
         struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
@@ -204,7 +204,7 @@ void keyboard_input_handler() {
 
     struct Vector applicable_vector = {0};
 
-    if(data[1] == 0xF0) // If there is a break code detecting key releases
+    if(data[0] == 0xF0 || data[1] == 0xF0) // If there is a break code detecting key releases
         return;
     
     /*** Movement of Camera Position */ 
@@ -238,6 +238,46 @@ void keyboard_input_handler() {
     
     applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
     camera->pos = add_vector(camera->pos, applicable_vector);
+
+    /** Movement of Camera View */
+    float angle_x = 0;
+    float angle_y = 0;
+    if(data[1] == ARROW_KEY) {
+        switch(data[2]) {
+            case ARROW_LEFT:
+                angle_y = M_PI / 6.0;
+                break;
+            case ARROW_RIGHT:
+                angle_y = -M_PI / 6.0;
+                break;
+            case ARROW_UP:
+                angle_x = M_PI / 6.0;
+                break;
+            case ARROW_DOWN:
+                angle_x = -M_PI / 6.0;;
+                break;
+            default:
+                break;
+        }
+
+        if(angle_x != 0.0f) {
+            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
+            camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+            normalize(&(camera->look));
+            cross_product(&(camera->look), &(camera->up), &(camera->right));
+            normalize(&(camera->right));
+        }
+    
+        if(angle_y != 0.0f) {
+            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
+            camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+            normalize(&(camera->look));
+            cross_product(&(camera->right), &(camera->look), &(camera->up));
+            normalize(&(camera->up));
+        }
+
+    }
+
     set_camera(&camera);
 
     // TODO: Call firmware API for camera update

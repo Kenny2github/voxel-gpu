@@ -5,8 +5,8 @@
 #include "software/vector_math.h"
 #include <stdint.h>
 
-#define MOUSE_IRQ_ID 79
-#define KEYBOARD_IRQ_ID 89
+#define MOUSE_IRQ_ID 89
+#define KEYBOARD_IRQ_ID 79
 
 #define SENSITIVITY_VERTICAL 1.0
 #define SENSITIVITY_HORIZONTAL 1.0
@@ -17,6 +17,11 @@
 #define S_KEY 0x1B
 #define SPACE_KEY 0x29
 #define SHIFT_KEY 0x12
+#define ARROW_KEY 0xE0
+#define ARROW_LEFT 0x6B
+#define ARROW_RIGHT 0x74
+#define ARROW_UP 0x75
+#define ARROW_DOWN 0x72
 
 #define MOVEMENT_SPEED 1.0
 

@@ -10,8 +10,6 @@ void set_camera_settings(float _fov_degrees, float _focal_length) {
     clip_plane_x = sinf(angle) / cosf(angle) * _focal_length;
     clip_plane_y = clip_plane_x / ASPECT_RATIO;
     focal_length = _focal_length;
-
-    render();
 }
 
 
@@ -45,5 +43,4 @@ void set_camera(struct Camera* cam) {
     GPU->camera.look[3].y = (uint32_t)convert_float_to_fixed(cam->look.y * focal_length + cam->right.y * clip_plane_x - cam->up.y * clip_plane_y);
     GPU->camera.look[3].z = (uint32_t)convert_float_to_fixed(cam->look.z * focal_length + cam->right.z * clip_plane_x - cam->up.z * clip_plane_y);
 
-    render();
 }

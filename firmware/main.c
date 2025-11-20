@@ -6,9 +6,11 @@
 static int render_wait = 0;
 
 void render() {
-    // render_wait = 1;
-    // GPU->do_render = 1;
-    // while (render_wait);
+    render_wait = 1;
+    GPU->do_render = 1;
+    while (render_wait);
+
+    // Swap buffer here
 }
 
 static void enable_gpu_interrupt(void) {
