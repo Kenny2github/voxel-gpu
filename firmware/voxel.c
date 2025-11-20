@@ -1,10 +1,11 @@
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
+#include <string.h>
 
 #define abs(x) ((x >= 0) ? (x) : (-x))
 
 void set_voxel(v_pos pos, uint8_t palette) {
-    *(GPU->voxel_buffer + pos.x + pos.y * SIDE_LEN + pos.z * SIDE_LEN * SIDE_LEN) = palette;
+    *(GPU->voxel_buffer + pos.x + pos.z * SIDE_LEN + pos.y * SIDE_LEN * SIDE_LEN) = palette;
     ++GPU->voxel_count;
     render();
 }
@@ -55,5 +56,11 @@ void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     /* TODO: what to do when calling this function over a range that may already contain voxels? */
     GPU->voxel_count += dist_x * dist_y * dist_z;
 
+    render();
+}
+
+void clear_grid(void) {
+    memset((unsigned char *)GPU->voxel_buffer, 0x0, SIDE_LEN * SIDE_LEN * SIDE_LEN);
+    GPU->voxel_count = 0;
     render();
 }
