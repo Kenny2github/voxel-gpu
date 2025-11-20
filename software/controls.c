@@ -1,6 +1,7 @@
 #include "software/controls.h"
 #include "hardware/hardware.h"
 #include "firmware/interrupts.h"
+#include "firmware/firmware.h"
 #include <stdlib.h>
 
 static struct Camera *camera = NULL;
@@ -21,9 +22,7 @@ void config_mouse(void) {
         {0, 0, 256}, // pos
         {0, 0, -1}, // look
         {0, 1, 0}, // up
-        {1, 0, 0}, // right
-        1, // computed up
-        1 // computed right
+        {1, 0, 0} // right
     };
 
     // For debugging using screen buffer lmfao
@@ -66,6 +65,21 @@ void config_keyboard(void) {
     // *test_x_pos = 0;
     // *test_y_pos = 0;
     // *test_z_pos = 0;
+}
+
+void set_camera_default(struct Vector pos, struct Vector look, struct Vector up) {
+    *camera = (struct Camera){
+        pos,
+        look,
+        up,
+        {0, 0, 1}
+    };
+
+    cross_product(&(camera->look), &(camera->up), &(camera->right));
+    normalize(&(camera->look));
+    normalize(&(camera->up));
+    normalize(&(camera->right));
+
 }
 
 struct movement_key_status movement_keys_bool = {
@@ -122,17 +136,11 @@ void mouse_input_handler() {
     volatile uint32_t* test_x_angle = (volatile uint32_t*)(0xC80000C0);
     *test_x_angle = convert_float_to_fixed(angle_x);
     if(angle_x != 0.0f) {
-        if(camera->updated_up == 0) {
-            if(camera->updated_right == 0) 
-                while(1); // Lack of right-vector for rotation
-        
-            cross_product(&(camera->right), &(camera->look), &(camera->up));
-            camera->updated_up = 1;
-        }
-
         struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
-        camera->updated_right = 0;
+        normalize(&(camera->look));
+        cross_product(&(camera->look), &(camera->up), &(camera->right));
+        normalize(&(camera->right));
     }
     
     // Vertical motion should rotate lookAt vector based on right-vector
@@ -140,20 +148,15 @@ void mouse_input_handler() {
     volatile int32_t* test_y_angle = (volatile int32_t*)(0xC80000D0);
     *test_y_angle = convert_float_to_fixed(angle_y);
     if(angle_y != 0.0f) {
-        if(camera->updated_right == 0) {
-            if(camera->updated_up == 0) 
-                while(1); // Lack of up-vector for rotation
-        
-            cross_product(&(camera->look), &(camera->up), &(camera->right));
-            camera->updated_right = 1;
-        }
-
         struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
-        camera->updated_up = 0;
+        normalize(&(camera->look));
+        cross_product(&(camera->right), &(camera->look), &(camera->up));
+        normalize(&(camera->up));
     }
 
     // TODO: Call firmware API for camera update
+    set_camera(&camera);
     // volatile int32_t* test_x_look = (volatile int32_t*)(0xC8000000);
     // volatile int32_t* test_y_look = (volatile int32_t*)(0xC8000010);
     // volatile int32_t* test_z_look = (volatile int32_t*)(0xC8000020);
@@ -207,33 +210,17 @@ void keyboard_input_handler() {
     /*** Movement of Camera Position */ 
     switch(data[2]) {
         case SPACE_KEY:
-            if(camera->updated_up == 0) {
-                cross_product(&camera->right, &camera->look, &camera->up);
-                camera->updated_up = 1;
-            }
             applicable_vector = camera->up;
             break;
         case SHIFT_KEY:
-            if(camera->updated_up == 0) {
-                cross_product(&camera->right, &camera->look, &camera->up);
-                camera->updated_up = 1;
-            }
             applicable_vector = camera->up;
             negative_vector(&applicable_vector);
             break;
         case A_KEY:
-            if(camera->updated_right == 0) {
-                cross_product(&camera->look, &camera->up, &camera->right);
-                camera->updated_right = 1;
-            }
             applicable_vector = camera->right;
             negative_vector(&applicable_vector);
             break;
         case D_KEY:
-            if(camera->updated_right == 0) {
-                cross_product(&camera->look, &camera->up, &camera->right);
-                camera->updated_right = 1;
-            }
             applicable_vector = camera->right;
             break;
         case W_KEY:
@@ -251,6 +238,7 @@ void keyboard_input_handler() {
     
     applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
     camera->pos = add_vector(camera->pos, applicable_vector);
+    set_camera(&camera);
 
     // TODO: Call firmware API for camera update
     // volatile uint32_t* test_x_pos = (volatile uint32_t*)(0xC8000090);

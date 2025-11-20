@@ -44,9 +44,6 @@ struct Camera {
     struct Vector look;
     struct Vector up;
     struct Vector right;
-
-    uint8_t updated_up;
-    uint8_t updated_right;
 };
 
 struct Camera_formatted {
@@ -59,6 +56,8 @@ struct Camera_formatted {
 void config_inputs();
 void config_mouse();
 void config_keyboard();
+
+void set_camera_default(struct Vector pos, struct Vector look, struct Vector up);
 
 void mouse_input_handler();
 void keyboard_input_handler();

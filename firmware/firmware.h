@@ -2,6 +2,7 @@
 #define FIRMWARE_H
 
 #include <stdint.h>
+#include "software/controls.h"
 
 /* defs */
 #define BLANK 0x0
@@ -76,6 +77,6 @@ void set_camera_settings(float _fov_degrees, float _focal_length);
 * @param lookAt The point the camera is looking at.
 * @param up The up direction for the camera.
 */
-void set_camera(cam_pos cam, cam_pos look_at, cam_pos up);
+void set_camera(struct Camera* camera);
 
 #endif
