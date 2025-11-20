@@ -26,7 +26,7 @@ float cosf(float x) {
     float term = 1.0f;
     float x_sq = x * x;
     
-    for (int n = 1; n <= 8; n++) {
+    for (int n = 1; n <= 5; n++) {
         term *= -x_sq / ((2*n-1) * (2*n));
         result += term;
     }
@@ -39,7 +39,7 @@ float sinf(float x) {
     float term = x;
     float x_sq = x * x;
     
-    for (int n = 1; n <= 8; n++) {
+    for (int n = 1; n <= 5; n++) {
         term *= -x_sq / ((2*n) * (2*n+1));
         result += term;
     }
