@@ -1,0 +1,336 @@
+[33mcommit 9096012a323e9142945d8ad8845e304586c16ca1[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 23 14:54:11 2025 -0400
+
+    Add output resolution as hardware parameter
+
+[33mcommit 64a901464fe348bce98f2c6a62b55440d5cc8e75[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 23 14:53:54 2025 -0400
+
+    Re-add Scaler; 256x192 -> 1024x768 for now
+
+[33mcommit 6533a3aac14ef1fc05ac86830d1a4b4702f06216[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 17:39:54 2025 -0400
+
+    Tie unused outputs to zero for now
+
+[33mcommit af358e595377b8680cabda044f217028b0da6157[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 17:39:28 2025 -0400
+
+    Apparently FF20 is a hard requirement
+
+[33mcommit 3f187be1cca817c8f807e16a8118435cf95d3dd1[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 17:25:47 2025 -0400
+
+    Apparently Monitor Program can access programming cable hardware on WSL
+
+[33mcommit 82d7a7194b07a63ef08ac0a795a370b982a78add[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 17:25:30 2025 -0400
+
+    Ignore objdumps
+
+[33mcommit 686cd220b97456db6415b99d24dba17072e727c9[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:28:43 2025 -0400
+
+    Just use wildcards for SRCS and HDRS
+
+[33mcommit 279332911430dd9fe60f8277e14d708a1ddf7e0e[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:22:02 2025 -0400
+
+    Fix gic_dist_registers offsets
+
+[33mcommit a64ca193d026367e00fdb9558b751195a2e513fe[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:21:44 2025 -0400
+
+    Upgrade to -std=gnu11 for _Static_assert
+
+[33mcommit 0f4528cb5975fd85079f39174994a67d486c646c[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:11:11 2025 -0400
+
+    Add interrupts.c to makefile
+
+[33mcommit 5970ff6c2908e2d8abf87c127a0cf28642551289[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:10:40 2025 -0400
+
+    Elaborate on clangd support
+
+[33mcommit ecaf1c2dc43ca44b611c11280f92ad87da2c568a[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:08:16 2025 -0400
+
+    Interrupt infrastructure
+    
+    Adapted, with significant modifications, from:
+    https://github.com/Kenny2github/DE1-Stormbound-on-Chip/blob/main/src/interrupts.c
+
+[33mcommit 9b54172fd0a1a031d2549ae68b9dd3d30b9bcc3b[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:07:40 2025 -0400
+
+    Completely overhaul build system
+
+[33mcommit dd295587a6a2d96770fa44a6177a2f3d8d0b26dc[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 09:07:07 2025 -0400
+
+    Allow single-line statements, except functions
+
+[33mcommit 90d785f185d6a4a970b33c76e142cd9a8dbf5620[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 17 01:58:30 2025 -0400
+
+    Prevent clangd errors related to wrong architecture
+
+[33mcommit 181c1676aafdf07ded47c8055fc5458e51b035c3[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 22:50:47 2025 -0400
+
+    Update amp file
+
+[33mcommit aab7c178604bcf430eaa96bf08c19362b250cd04[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 22:43:20 2025 -0400
+
+    clang-format for clangd users
+
+[33mcommit 27f43f85fecfe2aca73927bb6801326c30efb098[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 22:43:09 2025 -0400
+
+    Completely revamp address map definition
+
+[33mcommit 096fac999472c1b6688a276c8633b86829b46196[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 17:00:24 2025 -0400
+
+    New default test main program
+
+[33mcommit f1edc6ff1efe8f5364d8a51ce4390fe13ed99ff3[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 17:00:02 2025 -0400
+
+    Mark GPU struct with packed attribute
+
+[33mcommit 5868d4e78c949cd9b61d61e4092d5468aab66f31[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 09:36:55 2025 -0400
+
+    Fix Quartus errors in voxel_gpu.sv
+
+[33mcommit 46d7e9ddbdfe0d077b718c9ff6a8e6ef7f1fd883[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 09:30:51 2025 -0400
+
+    ...?
+
+[33mcommit 0d7d693e851200ba466b557cab53002afcc93848[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 09:21:35 2025 -0400
+
+    add_fileset_file: wrong type
+
+[33mcommit 0250a08eaa5972d35006d98f3fa9d6c9d5d0e5ea[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 08:28:55 2025 -0400
+
+    Reduce Computer_System warnings
+
+[33mcommit b182b8aadc5d6b82f689f66d8699200f06df3e7f[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 08:28:07 2025 -0400
+
+    Resolve VGA_Subsystem warnings
+
+[33mcommit a106d3d77bfa64f9560d88c2fef96a61b0322f02[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 08:27:58 2025 -0400
+
+    Remove VGA Subsystem scaler
+
+[33mcommit d746a0c115fefae16124cae774d015efbc4f0ecc[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 08:25:46 2025 -0400
+
+    Resolve Char_Buf_Subsystem warnings
+
+[33mcommit 6baf5107b405ab91662e3cbfbf0a515d654a2e69[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 08:13:35 2025 -0400
+
+    Remap GPU OCRAM output to s1 to avoid contention with VGA DMA
+
+[33mcommit b3e3d33d3d4f1f5cf035be9c7c05bd00f58dbb86[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 07:52:02 2025 -0400
+
+    Update qsys with new connections
+
+[33mcommit bd82356282ee97a4402d4a04d6e6b9fde6344c01[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Wed Oct 15 07:44:38 2025 -0400
+
+    Refactor voxel_gpu connections
+    
+    - Need avalon master to talk to memory
+    - Need parameters to mirror VGA controller's
+    - Shorten clock, reset, and irq port names
+
+[33mcommit d63335fce1bc5e9f17512794b5cf40767c2b7305[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 20:12:53 2025 -0400
+
+    Add new headers in amp file
+
+[33mcommit 811ab9567a7b519d4f7e0dc40d624d9ea8c6295d[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 20:12:47 2025 -0400
+
+    Bare header for software use (and firmware prototypes)
+
+[33mcommit 65c12a9f5b84fa5c4bd62fc9d3816f1fcfaf91c3[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 20:12:28 2025 -0400
+
+    Header for firmware use based on qsys config
+
+[33mcommit a65eb39fd6176300f304651d5ded72b01bc42a7a[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 20:04:14 2025 -0400
+
+    Add voxel_gpu to qsys
+
+[33mcommit 4925721c8cf2e097e0cede2ff2dcd54bc5b5c1c9[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 20:02:10 2025 -0400
+
+    Remove deadbeef component
+
+[33mcommit c2904352bdf91af32f649ac84ff741e6e1eb23d3[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 19:53:55 2025 -0400
+
+    Initial draft of voxel_gpu component
+
+[33mcommit 593431f9802d0b9f00c3b404f8f3e72768cc8e25[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Tue Oct 14 15:55:34 2025 -0400
+
+    Newlines apparently control printing in Monitor Program
+
+[33mcommit 31cb693b157e92f666451a69585b2944b5153570[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Mon Oct 13 15:21:24 2025 -0400
+
+    Ignore VSCode files
+
+[33mcommit 0304b667cd2b290d66947828b269416911bdaddf[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Mon Oct 13 15:21:17 2025 -0400
+
+    Quartus seems to like this assignment ordering
+
+[33mcommit b5d8f0f2b45b7c6e6eb68dd40fecf6debe0287f3[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Mon Oct 13 14:37:37 2025 -0400
+
+    Downgrade to 21.1 to match Monitor Program
+
+[33mcommit 68d3d7eadb6764e0d8aef55c9637889f1d72bfcf[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 10 20:59:49 2025 -0400
+
+    Add hardware cable
+
+[33mcommit 6d9e48c6de02930ab57ba020a420764edd5bcc42[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 10 16:00:17 2025 -0400
+
+    More gitignores
+
+[33mcommit b2a706e3fc2cb6a3aba3a706d8e4ac2a5a62dc34[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 10 15:59:50 2025 -0400
+
+    Remove connections for removed components
+
+[33mcommit a7b7f08e42ed32393d5110dab48fc5c87c589b73[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Fri Oct 10 15:59:36 2025 -0400
+
+    Random QSF reordering
+
+[33mcommit a5f54d5e6edd20f55551e82d52f7b582178257c1[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 23:25:01 2025 -0400
+
+    More gitignores
+
+[33mcommit 1ad7176f5ebeb53656f0ca11ea9dd61116d094b5[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 23:24:50 2025 -0400
+
+    Add test component to system
+
+[33mcommit 8e9d584684db02aa82bbde8ba603e04c18f264b5[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 23:01:34 2025 -0400
+
+    New test component
+
+[33mcommit de638ff82922e9934fdad40dcca5d92cc8974071[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 22:49:12 2025 -0400
+
+    Rename project.amp to voxel_gpu.amp
+
+[33mcommit 11ffd1c9e86af5eba84dfd6762f8836dd78f3db7[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 22:12:24 2025 -0400
+
+    Monitor Program framework
+
+[33mcommit a45551f12dc25e33c36f2082407975011efae863[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 18:37:32 2025 -0400
+
+    Remove even more unneeded components
+
+[33mcommit c4f081b9be202fadd0188884ba903a47c9d5f3db[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 18:32:09 2025 -0400
+
+    Don't track .sopcinfo
+
+[33mcommit cb191c8dbdc614b563926d55f558d83abdbceaf0[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 18:30:54 2025 -0400
+
+    Remove unnecessary components
+
+[33mcommit c32ae503648974b35b317371d9cff221242f26d0[m[33m ([m[1;33mtag: DE1-SoC[m[33m)[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Thu Oct 9 17:42:30 2025 -0400
+
+    Add DE1-SoC hardware and firmware from Monitor Program files
+
+[33mcommit 044c94c43e8c3551110e01bc97477cb09451139d[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Mon Oct 6 17:50:22 2025 -0400
+
+    Empty Makefiles at empty tables
+
+[33mcommit 3df670c16fb196fa8524cba155d9a6533b43727b[m
+Author: AbyxDev <ken@abyx.dev>
+Date:   Mon Oct 6 17:11:53 2025 -0400
+
+    Initial commit
