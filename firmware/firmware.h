@@ -55,20 +55,17 @@ void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
 /* camera */
 
 typedef struct cam_pos {
-    uint16_t x;
-    uint16_t y;
-    uint16_t z;
+    float x;
+    float y;
+    float z;
 } cam_pos;
-
-uint16_t clip_plane_x, clip_plane_y;
-uint16_t focal_length;
 
 /**
  * configures camera settings.
  * @param _fov_degrees field of view in degrees
  * @param _focal_length focal length in voxel units
  */
-void set_camera_settings(uint16_t _fov_degrees, uint16_t _focal_length);
+void set_camera_settings(float _fov_degrees, float _focal_length);
 
 /**
 * sets camera position and orientation in the voxel space.

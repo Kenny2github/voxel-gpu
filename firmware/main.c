@@ -2,8 +2,6 @@
 #include "firmware/firmware.h"
 #include "firmware/interrupts.h"
 
-
-
 static int render_wait = 0;
 
 void render() {

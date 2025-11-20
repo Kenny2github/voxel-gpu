@@ -1,6 +1,10 @@
 ############################################
 # Global Defines
-MONITOR ?= $(wildcard C:/intelFPGA_lite/*/University_Program/Monitor_Program)
+ifeq ($(OS),Windows_NT)
+	MONITOR ?= $(wildcard C:/intelFPGA_lite/*/University_Program/Monitor_Program)
+else
+	MONITOR ?= $(wildcard ~/intelFPGA_lite/*/University_Program/Monitor_Program)
+endif
 ARM_TOOLS := $(MONITOR)/arm_tools/baremetal/bin
 DEFINE_COMMA := ,
 
