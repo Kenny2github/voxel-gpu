@@ -1,5 +1,6 @@
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
+
 #include <math.h>
 #include "software/vector_math.h"
 
@@ -9,7 +10,7 @@ void set_camera_settings(uint16_t _fov_degrees, uint16_t _focal_length) {
     clip_plane_y = clip_plane_x / ASPECT_RATIO;
     focal_length = _focal_length;
 
-    GPU->do_render = 1;
+    render();
 }
 
 void set_camera(cam_pos cam, cam_pos look_at, cam_pos up) {
@@ -45,5 +46,5 @@ void set_camera(cam_pos cam, cam_pos look_at, cam_pos up) {
     GPU->camera.look[3].y = look_at.y * focal_length + right.y * clip_plane_x - up.y * clip_plane_y;
     GPU->camera.look[3].z = look_at.z * focal_length + right.z * clip_plane_x - up.z * clip_plane_y;
 
-    GPU->do_render = 1;
+    render();
 }

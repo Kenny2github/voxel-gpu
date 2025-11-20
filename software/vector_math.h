@@ -3,8 +3,13 @@
 
 #include <stdint.h>
 
+#ifndef FRAC_BITS
 #define FRAC_BITS   8
-#define M_PI        3.14159265358979323846264
+#endif 
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 struct AffineTransform3D {
     float matrix[16];

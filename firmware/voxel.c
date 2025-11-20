@@ -6,10 +6,10 @@
 void set_voxel(v_pos pos, uint8_t palette) {
     *(GPU->voxel_buffer + pos.x + pos.y * SIDE_LEN + pos.z * SIDE_LEN * SIDE_LEN) = palette;
     ++GPU->voxel_count;
-    GPU->do_render = 1;
+    render();
 }
 
-void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
+void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     v_pos start;
     v_pos end;
     uint8_t dist_x, dist_y, dist_z;
@@ -55,5 +55,5 @@ void set_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     /* TODO: what to do when calling this function over a range that may already contain voxels? */
     GPU->voxel_count += dist_x * dist_y * dist_z;
 
-    GPU->do_render = 1;
+    render();
 }
