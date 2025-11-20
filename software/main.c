@@ -28,8 +28,8 @@ int main(void) {
     v_pos startPos = {128, 128, 128};
     v_pos firstPos = {0, 0, 0};
     v_pos endPos = {SIDE_LEN-1, SIDE_LEN-1, SIDE_LEN-1};
-    fill_voxel_range(firstPos, endPos, 0x0);
-    set_voxel(startPos, 0xFF);
+    // fill_voxel_range(firstPos, endPos, 0x0);
+    set_voxel(startPos, 0xBB);
     
     config_interrupts();
     while(1);
