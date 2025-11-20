@@ -29,7 +29,7 @@ int main(void) {
     v_pos firstPos = {0, 0, 0};
     v_pos endPos = {SIDE_LEN-1, SIDE_LEN-1, SIDE_LEN-1};
     // fill_voxel_range(firstPos, endPos, 0x0);
-    set_voxel(startPos, 0xBB);
+    set_voxel(startPos, 1);
     
     config_interrupts();
     while(1);
