@@ -60,7 +60,7 @@ void normalize(struct Vector *a) {
     if(squared_norm == 0.0f)
         return;
 
-    float inv_sqrt = Q_rsqrt(a->x * a->x + a->y * a->y + a->z * a->z);
+    float inv_sqrt = Q_rsqrt(squared_norm);
     if (inv_sqrt == 0.0f) return;
 
     a->x *= inv_sqrt;
