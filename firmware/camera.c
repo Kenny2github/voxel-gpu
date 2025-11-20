@@ -1,6 +1,7 @@
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
 #include <math.h>
+#include "software/vector_math.h"
 
 void set_camera_settings(uint16_t _fov_degrees, uint16_t _focal_length) {
     /* ideally we dont use tan(x) from math.h as its kinda slow but i havent figured it out yet */

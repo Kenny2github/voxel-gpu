@@ -22,6 +22,7 @@ float Q_rsqrt(float number); // Quake III method
 float sqrtf(float x); // Inverse of Q_rsqrt
 float cosf(float x); // Taylor approx
 float sinf(float x); // Taylor approx
+float tanf(float x); //  The thing ken gave for linear approximation
 
 /** @brief Computes 3D cross-product given float data
  *  @param Vector a first vector
