@@ -5,8 +5,6 @@
 #include "software/controls.h"
 
 /* defs */
-#define BLANK 0x0
-#define WHITE 0x1
 
 #define PALETTE_START 0xC2FFFF00 // enough for 128 colors (1B palette -> 2B color)
 #define GRID_START 0xC3000000
@@ -51,7 +49,10 @@ void set_voxel(v_pos pos, uint8_t palette);
  */
 void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
 
-
+/**
+ * clears the entire voxel grid
+ */
+void clear_grid(void);
 
 /* camera */
 
