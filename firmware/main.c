@@ -5,12 +5,20 @@
 
 static int render_wait = 0;
 
+void wait_for_vsync() {
+    *(PIXEL_BUF_CTRL->buffer) = 1;
+    while (*(PIXEL_BUF_CTRL->buffer + 3) & 1);
+
+    GPU->pixel_buffer = *(PIXEL_BUF_CTRL->back_buffer);
+}
+
 void render() {
     render_wait = 1;
     GPU->do_render = 1;
     while (render_wait);
 
-    // Swap buffer here
+    /* GPU interrupt handled, swap buffers */
+    wait_for_vsync();
 }
 
 static void enable_gpu_interrupt(void) {
@@ -37,6 +45,10 @@ void init_firmware() {
 
     GPU->palette_buffer = (unsigned char *)PALETTE_START;
     GPU->palette_length = sizeof(palette_data) / sizeof(palette_data[0]);
+
+    *(PIXEL_BUF_CTRL->buffer) = FPGA_PIXEL_BUF_BASE;
+    *(PIXEL_BUF_CTRL->back_buffer) = SDRAM_BASE;
+    GPU->pixel_buffer = *(PIXEL_BUF_CTRL->back_buffer);
 
     fill_palette_buffer();
     clear_grid();
