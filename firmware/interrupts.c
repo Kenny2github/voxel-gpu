@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "hardware/hardware.h"
+#include "firmware/interrupts.h"
 
 /*** Static variables ***/
 
@@ -82,11 +83,12 @@ void __attribute__((__interrupt__)) __cs3_isr_irq(void) {
     for (i = 0; i < num_irq_handlers; ++i) {
         if (irq == irq_handlers[i].irq) {
             irq_handlers[i].on_irq();
+            break;
         }
     }
-    if (i >= num_irq_handlers) {
+    if (i >= num_irq_handlers)
         while (1);
-    }
+    
     MPCORE_GIC_CPUIF->icceoir = irq;
 }
 
