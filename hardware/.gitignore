@@ -1,7 +1,12 @@
 */
 !src/
+!tests/
 !docs/
 !ip/
+tests/work/
+*.bin
+*.bmp
+*.log
 *.rpt
 *.amp
 *.BAK.*
