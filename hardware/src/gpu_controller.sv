@@ -12,26 +12,26 @@ module gpu_controller #(
     parameter FRAC_BITS = 8,
     parameter PIXEL_BITS = 16
 ) (
-    input  camera                  cam,
-    output logic  [          31:0] m1_address,        //    m1.address
-    output logic  [           7:0] m1_writedata,      //      .writedata
-    output logic                   m1_write,          //      .write
-    input  logic                   m1_waitrequest,    //      .waitrequest
-    input  logic  [           7:0] m1_readdata,       //      .readdata
-    output logic                   m1_read,           //      .read
-    input  logic                   m1_readdatavalid,  //      .readdatavalid
-    input  logic  [PIXEL_BITS-1:0] start_row,
-    input  logic  [PIXEL_BITS-1:0] start_col,
-    input  logic  [          31:0] pixel_buffer,
-    input  logic  [          31:0] voxel_buffer,
-    input  logic  [          31:0] voxel_count,
-    input  logic  [          31:0] palette_buffer,
-    input  logic  [          31:0] palette_length,
-    input  logic                   do_render,
-    input  logic                   clear_interrupt,
-    output logic                   irq,
-    input  logic                   reset,
-    input  logic                   clock
+    input  camera                cam,
+    output logic  [        31:0] m1_address,        //    m1.address
+    output logic  [         7:0] m1_writedata,      //      .writedata
+    output logic                 m1_write,          //      .write
+    input  logic                 m1_waitrequest,    //      .waitrequest
+    input  logic  [         7:0] m1_readdata,       //      .readdata
+    output logic                 m1_read,           //      .read
+    input  logic                 m1_readdatavalid,  //      .readdatavalid
+    input  logic  [ROW_BITS-1:0] start_row,
+    input  logic  [COL_BITS-1:0] start_col,
+    input  logic  [        31:0] pixel_buffer,
+    input  logic  [        31:0] voxel_buffer,
+    input  logic  [        31:0] voxel_count,
+    input  logic  [        31:0] palette_buffer,
+    input  logic  [        31:0] palette_length,
+    input  logic                 do_render,
+    input  logic                 clear_interrupt,
+    output logic                 irq,
+    input  logic                 reset,
+    input  logic                 clock
 );
   enum logic [3:0] {
     IDLE,
