@@ -41,7 +41,7 @@ module voxel_gpu #(
 
   always_ff @(posedge clock or posedge reset) begin
     if (reset) begin
-      pixel_buffer <= DEFAULT_BUFFER;
+      pixel_buffer <= '0;
       voxel_buffer <= '0;
       voxel_count <= '0;
       palette_buffer <= '0;

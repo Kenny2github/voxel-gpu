@@ -64,7 +64,6 @@ module gpu_controller #(
   // bilinear interpolation...
   function logic [COORD_BITS+FRAC_BITS-1:0] lerp2;
     input logic [COORD_BITS+FRAC_BITS-1:0] p0, p1, p2, p3, x, y, X, Y;
-    output lerp2;
     begin
       lerp2 = p0 + (p1 - p0) * x / X + (p2 - p0) * y / Y + (p0 - p1 + p3 - p2) * x * y / (X * Y);
     end
@@ -160,7 +159,7 @@ module gpu_controller #(
       end
       SHADE: begin
         if (shading_done) begin
-          if (entry_num >= entry_count) next_state = WRITEOUT;
+          if (entry_num >= palette_length) next_state = WRITEOUT;
           else next_state = FETCH_ENTRY;
         end else next_state = SHADE;
       end
@@ -172,7 +171,7 @@ module gpu_controller #(
       end
       WRITE: begin
         if (writing_done && byte_counter == (PIXEL_BITS / 8 - 1)) begin
-          if (pixel_num >= pixel_count) next_state = INTERRUPT;
+          if (pixel_num >= TOTAL_ROWS * TOTAL_COLS) next_state = INTERRUPT;
           else next_state = FETCH_PIXEL;
         end else next_state = WRITE;
       end
@@ -271,7 +270,7 @@ module gpu_controller #(
         m1_read = 1'b1;
       end
       SHADE: begin
-        do_shade = entry_num < entry_count;
+        do_shade = entry_num < palette_length;
       end
       WRITE: begin
         m1_write = 1'b1;

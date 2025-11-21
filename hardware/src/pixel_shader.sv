@@ -64,7 +64,7 @@ module pixel_shader #(
         else next_state = IDLE;
       end
       MEASURE: begin
-        next_state = STORE;
+        next_state = STORE_VOXEL;
       end
       STORE_VOXEL: begin
         next_state = DONE_RASTERIZING;
