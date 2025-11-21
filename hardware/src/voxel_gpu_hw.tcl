@@ -100,6 +100,7 @@ add_interface_port s1 s1_readdata readdata Output 32
 add_interface_port s1 s1_writedata writedata Input 32
 add_interface_port s1 s1_write write Input 1
 add_interface_port s1 s1_waitrequest waitrequest Output 1
+add_interface_port s1 s1_read read Input 1
 set_interface_assignment s1 embeddedsw.configuration.isFlash 0
 set_interface_assignment s1 embeddedsw.configuration.isMemoryDevice 0
 set_interface_assignment s1 embeddedsw.configuration.isNonVolatileStorage 0

@@ -6,6 +6,7 @@ module voxel_gpu #(
     parameter PIXEL_BITS   = 16
 ) (
     input  wire [ 7:0] s1_address,       //    s1.address
+    input  wire        s1_read,          //      .read
     output wire [31:0] s1_readdata,      //      .readdata
     input  wire [31:0] s1_writedata,     //      .writedata
     input  wire        s1_write,         //      .write
