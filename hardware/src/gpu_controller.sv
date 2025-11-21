@@ -58,6 +58,7 @@ module gpu_controller #(
   wire [PIXEL_BITS-1:0] pixel;
   logic [ROW_BITS+COL_BITS-1:0] pixel_num;
   logic [7:0] cycle_counter;
+  logic [$clog2(PIXEL_BITS / 8)-1:0] byte_counter;
   logic read_valid, do_rasterize, rasterizing_done, do_shade, shading_done, writing_done;
 
   // bilinear interpolation...
@@ -170,7 +171,7 @@ module gpu_controller #(
         next_state = WRITE;
       end
       WRITE: begin
-        if (writing_done) begin
+        if (writing_done && byte_counter == (PIXEL_BITS / 8 - 1)) begin
           if (pixel_num >= pixel_count) next_state = INTERRUPT;
           else next_state = FETCH_PIXEL;
         end else next_state = WRITE;
@@ -192,6 +193,7 @@ module gpu_controller #(
     if (reset) begin
       m1_address <= '0;
       cycle_counter <= '0;
+      byte_counter <= '0;
       voxel_num <= '0;
       entry_num <= '0;
       pixel_num <= '0;
@@ -237,10 +239,14 @@ module gpu_controller #(
         end
         FETCH_PIXEL: begin
           pixel_num <= pixel_num + 1'b1;
+          if (next_state == WRITE) begin
+            byte_counter <= '0;
+          end
         end
         WRITE: begin
-          if (next_state == FETCH_PIXEL) begin
-            m1_address <= m1_address + 1'b1;
+          if (writing_done) begin
+            m1_address   <= m1_address + 1'b1;
+            byte_counter <= byte_counter + 1'b1;
           end
         end
       endcase
@@ -269,7 +275,7 @@ module gpu_controller #(
       end
       WRITE: begin
         m1_write = 1'b1;
-        m1_writedata = pixel;
+        m1_writedata = pixel[byte_counter*8+:8];
       end
       INTERRUPT: begin
         irq = 1'b1;
