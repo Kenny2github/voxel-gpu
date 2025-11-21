@@ -56,6 +56,7 @@ module gpu_controller #(
   logic [ROW_BITS-1:0] row;
   logic [COL_BITS-1:0] col;
   wire [PIXEL_BITS-1:0] pixel;
+  logic [ROW_BITS+COL_BITS-1:0] pixel_num;
   logic [7:0] cycle_counter;
   logic read_valid, do_rasterize, rasterizing_done, do_shade, shading_done, writing_done;
 
@@ -192,6 +193,8 @@ module gpu_controller #(
       m1_address <= '0;
       cycle_counter <= '0;
       voxel_num <= '0;
+      entry_num <= '0;
+      pixel_num <= '0;
     end else begin
       case (state)
         RASTERIZING: begin
