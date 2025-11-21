@@ -1,10 +1,8 @@
 `include "common.svh"
 
 module gpu_controller #(
-    parameter START_ROW = 0,
-    parameter START_COL = 0,
-    parameter STOP_ROW = 0,
-    parameter STOP_COL = 0,
+    parameter MY_ROWS = 0,
+    parameter MY_COLS = 0,
     parameter TOTAL_ROWS = 0,
     parameter TOTAL_COLS = 0,
     parameter ROW_BITS = $clog2(TOTAL_ROWS),
@@ -14,24 +12,26 @@ module gpu_controller #(
     parameter FRAC_BITS = 8,
     parameter PIXEL_BITS = 8
 ) (
-    input  camera        cam,
-    output logic  [31:0] m1_address,        //    m1.address
-    output logic  [ 7:0] m1_writedata,      //      .writedata
-    output logic         m1_write,          //      .write
-    input  logic         m1_waitrequest,    //      .waitrequest
-    input  logic  [ 7:0] m1_readdata,       //      .readdata
-    output logic         m1_read,           //      .read
-    input  logic         m1_readdatavalid,  //      .readdatavalid
-    input  logic  [31:0] pixel_buffer,
-    input  logic  [31:0] voxel_buffer,
-    input  logic  [31:0] voxel_count,
-    input  logic  [31:0] palette_buffer,
-    input  logic  [31:0] palette_length,
-    input  logic         do_render,
-    input  logic         clear_interrupt,
-    output logic         irq,
-    input  logic         reset,
-    input  logic         clock
+    input  camera                  cam,
+    output logic  [          31:0] m1_address,        //    m1.address
+    output logic  [           7:0] m1_writedata,      //      .writedata
+    output logic                   m1_write,          //      .write
+    input  logic                   m1_waitrequest,    //      .waitrequest
+    input  logic  [           7:0] m1_readdata,       //      .readdata
+    output logic                   m1_read,           //      .read
+    input  logic                   m1_readdatavalid,  //      .readdatavalid
+    input  logic  [PIXEL_BITS-1:0] start_row,
+    input  logic  [PIXEL_BITS-1:0] start_col,
+    input  logic  [          31:0] pixel_buffer,
+    input  logic  [          31:0] voxel_buffer,
+    input  logic  [          31:0] voxel_count,
+    input  logic  [          31:0] palette_buffer,
+    input  logic  [          31:0] palette_length,
+    input  logic                   do_render,
+    input  logic                   clear_interrupt,
+    output logic                   irq,
+    input  logic                   reset,
+    input  logic                   clock
 );
   enum logic [3:0] {
     IDLE,
@@ -70,8 +70,8 @@ module gpu_controller #(
 
   genvar r, c;
   generate
-    for (r = START_ROW; r < STOP_ROW; ++r) begin
-      for (c = START_COL; c < STOP_COL; ++c) begin
+    for (r = 0; r < MY_ROWS; ++r) begin
+      for (c = 0; c < MY_COLS; ++c) begin
         pixel_shader #(
             .ROW(r),
             .COL(c),
@@ -84,13 +84,34 @@ module gpu_controller #(
         ) shader (
             .valid(  /* TODO */),
             .cam_look_x(lerp2(
-                cam.look0.x, cam.look1.x, cam.look2.x, cam.look3.x, c, r, TOTAL_COLS, TOTAL_ROWS
+                cam.look0.x,
+                cam.look1.x,
+                cam.look2.x,
+                cam.look3.x,
+                c + start_col,
+                r + start_row,
+                TOTAL_COLS,
+                TOTAL_ROWS
             )),
             .cam_look_y(lerp2(
-                cam.look0.y, cam.look1.y, cam.look2.y, cam.look3.y, c, r, TOTAL_COLS, TOTAL_ROWS
+                cam.look0.y,
+                cam.look1.y,
+                cam.look2.y,
+                cam.look3.y,
+                c + start_col,
+                r + start_row,
+                TOTAL_COLS,
+                TOTAL_ROWS
             )),
             .cam_look_z(lerp2(
-                cam.look0.z, cam.look1.z, cam.look2.z, cam.look3.z, c, r, TOTAL_COLS, TOTAL_ROWS
+                cam.look0.z,
+                cam.look1.z,
+                cam.look2.z,
+                cam.look3.z,
+                c + start_col,
+                r + start_row,
+                TOTAL_COLS,
+                TOTAL_ROWS
             )),
             .*
         );
