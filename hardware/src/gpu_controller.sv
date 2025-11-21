@@ -83,6 +83,9 @@ module gpu_controller #(
             .PIXEL_BITS(PIXEL_BITS)
         ) shader (
             .valid(  /* TODO */),
+            .cam_pos_x(cam.pos.x),
+            .cam_pos_y(cam.pos.y),
+            .cam_pos_z(cam.pos.z),
             .cam_look_x(lerp2(
                 cam.look0.x,
                 cam.look1.x,
