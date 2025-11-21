@@ -25,14 +25,14 @@ module voxel_gpu #(
   // GPU.*
   logic [31:0] pixel_buffer, voxel_buffer, voxel_count, palette_buffer, palette_length;
   // write-only signals cleared automatically
-  logic do_render, clear_interrupt;
+  logic mmio_do_render, clear_interrupt;
+  // controller signals
+  logic do_render, done_rendering;
   // GPU.camera
   camera cam;
 
   logic [$clog2(V_RESOLUTION)-1:0] start_row;
   logic [$clog2(H_RESOLUTION)-1:0] start_col;
-
-  assign start_row = '0;
   assign start_col = '0;
 
   gpu_controller #(
@@ -52,9 +52,10 @@ module voxel_gpu #(
       voxel_count <= '0;
       palette_buffer <= '0;
       palette_length <= '0;
-      do_render <= 1'b0;
+      mmio_do_render <= 1'b0;
       clear_interrupt <= 1'b0;
       cam <= '{default: 0};
+      start_row = '0;
     end else if (s1_write) begin
       case (s1_address)
         8'h00: begin
@@ -74,8 +75,10 @@ module voxel_gpu #(
         end
         8'h0f: begin
           // write 1: do_render; write 0: clear_interrupt
-          if (s1_writedata) do_render <= 1'b1;
-          else clear_interrupt <= 1'b1;
+          if (s1_writedata) begin
+            mmio_do_render <= 1'b1;
+            start_row <= '0;
+          end else clear_interrupt <= 1'b1;
         end
         8'h10: begin
           cam.pos.x <= s1_writedata;
@@ -124,10 +127,15 @@ module voxel_gpu #(
         end
       endcase
     end else begin
-      do_render <= 1'b0;
+      if (do_render && !mmio_do_render) begin
+        start_row <= start_row + 1'b1;
+      end
+      mmio_do_render  <= 1'b0;
       clear_interrupt <= 1'b0;
     end
   end
+
+  assign do_render = mmio_do_render || (done_rendering && (start_row < V_RESOLUTION - 1));
 
   always_comb begin
     s1_readdata = '0;
@@ -199,5 +207,6 @@ module voxel_gpu #(
   end
 
   assign s1_waitrequest = 1'b0;
+  assign irq = done_rendering && (start_row == V_RESOLUTION - 1);
 
 endmodule

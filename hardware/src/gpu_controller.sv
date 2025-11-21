@@ -29,7 +29,7 @@ module gpu_controller #(
     input  logic  [        31:0] palette_length,
     input  logic                 do_render,
     input  logic                 clear_interrupt,
-    output logic                 irq,
+    output logic                 done_rendering,
     input  logic                 reset,
     input  logic                 clock
 );
@@ -178,6 +178,7 @@ module gpu_controller #(
       end
       INTERRUPT: begin
         if (clear_interrupt) next_state = IDLE;
+        else if (do_render) next_state = RASTERIZING;
         else next_state = INTERRUPT;
       end
     endcase
@@ -257,7 +258,7 @@ module gpu_controller #(
     m1_read = 1'b0;
     m1_write = 1'b0;
     m1_writedata = '0;
-    irq = 1'b0;
+    done_rendering = 1'b0;
     do_rasterize = 1'b0;
     do_shade = 1'b0;
     case (state)
@@ -278,7 +279,7 @@ module gpu_controller #(
         m1_writedata = pixel[byte_counter*8+:8];
       end
       INTERRUPT: begin
-        irq = 1'b1;
+        done_rendering = 1'b1;
       end
     endcase
   end
