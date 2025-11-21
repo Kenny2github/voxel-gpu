@@ -10,7 +10,7 @@ module gpu_controller #(
     parameter COORD_BITS = 8,
     parameter PALETTE_BITS = 8,
     parameter FRAC_BITS = 8,
-    parameter PIXEL_BITS = 8
+    parameter PIXEL_BITS = 16
 ) (
     input  camera                  cam,
     output logic  [          31:0] m1_address,        //    m1.address
