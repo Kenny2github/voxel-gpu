@@ -11,8 +11,10 @@ stateDiagram-v2
     idle --> measure: Voxel selected
 	measure --> store_voxel
 	store_voxel --> done_rasterizing
+    done_rasterizing --> measure: Next voxel selected
 	done_rasterizing --> idle
     idle --> store_pixel: Palette entry selected
     store_pixel --> done_shading
+    done_shading --> store_pixel: Next entry selected
     done_shading --> idle
 ```

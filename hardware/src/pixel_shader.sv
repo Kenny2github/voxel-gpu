@@ -33,8 +33,10 @@ module pixel_shader #(
   enum logic [3:0] {
     IDLE,
     MEASURE,
-    STORE,
-    DONE
+    STORE_VOXEL,
+    DONE_RASTERIZING,
+    STORE_PIXEL,
+    DONE_SHADING
   }
       state, next_state;
 
@@ -59,17 +61,26 @@ module pixel_shader #(
   always_comb begin
     case (state)
       IDLE: begin
-        if (valid) next_state = MEASURE;
+        if (do_rasterize) next_state = MEASURE;
+        else if (do_shade) next_state = STORE_PIXEL;
         else next_state = IDLE;
       end
       MEASURE: begin
         next_state = STORE;
       end
-      STORE: begin
-        next_state = DONE;
+      STORE_VOXEL: begin
+        next_state = DONE_RASTERIZING;
       end
-      DONE: begin
-        next_state = IDLE;
+      DONE_RASTERIZING: begin
+        if (do_rasterize) next_state = MEASURE;
+        else next_state = IDLE;
+      end
+      STORE_PIXEL: begin
+        next_state = DONE_SHADING;
+      end
+      DONE_SHADING: begin
+        if (do_shade) next_state = STORE_PIXEL;
+        else next_state = IDLE;
       end
     endcase
   end
