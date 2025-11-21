@@ -36,13 +36,13 @@ add_fileset_file pixel_shader.sv SYSTEM_VERILOG PATH pixel_shader.sv
 #
 # parameters
 #
-
 add_parameter H_RESOLUTION INTEGER 256 ""
 set_parameter_property H_RESOLUTION DEFAULT_VALUE 256
 set_parameter_property H_RESOLUTION DISPLAY_NAME "Horizontal Resolution"
 set_parameter_property H_RESOLUTION TYPE INTEGER
 set_parameter_property H_RESOLUTION UNITS None
-set_parameter_property H_RESOLUTION DISPLAY_UNITS "pixels"
+set_parameter_property H_RESOLUTION DISPLAY_UNITS pixels
+set_parameter_property H_RESOLUTION ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property H_RESOLUTION DESCRIPTION ""
 set_parameter_property H_RESOLUTION HDL_PARAMETER true
 add_parameter V_RESOLUTION INTEGER 192 ""
@@ -50,7 +50,8 @@ set_parameter_property V_RESOLUTION DEFAULT_VALUE 192
 set_parameter_property V_RESOLUTION DISPLAY_NAME "Vertical Resolution"
 set_parameter_property V_RESOLUTION TYPE INTEGER
 set_parameter_property V_RESOLUTION UNITS None
-set_parameter_property V_RESOLUTION DISPLAY_UNITS "pixels"
+set_parameter_property V_RESOLUTION DISPLAY_UNITS pixels
+set_parameter_property V_RESOLUTION ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property V_RESOLUTION DESCRIPTION ""
 set_parameter_property V_RESOLUTION HDL_PARAMETER true
 add_parameter PIXEL_BITS INTEGER 16 ""
@@ -58,8 +59,10 @@ set_parameter_property PIXEL_BITS DEFAULT_VALUE 16
 set_parameter_property PIXEL_BITS DISPLAY_NAME "Bits per pixel"
 set_parameter_property PIXEL_BITS TYPE INTEGER
 set_parameter_property PIXEL_BITS UNITS Bits
+set_parameter_property PIXEL_BITS ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property PIXEL_BITS DESCRIPTION ""
 set_parameter_property PIXEL_BITS HDL_PARAMETER true
+
 
 #
 # display items
@@ -178,9 +181,9 @@ set_interface_property m1 CMSIS_SVD_VARIABLES ""
 set_interface_property m1 SVD_ADDRESS_GROUP ""
 
 add_interface_port m1 m1_address address Output 32
-add_interface_port m1 m1_writedata writedata Output 32
+add_interface_port m1 m1_writedata writedata Output 8
 add_interface_port m1 m1_write write Output 1
 add_interface_port m1 m1_waitrequest waitrequest Input 1
-add_interface_port m1 m1_readdata readdata Input 32
+add_interface_port m1 m1_readdata readdata Input 8
 add_interface_port m1 m1_read read Output 1
 add_interface_port m1 m1_readdatavalid readdatavalid Input 1

@@ -16,10 +16,10 @@ module gpu_controller #(
 ) (
     input  camera        cam,
     output logic  [31:0] m1_address,        //    m1.address
-    output logic  [31:0] m1_writedata,      //      .writedata
+    output logic  [ 7:0] m1_writedata,      //      .writedata
     output logic         m1_write,          //      .write
     input  logic         m1_waitrequest,    //      .waitrequest
-    input  logic  [31:0] m1_readdata,       //      .readdata
+    input  logic  [ 7:0] m1_readdata,       //      .readdata
     output logic         m1_read,           //      .read
     input  logic         m1_readdatavalid,  //      .readdatavalid
     input  logic  [31:0] pixel_buffer,
