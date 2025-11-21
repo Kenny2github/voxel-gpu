@@ -57,7 +57,7 @@ module gpu_controller #(
   logic [COL_BITS-1:0] col;
   wire [PIXEL_BITS-1:0] pixel;
   logic [7:0] cycle_counter;
-  logic read_valid, writing_done;
+  logic read_valid, do_rasterize, rasterizing_done, do_shade, shading_done, writing_done;
 
   // bilinear interpolation...
   function logic [COORD_BITS+FRAC_BITS-1:0] lerp2;
@@ -247,15 +247,20 @@ module gpu_controller #(
     m1_write = 1'b0;
     m1_writedata = '0;
     irq = 1'b0;
+    do_rasterize = 1'b0;
+    do_shade = 1'b0;
     case (state)
-      RASTERIZING: begin
-        reset_pixels = 1'b1;
-      end
       FETCH_VOXEL: begin
         m1_read = 1'b1;
       end
+      RASTERIZE: begin
+        do_rasterize = voxel_num < voxel_count;
+      end
       FETCH_ENTRY: begin
         m1_read = 1'b1;
+      end
+      SHADE: begin
+        do_shade = entry_num < entry_count;
       end
       WRITE: begin
         m1_write = 1'b1;

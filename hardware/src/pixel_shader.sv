@@ -10,7 +10,8 @@ module pixel_shader #(
 		parameter FRAC_BITS = 8,
     parameter PIXEL_BITS = 8
 ) (
-    input logic valid,
+    input logic do_rasterize,
+    input logic do_shade,
     input logic [COORD_BITS-1:0] voxel_x,
     input logic [COORD_BITS-1:0] voxel_y,
     input logic [COORD_BITS-1:0] voxel_z,
