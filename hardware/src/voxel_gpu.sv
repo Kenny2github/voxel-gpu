@@ -1,4 +1,4 @@
-`include "common.svh"
+import gpu::*;
 
 module voxel_gpu #(
     parameter H_RESOLUTION = 256,

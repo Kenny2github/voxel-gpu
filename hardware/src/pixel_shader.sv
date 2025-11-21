@@ -1,5 +1,3 @@
-`include "common.svh"
-
 module pixel_shader #(
     parameter ROW = 0,
     parameter COL = 0,

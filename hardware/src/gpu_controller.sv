@@ -1,4 +1,4 @@
-`include "common.svh"
+import gpu::*;
 
 module gpu_controller #(
     parameter MY_ROWS = 0,
