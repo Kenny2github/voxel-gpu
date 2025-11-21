@@ -3,7 +3,7 @@
 #include "firmware/interrupts.h"
 #include "firmware/palette.h"
 
-static int render_wait = 0;
+static volatile int render_wait = 0;
 
 void wait_for_vsync() {
     *(PIXEL_BUF_CTRL->buffer) = 1;
