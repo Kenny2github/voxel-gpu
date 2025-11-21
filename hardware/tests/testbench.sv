@@ -287,21 +287,23 @@ module testbench #(
     write_s1(3, SDRAM_BASE + 32);  // palette_buffer
     write_s1(4, 2);  // palette_length
 
-    write_s1(16, {8'd5, 8'b0});  // cam.pos.x
-    write_s1(17, {8'd5, 8'b0});  // cam.pos.y
-    write_s1(18, {8'd5, 8'b0});  // cam.pos.z
-    write_s1(19, 0);  // cam.look0.x
-    write_s1(20, 0);  // cam.look0.y
-    write_s1(21, 0);  // cam.look0.z
-    write_s1(22, 0);  // cam.look1.x
-    write_s1(23, 0);  // cam.look1.y
-    write_s1(24, 0);  // cam.look1.z
-    write_s1(25, 0);  // cam.look2.x
-    write_s1(26, 0);  // cam.look2.y
-    write_s1(27, 0);  // cam.look2.z
-    write_s1(28, 0);  // cam.look3.x
-    write_s1(29, 0);  // cam.look3.y
-    write_s1(30, 0);  // cam.look3.z
+    // set up camera at (4, 1, 1)
+    // render plane at (2, 3, 0), (2, 3, 6), (2, 0, 0), (2, 0, 6)
+    write_s1(16, {8'd4, 8'b0});  // cam.pos.x
+    write_s1(17, {8'd1, 8'b0});  // cam.pos.y
+    write_s1(18, {8'd1, 8'b0});  // cam.pos.z
+    write_s1(19, {8'(-2), 8'd0});  // cam.look0.x
+    write_s1(20, {8'd2, 8'd0});  // cam.look0.y
+    write_s1(21, {8'(-1), 8'd0});  // cam.look0.z
+    write_s1(22, {8'(-2), 8'd0});  // cam.look1.x
+    write_s1(23, {8'd2, 8'd0});  // cam.look1.y
+    write_s1(24, {8'd5, 8'd0});  // cam.look1.z
+    write_s1(25, {8'(-2), 8'd0});  // cam.look2.x
+    write_s1(26, {8'(-1), 8'd0});  // cam.look2.y
+    write_s1(27, {8'(-1), 8'd0});  // cam.look2.z
+    write_s1(28, {8'(-2), 8'd0});  // cam.look3.x
+    write_s1(29, {8'(-1), 8'd0});  // cam.look3.y
+    write_s1(30, {8'd5, 8'd0});  // cam.look3.z
 
     $writememh("ocram.hex", ocram.mem);
     $system("./ocram_to_bmp.py");
