@@ -5,22 +5,22 @@ module voxel_gpu #(
     parameter V_RESOLUTION = 192,
     parameter PIXEL_BITS   = 16
 ) (
-    input  wire [ 7:0] s1_address,       //    s1.address
-    input  wire        s1_read,          //      .read
-    output wire [31:0] s1_readdata,      //      .readdata
-    input  wire [31:0] s1_writedata,     //      .writedata
-    input  wire        s1_write,         //      .write
-    output wire        s1_waitrequest,   //      .waitrequest
-    input  wire        reset,            // reset.reset
-    input  wire        clock,            // clock.clk
-    output wire        irq,              //   irq.irq
-    output wire [31:0] m1_address,       //    m1.address
-    output wire [ 7:0] m1_writedata,     //      .writedata
-    output wire        m1_write,         //      .write
-    input  wire        m1_waitrequest,   //      .waitrequest
-    input  wire [ 7:0] m1_readdata,      //      .readdata
-    output wire        m1_read,          //      .read
-    input  wire        m1_readdatavalid  //      .readdatavalid
+    input  logic [ 7:0] s1_address,       //    s1.address
+    input  logic        s1_read,          //      .read
+    output logic [31:0] s1_readdata,      //      .readdata
+    input  logic [31:0] s1_writedata,     //      .writedata
+    input  logic        s1_write,         //      .write
+    output logic        s1_waitrequest,   //      .waitrequest
+    input  logic        reset,            // reset.reset
+    input  logic        clock,            // clock.clk
+    output logic        irq,              //   irq.irq
+    output logic [31:0] m1_address,       //    m1.address
+    output logic [ 7:0] m1_writedata,     //      .writedata
+    output logic        m1_write,         //      .write
+    input  logic        m1_waitrequest,   //      .waitrequest
+    input  logic [ 7:0] m1_readdata,      //      .readdata
+    output logic        m1_read,          //      .read
+    input  logic        m1_readdatavalid  //      .readdatavalid
 );
   // GPU.*
   logic [31:0] pixel_buffer, voxel_buffer, voxel_count, palette_buffer, palette_length;
