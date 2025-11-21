@@ -5,7 +5,7 @@
 #define abs(x) ((x >= 0) ? (x) : (-x))
 
 void set_voxel(v_pos pos, uint8_t palette) {
-    *(GPU->voxel_buffer + pos.x + pos.z * SIDE_LEN + pos.y * SIDE_LEN * SIDE_LEN) = palette;
+    *((uint32_t *)GRID_START + pos.x + pos.z * SIDE_LEN + pos.y * SIDE_LEN * SIDE_LEN) = palette;
     ++GPU->voxel_count;
 }
 
@@ -45,7 +45,7 @@ void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     unsigned char* y_offset;
     unsigned char* voxel_offset;
     for (uint8_t y = start.y; y <= end.y; ++y) {
-        y_offset = GPU->voxel_buffer + y * SIDE_LEN * SIDE_LEN;
+        y_offset = (unsigned char *)GRID_START + y * SIDE_LEN * SIDE_LEN;
         for (uint8_t z = start.z; z <= end.z; ++z) {
             voxel_offset = y_offset + z * SIDE_LEN;
             memset(voxel_offset, palette, dist_x);
@@ -58,6 +58,6 @@ void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
 }
 
 void clear_grid(void) {
-    memset((unsigned char *)GPU->voxel_buffer, 0x0, SIDE_LEN * SIDE_LEN * SIDE_LEN);
+    memset((unsigned char *)GRID_START, 0x0, SIDE_LEN * SIDE_LEN * SIDE_LEN);
     GPU->voxel_count = 0;
 }

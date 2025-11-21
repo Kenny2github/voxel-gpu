@@ -31,11 +31,11 @@ static void handle_gpu_interrupt(void) {
 }
 
 static void fill_palette_buffer(void) {
-    for (uint16_t i = 0; i < GPU->palette_length; ++i) {
+    for (uint16_t i = 0; i < sizeof(palette_data) / sizeof(palette_data[0]); ++i) {
         uint16_t upper_color = (palette_data[i] & 0xFF00) >> 8;
         uint16_t lower_color = (palette_data[i] & 0x00FF);
-        *(GPU->palette_buffer + i * 2) = lower_color;
-        *(GPU->palette_buffer + i * 2 + 1) = upper_color;
+        *((uint32_t *)PALETTE_START + i * 2) = lower_color;
+        *((uint32_t *)PALETTE_START + i * 2 + 1) = upper_color;
     }
 }
 
@@ -46,9 +46,9 @@ void init_firmware() {
     GPU->palette_buffer = (unsigned char *)PALETTE_START;
     GPU->palette_length = sizeof(palette_data) / sizeof(palette_data[0]);
 
-    *(PIXEL_BUF_CTRL->buffer) = FPGA_PIXEL_BUF_BASE;
-    *(PIXEL_BUF_CTRL->back_buffer) = SDRAM_BASE;
-    GPU->pixel_buffer = *(PIXEL_BUF_CTRL->back_buffer);
+    PIXEL_BUF_CTRL->buffer = FPGA_PIXEL_BUF_BASE;
+    PIXEL_BUF_CTRL->back_buffer = SDRAM_BASE;
+    GPU->pixel_buffer = SDRAM_BASE;
 
     fill_palette_buffer();
     clear_grid();
