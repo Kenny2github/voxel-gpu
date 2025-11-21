@@ -7,7 +7,7 @@ module pixel_shader #(
     parameter COL_BITS = 8,
     parameter COORD_BITS = 8,
     parameter PALETTE_BITS = 8,
-		parameter FRAC_BITS = 8,
+    parameter FRAC_BITS = 8,
     parameter PIXEL_BITS = 8
 ) (
     input logic do_rasterize,
@@ -41,12 +41,12 @@ module pixel_shader #(
   logic [PIXEL_BITS-1:0] _pixel;
   assign pixel = (row == ROW && col == COL) ? _pixel : 'z;
 
-	assign tAx = ({voxel_x, 8'b0} - cam_pos_x) / Dx;
-	assign tAy = ({voxel_y, 8'b0} - cam_pos_y) / Dy;
-	assign tAz = ({voxel_z, 8'b0} - cam_pos_z) / Dz;
-	assign tBx = ({voxel_x + 1'b1, 8'b0} - cam_pos_x) / Dx;
-	assign tBy = ({voxel_y + 1'b1, 8'b0} - cam_pos_y) / Dy;
-	assign tBz = ({voxel_z + 1'b1, 8'b0} - cam_pos_z) / Dz;
+  assign tAx   = ({voxel_x, 8'b0} - cam_pos_x) / Dx;
+  assign tAy   = ({voxel_y, 8'b0} - cam_pos_y) / Dy;
+  assign tAz   = ({voxel_z, 8'b0} - cam_pos_z) / Dz;
+  assign tBx   = ({voxel_x + 1'b1, 8'b0} - cam_pos_x) / Dx;
+  assign tBy   = ({voxel_y + 1'b1, 8'b0} - cam_pos_y) / Dy;
+  assign tBz   = ({voxel_z + 1'b1, 8'b0} - cam_pos_z) / Dz;
 
   always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
