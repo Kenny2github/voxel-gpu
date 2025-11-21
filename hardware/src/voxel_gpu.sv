@@ -29,9 +29,15 @@ module voxel_gpu #(
   // GPU.camera
   camera cam;
 
+  logic [$clog2(V_RESOLUTION)-1:0] start_row;
+  logic [$clog2(H_RESOLUTION)-1:0] start_col;
+
+  assign start_row = '0;
+  assign start_col = '0;
+
   gpu_controller #(
-      .STOP_ROW  (V_RESOLUTION),
-      .STOP_COL  (H_RESOLUTION),
+      .MY_ROWS(1),
+      .MY_COLS(H_RESOLUTION),
       .TOTAL_ROWS(V_RESOLUTION),
       .TOTAL_COLS(H_RESOLUTION),
       .PIXEL_BITS(PIXEL_BITS)
@@ -193,10 +199,5 @@ module voxel_gpu #(
   end
 
   assign s1_waitrequest = 1'b0;
-  assign m1_write = 1'b0;
-  assign m1_writedata = 32'b0;
-  assign m1_address = 32'b0;
-  assign m1_read = 1'b0;
-  assign irq = 1'b0;
 
 endmodule

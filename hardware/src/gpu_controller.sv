@@ -59,7 +59,8 @@ module gpu_controller #(
   logic [ROW_BITS+COL_BITS-1:0] pixel_num;
   logic [7:0] cycle_counter;
   logic [$clog2(PIXEL_BITS / 8)-1:0] byte_counter;
-  logic read_valid, do_rasterize, rasterizing_done, do_shade, shading_done, writing_done;
+  logic read_valid, do_rasterize, do_shade, writing_done;
+  wand rasterizing_done, shading_done;
 
   // bilinear interpolation...
   function logic [COORD_BITS+FRAC_BITS-1:0] lerp2;
@@ -83,34 +84,34 @@ module gpu_controller #(
             .FRAC_BITS(FRAC_BITS),
             .PIXEL_BITS(PIXEL_BITS)
         ) shader (
-            .cam_pos_x(cam.pos.x),
-            .cam_pos_y(cam.pos.y),
-            .cam_pos_z(cam.pos.z),
+            .cam_pos_x(cam.pos.x[COORD_BITS+FRAC_BITS-1:0]),
+            .cam_pos_y(cam.pos.y[COORD_BITS+FRAC_BITS-1:0]),
+            .cam_pos_z(cam.pos.z[COORD_BITS+FRAC_BITS-1:0]),
             .cam_look_x(lerp2(
-                cam.look0.x,
-                cam.look1.x,
-                cam.look2.x,
-                cam.look3.x,
+                cam.look0.x[COORD_BITS+FRAC_BITS-1:0],
+                cam.look1.x[COORD_BITS+FRAC_BITS-1:0],
+                cam.look2.x[COORD_BITS+FRAC_BITS-1:0],
+                cam.look3.x[COORD_BITS+FRAC_BITS-1:0],
                 c + start_col,
                 r + start_row,
                 TOTAL_COLS,
                 TOTAL_ROWS
             )),
             .cam_look_y(lerp2(
-                cam.look0.y,
-                cam.look1.y,
-                cam.look2.y,
-                cam.look3.y,
+                cam.look0.y[COORD_BITS+FRAC_BITS-1:0],
+                cam.look1.y[COORD_BITS+FRAC_BITS-1:0],
+                cam.look2.y[COORD_BITS+FRAC_BITS-1:0],
+                cam.look3.y[COORD_BITS+FRAC_BITS-1:0],
                 c + start_col,
                 r + start_row,
                 TOTAL_COLS,
                 TOTAL_ROWS
             )),
             .cam_look_z(lerp2(
-                cam.look0.z,
-                cam.look1.z,
-                cam.look2.z,
-                cam.look3.z,
+                cam.look0.z[COORD_BITS+FRAC_BITS-1:0],
+                cam.look1.z[COORD_BITS+FRAC_BITS-1:0],
+                cam.look2.z[COORD_BITS+FRAC_BITS-1:0],
+                cam.look3.z[COORD_BITS+FRAC_BITS-1:0],
                 c + start_col,
                 r + start_row,
                 TOTAL_COLS,
