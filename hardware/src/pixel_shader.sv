@@ -14,12 +14,12 @@ module pixel_shader #(
     input logic [COORD_BITS-1:0] voxel_y,
     input logic [COORD_BITS-1:0] voxel_z,
     input logic [PALETTE_BITS-1:0] voxel_id,
-    input logic [COORD_BITS+FRAC_BITS-1:0] cam_pos_x,
-    input logic [COORD_BITS+FRAC_BITS-1:0] cam_pos_y,
-    input logic [COORD_BITS+FRAC_BITS-1:0] cam_pos_z,
-    input logic [COORD_BITS+FRAC_BITS-1:0] cam_look_x,
-    input logic [COORD_BITS+FRAC_BITS-1:0] cam_look_y,
-    input logic [COORD_BITS+FRAC_BITS-1:0] cam_look_z,
+    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_x,
+    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_y,
+    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_z,
+    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_x,
+    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_y,
+    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_z,
     input logic [ROW_BITS-1:0] row,
     input logic [COL_BITS-1:0] col,
     output logic rasterizing_done,
@@ -41,12 +41,14 @@ module pixel_shader #(
   logic [PIXEL_BITS-1:0] _pixel;
   assign pixel = (row == ROW && col == COL) ? _pixel : 'z;
 
-  assign tAx   = ({voxel_x, 8'b0} - cam_pos_x) / Dx;
-  assign tAy   = ({voxel_y, 8'b0} - cam_pos_y) / Dy;
-  assign tAz   = ({voxel_z, 8'b0} - cam_pos_z) / Dz;
-  assign tBx   = ({voxel_x + 1'b1, 8'b0} - cam_pos_x) / Dx;
-  assign tBy   = ({voxel_y + 1'b1, 8'b0} - cam_pos_y) / Dy;
-  assign tBz   = ({voxel_z + 1'b1, 8'b0} - cam_pos_z) / Dz;
+  logic [COORD_BITS+FRAC_BITS-1:0] tAx, tAy, tAz, tBx, tBy, tBz;
+
+  assign tAx = {({voxel_x, FRAC_BITS'(0)} - cam_pos_x), FRAC_BITS'(0)} / (cam_look_x || 1);
+  assign tAy = {({voxel_y, FRAC_BITS'(0)} - cam_pos_y), FRAC_BITS'(0)} / (cam_look_y || 1);
+  assign tAz = {({voxel_z, FRAC_BITS'(0)} - cam_pos_z), FRAC_BITS'(0)} / (cam_look_z || 1);
+  assign tBx = {({voxel_x + 1'b1, FRAC_BITS'(0)} - cam_pos_x), FRAC_BITS'(0)} / (cam_look_x || 1);
+  assign tBy = {({voxel_y + 1'b1, FRAC_BITS'(0)} - cam_pos_y), FRAC_BITS'(0)} / (cam_look_y || 1);
+  assign tBz = {({voxel_z + 1'b1, FRAC_BITS'(0)} - cam_pos_z), FRAC_BITS'(0)} / (cam_look_z || 1);
 
   always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
