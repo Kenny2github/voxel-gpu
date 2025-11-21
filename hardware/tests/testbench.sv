@@ -305,6 +305,11 @@ module testbench #(
     write_s1(29, {8'(-1), 8'd0});  // cam.look3.y
     write_s1(30, {8'd5, 8'd0});  // cam.look3.z
 
+    write_s1(15, 1);
+    @(posedge irq);
+    write_s1(15, 0);
+    #10;
+
     $writememh("ocram.hex", ocram.mem);
     $system("./ocram_to_bmp.py");
     done = 1;
