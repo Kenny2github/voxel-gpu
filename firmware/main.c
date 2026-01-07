@@ -40,18 +40,18 @@ static void fill_palette_buffer(void) {
 }
 
 void init_firmware() {
-    // GPU->voxel_buffer = (unsigned char *)GRID_START;
-    // GPU->voxel_count = 0;
+    GPU->voxel_buffer = (unsigned char *)GRID_START;
+    GPU->voxel_count = 0;
 
-    // GPU->palette_buffer = (unsigned char *)PALETTE_START;
-    // GPU->palette_length = sizeof(palette_data) / sizeof(palette_data[0]);
+    GPU->palette_buffer = (unsigned char *)PALETTE_START;
+    GPU->palette_length = sizeof(palette_data) / sizeof(palette_data[0]);
 
     PIXEL_BUF_CTRL->buffer = FPGA_PIXEL_BUF_BASE;
     PIXEL_BUF_CTRL->back_buffer = SDRAM_BASE;
-    // GPU->pixel_buffer = SDRAM_BASE;
+    GPU->pixel_buffer = SDRAM_BASE;
 
-    // fill_palette_buffer();
-    // clear_grid();
+    fill_palette_buffer();
+    clear_grid();
 
     config_interrupt(GPU_IRQ, enable_gpu_interrupt, handle_gpu_interrupt);
 }
