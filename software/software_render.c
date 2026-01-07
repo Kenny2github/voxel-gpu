@@ -61,7 +61,7 @@ void viewing_ray(
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) 
-            *(short int*)((int)(PIXEL_BUF_CTRL->back_buffer) + (y << 10) + (x << 1)) = 0x0;
+            *(uint16_t*)((uint32_t)(PIXEL_BUF_CTRL->back_buffer) + (y << 10) + (x << 1)) = 0x0;
 }
 
 void render_software() {
@@ -72,8 +72,7 @@ void render_software() {
             struct Ray camera_ray;
             viewing_ray(x, y, &camera_ray);
             
-            struct Vector add_vec = camera_ray.direction;
-            normalize(&add_vec);
+            struct Vector add_vec = divide_vector(camera_ray.direction, max(camera_ray.direction));
 
             struct Vector curr_pos = add_vector(camera_ray.origin, camera_ray.direction);
             uint8_t palette = 0;
@@ -84,7 +83,7 @@ void render_software() {
             }
 
             if(palette > 0) {
-                *(short int *)((int)(PIXEL_BUF_CTRL->back_buffer) + (y << 10) + (x << 1)) = 0xFF;
+                *(uint16_t*)((uint32_t)(PIXEL_BUF_CTRL->back_buffer) + (y << 10) + (x << 1)) = 0xFF;
             }
             
         }

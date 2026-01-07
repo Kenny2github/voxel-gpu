@@ -60,6 +60,8 @@ void negative_vector(struct Vector* a);
 /** @brief Adds two vectors and returns a new vector */
 struct Vector add_vector(const struct Vector a, const struct Vector b);
 
+struct Vector divide_vector(const struct Vector a, float divisor);
+
 /** @brief Multiplies a vector with a constant and returns a new vector */
 struct Vector multiply_vector(const struct Vector a, float multiplier);
 
