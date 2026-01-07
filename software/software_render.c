@@ -1,7 +1,6 @@
 #include "software/software_render.h"
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
-volatile char *pixel_buffer;
 
 
 #define H_RESOLUTION 256
@@ -10,10 +9,21 @@ volatile char *pixel_buffer;
 static struct Camera camera;
 static float clip_plane_x, clip_plane_y;
 static float focal_length;
+unsigned char* pixel_buffer_software;
+
+void setup_pixel_buffer_software() {
+    pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+}
 
 void wait_for_vsync_software() {
     *(PIXEL_BUF_CTRL->buffer) = 1;
-    while (*((uint32_t*)(PIXEL_BUF_CTRL->buffer) + 3) & 1);
+    while (*(PIXEL_BUF_CTRL->buffer + 3) & 1);
+
+    if(pixel_buffer_software == PIXEL_BUF_CTRL->back_buffer)
+        pixel_buffer_software = PIXEL_BUF_CTRL->buffer;
+    else
+        pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+
 }
 
 void set_camera_default_software(struct Vector pos, struct Vector look, struct Vector up) {
@@ -61,7 +71,7 @@ void viewing_ray(
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(PIXEL_BUF_CTRL->back_buffer) + (y << 10) + (x << 1)) = 0x0;
+            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
 }
 
 void render_software() {
@@ -83,7 +93,7 @@ void render_software() {
             }
 
             if(palette > 0) {
-                *(uint16_t*)((uint32_t)(PIXEL_BUF_CTRL->back_buffer) + (y << 10) + (x << 1)) = 0xFF;
+                *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0xFF;
             }
             
         }

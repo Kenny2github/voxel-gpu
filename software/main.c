@@ -21,6 +21,7 @@ int main(void) {
     // Setting up interrupts
     config_inputs();
     init_firmware();
+    setup_pixel_buffer_software();
     config_interrupts();
     
     set_camera_settings(90.0, 1);
