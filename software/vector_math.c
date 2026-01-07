@@ -148,6 +148,14 @@ struct Vector_16fixed convert_vector_format(const struct Vector *a) {
     return new_vector;
 }
 
+float max(const struct Vector a) {
+    return a.x > a.y && a.x > a.z ? a.x : a.y > a.z ? a.y : a.z;
+}
+
+float min(const struct Vector a) {
+    return a.x < a.y && a.x < a.z ? a.x : a.y < a.z ? a.y : a.z;
+}
+
 int16_t convert_float_to_fixed(float a) {
     return (int16_t)(a * (1 << FRAC_BITS));
 }

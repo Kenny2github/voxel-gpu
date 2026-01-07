@@ -2,6 +2,7 @@
 #include "hardware/hardware.h"
 #include "firmware/interrupts.h"
 #include "firmware/firmware.h"
+#include "software/software_render.h"
 #include <stdlib.h>
 
 static struct Camera *camera = NULL;
@@ -156,7 +157,10 @@ void mouse_input_handler() {
     }
 
     // TODO: Call firmware API for camera update
-    set_camera(&camera);
+    set_camera(camera);
+    set_camera_software(camera);
+
+
     // volatile int32_t* test_x_look = (volatile int32_t*)(0xC8000000);
     // volatile int32_t* test_y_look = (volatile int32_t*)(0xC8000010);
     // volatile int32_t* test_z_look = (volatile int32_t*)(0xC8000020);
@@ -278,7 +282,8 @@ void keyboard_input_handler() {
 
     }
 
-    set_camera(&camera);
+    set_camera(camera);
+    set_camera_software(camera);
 
     // TODO: Call firmware API for camera update
     // volatile uint32_t* test_x_pos = (volatile uint32_t*)(0xC8000090);
