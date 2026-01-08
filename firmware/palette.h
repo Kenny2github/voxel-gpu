@@ -3,9 +3,6 @@
 
 #include <stdint.h>
 
-const uint16_t palette_data[] = {
-    0x0, // BLANK
-    0xFFFF, // WHITE
-};
+extern const uint16_t palette_data[2];
 
 #endif // PALETTE_H
