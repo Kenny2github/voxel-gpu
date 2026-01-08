@@ -1,7 +1,7 @@
 #include "software/software_render.h"
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
-
+#include "firmware/palette.h"
 
 #define H_RESOLUTION 256
 #define V_RESOLUTION 192
@@ -16,13 +16,10 @@ void setup_pixel_buffer_software() {
 }
 
 void wait_for_vsync_software() {
-    *(PIXEL_BUF_CTRL->buffer) = 1;
-    while (*(PIXEL_BUF_CTRL->buffer + 3) & 1);
+    *((int*)PIXEL_BUF_CTRL) = 1;
+    while ((*((int*)PIXEL_BUF_CTRL + 3) & 0x1) != 0);
 
-    if(pixel_buffer_software == PIXEL_BUF_CTRL->back_buffer)
-        pixel_buffer_software = PIXEL_BUF_CTRL->buffer;
-    else
-        pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+    pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
 
 }
 
@@ -71,7 +68,11 @@ void viewing_ray(
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
+            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0xFFFF;
+}
+
+static inline float my_fmaxf(float a, float b) {
+    return (a > b) ? a : b;
 }
 
 void render_software() {
@@ -82,18 +83,22 @@ void render_software() {
             struct Ray camera_ray;
             viewing_ray(x, y, &camera_ray);
             
-            struct Vector add_vec = divide_vector(camera_ray.direction, max(camera_ray.direction));
+            struct Vector add_vec = divide_vector(camera_ray.direction, my_fmaxf(max_vec(camera_ray.direction), fabsf(min_vec(camera_ray.direction))));
 
             struct Vector curr_pos = add_vector(camera_ray.origin, camera_ray.direction);
             uint8_t palette = 0;
-            while(max(curr_pos) < SIDE_LEN && min(curr_pos) >= 0 && palette == 0) {
-                int xi = (int)(curr_pos.x), yi = (int)(curr_pos.y), zi = (int)(curr_pos.z);
+            int step = 0;
+            while(max_vec(curr_pos) < SIDE_LEN && min_vec(curr_pos) >= 0 && palette == 0 && step++ < 5) {
+                int xi = (int)(curr_pos.x), yi = (int)(curr_pos.y+0.5f), zi = (int)(curr_pos.z);
                 curr_pos = add_vector(curr_pos, add_vec);
-                palette = *((uint8_t*)GRID_START + xi + zi*SIDE_LEN + yi*SIDE_LEN_SQR);
+                palette = *((uint8_t*)GRID_START + xi + zi*SIDE_LEN + yi*SIDE_LEN*SIDE_LEN);
             }
 
             if(palette > 0) {
-                *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0xFF;
+                *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = palette_data[palette];
+            } else {
+                *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
+
             }
             
         }

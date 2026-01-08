@@ -71,7 +71,9 @@ struct Vector transform_vector(const struct AffineTransform3D *transform, const 
 /** @brief Converts Vector to Vector_16fixed where Vector_16fixed uses an 8-bit integer, 8-bit floating fixed-point data */
 struct Vector_16fixed convert_vector_format(const struct Vector* a);
 
-float max(const struct Vector a);
+float max_vec(const struct Vector a);
+
+float min_vec(const struct Vector a);
 
 int16_t convert_float_to_fixed(float a);
 
