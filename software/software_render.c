@@ -75,9 +75,55 @@ static inline float my_fmaxf(float a, float b) {
     return (a > b) ? a : b;
 }
 
+static inline float my_fminf(float a, float b) {
+    return (a < b) ? a : b;
+}
+
+float check_box_intersection(const uint8_t xp, const uint8_t yp, const uint8_t zp, struct Ray* ray) {
+
+    // Parallel checks for each axis
+    if (fabsf(ray->direction.x) < 1e-8f) {
+        if (ray->origin.x < xp || ray->origin.x > xp + 1) return -1;
+    }
+    if (fabsf(ray->direction.y) < 1e-8f) {
+        if (ray->origin.y < yp || ray->origin.y > yp + 1) return -1;
+    }
+    if (fabsf(ray->direction.z) < 1e-8f) {
+        if (ray->origin.z < zp || ray->origin.z > zp + 1) return -1;
+    }
+
+    struct Vector low;
+    low.x = (xp - ray->origin.x) / ray->direction.x;
+    low.y = (yp - ray->origin.y) / -ray->direction.y;
+    low.z = (zp - ray->origin.z) / ray->direction.z;
+
+    struct Vector high;
+    high.x = (xp + 1 - ray->origin.x) / ray->direction.x;
+    high.y = (yp + 1 - ray->origin.y) / -ray->direction.y;
+    high.z = (zp + 1 - ray->origin.z) / ray->direction.z;
+
+    struct Vector close, far;
+    close.x = my_fminf(low.x, high.x);
+    close.y = my_fminf(low.y, high.y);
+    close.z = my_fminf(low.z, high.z);
+
+    far.x = my_fmaxf(low.x, high.x);
+    far.y = my_fmaxf(low.y, high.y);
+    far.z = my_fmaxf(low.z, high.z);
+
+    float min_t = max_vec(close);
+    float max_t = min_vec(far);
+
+    if (max_t < 0) return -1;
+    if (min_t > max_t) return -1;
+    return min_t > 0 ? min_t : max_t;
+
+}
+
 void render_software() {
 
-    // Ray-casting based implementation 
+    // Ray-marching based implementation 
+    /*
     for(int x = 0; x < H_RESOLUTION; x++) {
         for(int y = 0; y < V_RESOLUTION; y++) {
             struct Ray camera_ray;
@@ -103,4 +149,43 @@ void render_software() {
             
         }
     }
+    */
+
+    // Ray-casting based implementation
+    uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
+    struct Ray ray_tracker[H_RESOLUTION*V_RESOLUTION];
+    
+    for(int x = 0; x < H_RESOLUTION; x++) 
+        for(int y = 0; y < V_RESOLUTION; y++) {
+            viewing_ray(x, y, &(ray_tracker[x*V_RESOLUTION + y]));
+            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
+        }
+
+    for(int x = 0; x < SIDE_LEN; x++) {
+        for(int z = 0; z < SIDE_LEN; z++) {
+            for(int y = 0; y < SIDE_LEN; y++) {
+                uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
+                if(palette == 0)
+                    continue;
+                
+                for(int xs = 0; xs < H_RESOLUTION; xs++) {
+                    for(int ys = 0; ys < V_RESOLUTION; ys++) {
+                        float t = check_box_intersection(x, y, z, &(ray_tracker[xs*V_RESOLUTION + ys]));
+                        if(t == -1)
+                            continue;
+
+                        if(t_tracker[xs*V_RESOLUTION + ys] != 0 && t_tracker[xs*V_RESOLUTION + ys] < t)
+                            continue;
+
+                        t_tracker[xs*V_RESOLUTION + ys] = t;
+
+                        *(uint16_t*)((uint32_t)(pixel_buffer_software) + (ys << 10) + (xs << 1)) = palette_data[palette];
+                        
+                        
+                    }
+                }
+            }
+        }
+    }
+ 
 }
