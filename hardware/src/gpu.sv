@@ -1,12 +1,12 @@
 package gpu;
 
-  typedef struct {
+  typedef struct packed {
     logic signed [31:0] x;
     logic signed [31:0] y;
     logic signed [31:0] z;
   } vec3;
 
-  typedef struct {
+  typedef struct packed {
     vec3 pos;
     vec3 look0;
     vec3 look1;
