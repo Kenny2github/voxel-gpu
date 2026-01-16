@@ -19,11 +19,12 @@ The complexity of the project will likely come from multiple sources:
 	- IDE support to pass `--query-driver=**/arm-altera-eabi-gcc` as an argument to `clangd`
 
 ## Build
-1. Open `hardware/DE1_SoC_Computer.qpf` in Quartus and compile.
+1. `~/intelFPGA_lite/21.1/quartus/bin/quartus hardware/DE1_SoC_Computer.qpf` and compile.
 1. Simultaneously, `make`
 
 ## Run
-1. Open the Monitor Program and use it to open `voxel_gpu.amp`
+1. Connect the DE1-SoC programming cable.
+1. Open the Monitor Program (`~/intelFPGA_lite/21.1/University_Program/Monitor_Program/bin/intel-fpga-monitor-program`) and use it to open `voxel_gpu.amp`
 1. When prompted to "download the system", do so.
 1. Load (do not compile, you already did that) the program.
 1. Click Continue (or otherwise use the debugger).
