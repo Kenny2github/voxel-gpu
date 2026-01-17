@@ -1,6 +1,7 @@
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
 #include "firmware/interrupts.h"
+#include "firmware/fps.h"
 #include "firmware/palette.h"
 
 static volatile int render_wait = 0;
@@ -28,6 +29,7 @@ static void enable_gpu_interrupt(void) {
 
 static void handle_gpu_interrupt(void) {
     render_wait = 0;
+    ++frames;
 }
 
 static void fill_palette_buffer(void) {
@@ -54,4 +56,5 @@ void init_firmware() {
     // clear_grid();
 
     config_interrupt(GPU_IRQ, enable_gpu_interrupt, handle_gpu_interrupt);
+    enable_timer();
 }
