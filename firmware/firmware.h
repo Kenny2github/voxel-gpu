@@ -9,8 +9,7 @@
 #define PALETTE_START 0xC2FFFF00 // enough for 128 colors (1B palette -> 2B color)
 #define GRID_START 0xC3000000
 
-#define SIDE_LEN 256
-#define SIDE_LEN_SQR 65536
+#define SIDE_LEN 64 // 256
 #define ASPECT_RATIO (4.0f/3.0f)
 
 /* main */
@@ -26,7 +25,7 @@ void init_firmware();
 void render();
 
 /**
- * call every time we 
+ * call every time we
  */
 void wait_for_vsync();
 

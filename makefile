@@ -26,7 +26,7 @@ ARCHLDFLAGS	:= --defsym arm_program_mem=0x40 --defsym arm_available_mem_size=0x3
 ARCHLDSCRIPT	:= -T"$(MONITOR)/build/altera-socfpga-hosted-with-vectors.ld"
 ASFLAGS		:= $(ARCHASFLAGS)
 CCFLAGS		:= -Wall -c $(USERCCFLAGS) $(ARCHCCFLAGS) -I.
-LDFLAGS		:= $(patsubst %, -Wl$(DEFINE_COMMA)%, $(ARCHLDFLAGS)) $(ARCHLDSCRIPT)
+LDFLAGS		:= $(patsubst %, -Wl$(DEFINE_COMMA)%, $(ARCHLDFLAGS)) $(ARCHLDSCRIPT) -lm
 OCFLAGS		:= -O srec
 
 # Files
