@@ -9,6 +9,7 @@ static volatile int render_wait = 0;
 void wait_for_vsync() {
     *((int*)PIXEL_BUF_CTRL) = 1;
     while (*((int*)PIXEL_BUF_CTRL + 3) & 1);
+    ++frames;
 
     GPU->pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
 }
@@ -29,7 +30,6 @@ static void enable_gpu_interrupt(void) {
 
 static void handle_gpu_interrupt(void) {
     render_wait = 0;
-    ++frames;
 }
 
 static void fill_palette_buffer(void) {
@@ -43,10 +43,10 @@ static void fill_palette_buffer(void) {
 
 void init_firmware() {
 
-    
+
     fill_palette_buffer();
     clear_grid();
-    
+
     GPU->voxel_buffer = (unsigned char *)GRID_START;
     GPU->voxel_count = 0;
 
