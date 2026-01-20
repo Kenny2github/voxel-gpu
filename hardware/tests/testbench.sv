@@ -23,7 +23,7 @@ module mock_sdram #(
     last_chipselect <= chipselect;
     if (reset) $readmemh("sdram.hex", mem);
     else begin
-      if (chipselect) begin
+      if (chipselect && read_n) begin
         unique case (~writebyteenable_n)
           2'b00: begin
           end

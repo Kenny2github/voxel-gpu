@@ -72,8 +72,8 @@ module gpu_controller #(
 
   genvar r, c;
   generate
-    for (r = 0; r < MY_ROWS; ++r) begin
-      for (c = 0; c < MY_COLS; ++c) begin
+    for (r = 0; r < MY_ROWS; ++r) begin: rows
+      for (c = 0; c < MY_COLS; ++c) begin: cols
         pixel_shader #(
             .ROW(r),
             .COL(c),
@@ -119,8 +119,8 @@ module gpu_controller #(
             )),
             .*
         );
-      end
-    end
+      end: cols
+    end: rows
   endgenerate
 
   always_ff @(posedge clock, posedge reset) begin
@@ -266,13 +266,13 @@ module gpu_controller #(
         m1_read = 1'b1;
       end
       RASTERIZE: begin
-        do_rasterize = voxel_num < voxel_count;
+        do_rasterize = voxel_num <= voxel_count;
       end
       FETCH_ENTRY: begin
         m1_read = 1'b1;
       end
       SHADE: begin
-        do_shade = entry_num < palette_length;
+        do_shade = entry_num <= palette_length;
       end
       WRITE: begin
         m1_write = 1'b1;
