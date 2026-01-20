@@ -4,6 +4,7 @@
 #include "firmware/firmware.h"
 #include "software/software_render.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 static struct Camera *camera = NULL;
 
@@ -215,24 +216,30 @@ void keyboard_input_handler() {
     switch(data[2]) {
         case SPACE_KEY:
             applicable_vector = camera->up;
+            printf("Space was pressed\n");
             break;
         case SHIFT_KEY:
             applicable_vector = camera->up;
             negative_vector(&applicable_vector);
+            printf("Shift was pressed\n");
             break;
         case A_KEY:
             applicable_vector = camera->right;
             negative_vector(&applicable_vector);
+            printf("A was pressed\n");
             break;
         case D_KEY:
             applicable_vector = camera->right;
+            printf("D was pressed\n");
             break;
         case W_KEY:
             applicable_vector = camera->look;
             negative_vector(&applicable_vector);
+            printf("W was pressed\n");
             break;
         case S_KEY:
             applicable_vector = camera->look;
+            printf("S was pressed\n");
         default:
             break;
     }

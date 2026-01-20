@@ -165,6 +165,6 @@ float min_vec(const struct Vector a) {
     return a.x < a.y && a.x < a.z ? a.x : a.y < a.z ? a.y : a.z;
 }
 
-int16_t convert_float_to_fixed(float a) {
+inline int16_t convert_float_to_fixed(float a) {
     return (int16_t)(a * (1 << FRAC_BITS));
 }
