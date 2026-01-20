@@ -26,7 +26,7 @@ void init_firmware();
 void render();
 
 /**
- * call every time we 
+ * call every time we
  */
 void wait_for_vsync();
 
