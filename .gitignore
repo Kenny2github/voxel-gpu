@@ -9,3 +9,4 @@ amp.mk
 _hdl_checker/
 .cache
 compile_commands.json
+*.wlf
