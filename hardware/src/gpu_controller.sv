@@ -266,13 +266,13 @@ module gpu_controller #(
         m1_read = 1'b1;
       end
       RASTERIZE: begin
-        do_rasterize = voxel_num < voxel_count;
+        do_rasterize = voxel_num <= voxel_count;
       end
       FETCH_ENTRY: begin
         m1_read = 1'b1;
       end
       SHADE: begin
-        do_shade = entry_num < palette_length;
+        do_shade = entry_num <= palette_length;
       end
       WRITE: begin
         m1_write = 1'b1;
