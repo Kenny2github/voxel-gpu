@@ -1,7 +1,10 @@
+#include <stdio.h>
 #include "interrupts.h"
 #include "hardware/hardware.h"
 
 int frames;
+unsigned int fw_time;
+double gpu_latency;
 
 static const uint8_t num_to_hex[10] = {
 	0x3F, // 0
@@ -33,11 +36,15 @@ static void handle_timer_interrupt(void) {
 	frames_display |= num_to_hex[(frames / 100) % 10] << 16;
 	frames_display |= num_to_hex[(frames / 1000) % 10] << 24;
 	memset(HEX3_HEX0, frames_display, 4);
+	printf("GPU latency: %e sec\n", gpu_latency);
 	frames = 0;
+	++fw_time;
 }
 
 void enable_timer(void) {
 	frames = 0;
+	fw_time = 0;
+	gpu_latency = 0;
 	config_interrupt(PRIVATE_TIMER_IRQ, NULL, &handle_timer_interrupt);
 }
 
@@ -47,3 +54,7 @@ void disable_timer(void) {
 	*(timer_ptr + 2) = 0b000;
 }
 
+uint32_t cur_time(void) {
+	volatile int* timer_ptr = (int*)MPCORE_PRIV_TIMER;
+	return *(timer_ptr + 1);
+}

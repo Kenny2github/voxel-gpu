@@ -1,7 +1,7 @@
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
 #include "firmware/interrupts.h"
-#include "firmware/fps.h"
+#include "firmware/timing.h"
 #include "firmware/palette.h"
 
 static volatile int render_wait = 0;
@@ -17,7 +17,9 @@ void wait_for_vsync() {
 void render() {
     render_wait = 1;
     GPU->do_render = 1;
+    double start = cur_time() / 200E6 * fw_time;
     while (render_wait);
+    gpu_latency = cur_time() / 200E6 + fw_time - start;
 
     /* GPU interrupt handled, swap buffers */
     wait_for_vsync();

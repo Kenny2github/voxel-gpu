@@ -90,7 +90,7 @@ struct movement_key_status movement_keys_bool = {
 
 void mouse_input_handler() {
     
-    volatile int * PS2_ptr = (int *)PS2;
+    volatile int * PS2_ptr = (int *)PS2_DUAL;
     int PS2_data, RVALID;
 
     int numOfBytes = 0;
@@ -185,7 +185,7 @@ void mouse_input_handler() {
 }
 
 void keyboard_input_handler() {
-    volatile int * PS2_ptr = (int *)PS2_DUAL;
+    volatile int * PS2_ptr = (int *)PS2;
     int PS2_data;
 
     uint8_t done = 0;
@@ -234,11 +234,11 @@ void keyboard_input_handler() {
             break;
         case W_KEY:
             applicable_vector = camera->look;
-            negative_vector(&applicable_vector);
             printf("W was pressed\n");
             break;
         case S_KEY:
             applicable_vector = camera->look;
+            negative_vector(&applicable_vector);
             printf("S was pressed\n");
         default:
             break;
