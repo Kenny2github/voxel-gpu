@@ -10,6 +10,7 @@
 #define GRID_START 0xC3000000
 
 #define SIDE_LEN 64 // 256
+#define SIDE_LEN_SQR 65536
 #define ASPECT_RATIO (4.0f/3.0f)
 
 /* main */

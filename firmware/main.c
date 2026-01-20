@@ -1,6 +1,7 @@
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
 #include "firmware/interrupts.h"
+#include "firmware/timing.h"
 #include "firmware/palette.h"
 
 static volatile int render_wait = 0;
@@ -8,6 +9,7 @@ static volatile int render_wait = 0;
 void wait_for_vsync() {
     *((int*)PIXEL_BUF_CTRL) = 1;
     while (*((int*)PIXEL_BUF_CTRL + 3) & 1);
+    ++frames;
 
     GPU->pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
 }
@@ -15,7 +17,9 @@ void wait_for_vsync() {
 void render() {
     render_wait = 1;
     GPU->do_render = 1;
+    double start = cur_time() / 200E6 * fw_time;
     while (render_wait);
+    gpu_latency = cur_time() / 200E6 + fw_time - start;
 
     /* GPU interrupt handled, swap buffers */
     wait_for_vsync();
@@ -41,10 +45,10 @@ static void fill_palette_buffer(void) {
 
 void init_firmware() {
 
-    
+
     fill_palette_buffer();
     clear_grid();
-    
+
     GPU->voxel_buffer = (unsigned char *)GRID_START;
     GPU->voxel_count = 0;
 
@@ -57,4 +61,5 @@ void init_firmware() {
 
 
     config_interrupt(GPU_IRQ, enable_gpu_interrupt, handle_gpu_interrupt);
+    enable_timer();
 }
