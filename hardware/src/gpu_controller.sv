@@ -72,8 +72,8 @@ module gpu_controller #(
 
   genvar r, c;
   generate
-    for (r = 0; r < MY_ROWS; ++r) begin
-      for (c = 0; c < MY_COLS; ++c) begin
+    for (r = 0; r < MY_ROWS; ++r) begin: rows
+      for (c = 0; c < MY_COLS; ++c) begin: cols
         pixel_shader #(
             .ROW(r),
             .COL(c),
@@ -119,8 +119,8 @@ module gpu_controller #(
             )),
             .*
         );
-      end
-    end
+      end: cols
+    end: rows
   endgenerate
 
   always_ff @(posedge clock, posedge reset) begin
