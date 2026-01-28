@@ -137,7 +137,7 @@ void render_software() {
             while(max_vec(curr_pos) < SIDE_LEN && min_vec(curr_pos) >= 0 && palette == 0 && step++ < 5) {
                 int xi = (int)(curr_pos.x), yi = (int)(curr_pos.y+0.5f), zi = (int)(curr_pos.z);
                 curr_pos = add_vector(curr_pos, add_vec);
-                palette = *((uint8_t*)GRID_START + xi + zi*SIDE_LEN + yi*SIDE_LEN*SIDE_LEN);
+                palette = *((uint8_t*)VOXEL_SPACE_START + xi + zi*SIDE_LEN + yi*SIDE_LEN*SIDE_LEN);
             }
 
             if(palette > 0) {
@@ -164,7 +164,7 @@ void render_software() {
     for(int x = 0; x < SIDE_LEN; x++) {
         for(int z = 0; z < SIDE_LEN; z++) {
             for(int y = 0; y < SIDE_LEN; y++) {
-                uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
+                uint8_t palette = *((uint8_t*)VOXEL_SPACE_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
                 if(palette == 0)
                     continue;
                 
