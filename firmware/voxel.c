@@ -8,16 +8,16 @@ void set_voxel(v_pos pos, uint8_t palette) {
     // *((uint8_t *)VOXEL_SPACE_START + pos.x + pos.z * SIDE_LEN + pos.y * SIDE_LEN * SIDE_LEN) = palette;
     // ++GPU->voxel_count;
 
-    /* sparse implementation */
-    memcpy(VOXEL_SPACE_START + GPU->voxel_count * 4, &pos, 3);
-    memset(VOXEL_SPACE_START + GPU->voxel_count * 4 + 3, palette, 1);
+    /* sparse implementation : 2bytes per axis, 1byte for palette, 1byte for padding/spare */
+    memcpy(VOXEL_SPACE_START + GPU->voxel_count * 8, &pos, 6);
+    memset(VOXEL_SPACE_START + GPU->voxel_count * 8 + 6, palette, 1);
     ++GPU->voxel_count;
 }
 
 void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     v_pos start;
     v_pos end;
-    uint8_t dist_x, dist_y, dist_z;
+    uint16_t dist_x, dist_y, dist_z;
 
     if (corner0.x < corner1.x) {
         start.x = corner0.x;
@@ -61,6 +61,11 @@ void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
     // GPU->voxel_count += dist_x * dist_y * dist_z;
 
     /* sparse implementation */
+    if (dist_x * dist_y * dist_z + GPU->voxel_count > (VOXEL_SPACE_SIZE / 8)) {
+        // exceed max voxel count
+        return;
+    }
+    
     for (uint8_t x = start.x; x <= end.x; ++x) {
         for (uint8_t y = start.y; y <= end.y; ++y) {
             for (uint8_t z = start.z; z <= end.z; ++z) {
