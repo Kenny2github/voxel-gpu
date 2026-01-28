@@ -6,11 +6,11 @@
 
 /* defs */
 
-#define PALETTE_START 0xC2FFFF00 // enough for 128 colors (1B palette -> 2B color)
-#define VOXEL_SPACE_START 0xC3000000
+#define PALETTE_START 0xC0FFFF00 // enough for 128 colors (1B palette -> 2B color)
+#define VOXEL_SPACE_START 0xC1000000 // 48MB for voxel space
 
-#define SIDE_LEN 256
-#define VOXEL_SPACE_SIZE 16777216
+#define SIDE_LEN 65536
+#define VOXEL_SPACE_SIZE 0x3000000
 #define ASPECT_RATIO (4.0f/3.0f)
 
 /* main */
@@ -34,9 +34,9 @@ void wait_for_vsync();
 /* voxels */
 
 typedef struct v_pos {
-    uint8_t x;
-    uint8_t y;
-    uint8_t z;
+    uint16_t x;
+    uint16_t y;
+    uint16_t z;
 } v_pos;
 
 /**
