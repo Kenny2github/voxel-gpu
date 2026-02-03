@@ -19,7 +19,7 @@ void set_camera_settings_software(float _fov_degrees, float _focal_length);
 void viewing_ray(
     int i,
     int j,
-    struct Ray* ray
+    struct Vector* ray
 );
 
 void wait_for_vsync_software();

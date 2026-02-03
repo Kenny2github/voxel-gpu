@@ -69,4 +69,6 @@ void keyboard_input_handler();
 
 float convert_mouse_val_to_rad(int x, float ratio); // Ratio is in (pixels / degrees)
 
+void update_camera();
+
 #endif
