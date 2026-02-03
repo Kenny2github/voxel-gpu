@@ -5,6 +5,7 @@
 #include "software/external.h"
 #include "firmware/firmware.h"
 #include "software/software_render.h"
+#include "model-headers/monkey.h"
 int main(void) {
     // printf(
     //     "%p: pixel_buffer1 = %p\n", &((*GPU).pixel_buffer1), GPU->pixel_buffer1
@@ -23,7 +24,7 @@ int main(void) {
     init_firmware();
     setup_pixel_buffer_software();
     config_interrupts();
-    
+
     set_camera_settings(90.0, 1);
     set_camera_settings_software(90.0, 1);
 
@@ -39,7 +40,7 @@ int main(void) {
     v_pos firstPos = {0, 0, 0};
     v_pos endPos = {SIDE_LEN-1, SIDE_LEN-1, SIDE_LEN-1};
     // fill_voxel_range(firstPos, endPos, 0x0);
-    set_voxel(startPos, 0x1);
+    load_monkey();
     clear_screen_software();
     wait_for_vsync_software(); // wait_for_vsync();
     while(1) {
