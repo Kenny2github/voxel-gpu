@@ -154,7 +154,8 @@ void render_software() {
     // Ray-casting based implementation
     uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
     struct Ray ray_tracker[H_RESOLUTION*V_RESOLUTION];
-    
+
+    // TODO: Replace with only 4 rays 
     for(int x = 0; x < H_RESOLUTION; x++) 
         for(int y = 0; y < V_RESOLUTION; y++) {
             viewing_ray(x, y, &(ray_tracker[x*V_RESOLUTION + y]));
