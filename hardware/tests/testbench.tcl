@@ -1,13 +1,11 @@
 quit -sim
 vlib work
-vlog ../src/*.sv *.sv
+vlog ../src/*.sv $1
 vopt +acc testbench -o tb
 vsim tb
 
 log *
 add wave -recursive *
 
-when -fast {/testbench/done=1} {
-	stop
-}
+# rely on testbench to $stop
 run -all
