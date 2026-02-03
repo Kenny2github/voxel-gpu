@@ -120,6 +120,14 @@ struct Vector add_vector(const struct Vector a, const struct Vector b) {
     return r;
 }
 
+struct Vector sub_vector(const struct Vector a, const struct Vector b) {
+    struct Vector r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    return r;
+}
+
 
 struct Vector divide_vector(const struct Vector a, float divisor) {
     struct Vector r;

@@ -60,6 +60,8 @@ void negative_vector(struct Vector* a);
 /** @brief Adds two vectors and returns a new vector */
 struct Vector add_vector(const struct Vector a, const struct Vector b);
 
+struct Vector sub_vector(const struct Vector a, const struct Vector b);
+
 struct Vector divide_vector(const struct Vector a, float divisor);
 
 /** @brief Multiplies a vector with a constant and returns a new vector */
@@ -76,6 +78,5 @@ float max_vec(const struct Vector a);
 float min_vec(const struct Vector a);
 
 int16_t convert_float_to_fixed(float a);
-
 
 #endif

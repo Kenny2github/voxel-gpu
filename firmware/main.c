@@ -16,6 +16,10 @@ void wait_for_vsync() {
 
 void render() {
     render_wait = 1;
+
+    // Before render, update GPU camera settings
+    update_camera();
+
     GPU->do_render = 1;
     double start = cur_time() / 200E6 * fw_time;
     while (render_wait);

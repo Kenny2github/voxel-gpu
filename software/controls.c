@@ -158,8 +158,6 @@ void mouse_input_handler() {
     }
 
     // TODO: Call firmware API for camera update
-    set_camera(camera);
-    set_camera_software(camera);
 
 
     // volatile int32_t* test_x_look = (volatile int32_t*)(0xC8000000);
@@ -289,8 +287,6 @@ void keyboard_input_handler() {
 
     }
 
-    set_camera(camera);
-    set_camera_software(camera);
 
     // TODO: Call firmware API for camera update
     // volatile uint32_t* test_x_pos = (volatile uint32_t*)(0xC8000090);
@@ -303,4 +299,9 @@ void keyboard_input_handler() {
 
 float convert_mouse_val_to_rad(int x, float ratio) {
     return ratio * x * (M_PI / 180.0);
+}
+
+void update_camera() {
+    set_camera(camera);
+    set_camera_software(camera);
 }
