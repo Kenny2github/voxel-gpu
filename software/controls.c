@@ -9,14 +9,14 @@
 static struct Camera *camera = NULL;
 
 void config_inputs(void) {
-    config_interrupt(MOUSE_IRQ_ID, config_mouse, mouse_input_handler);
-    config_interrupt(KEYBOARD_IRQ_ID, config_keyboard, keyboard_input_handler);
+    config_interrupt(PS2_DUAL_IRQ, config_mouse, mouse_input_handler);
+    config_interrupt(PS2_IRQ, config_keyboard, keyboard_input_handler);
 
 
 }
 
 void config_mouse(void) {
-    PS2->re = 0x1;
+    PS2_DUAL->re = 0x1;
 
     camera = malloc(sizeof(struct Camera));
     *camera = (struct Camera){
@@ -55,8 +55,7 @@ void config_mouse(void) {
 }
 
 void config_keyboard(void) {
-    volatile int* ptr = (volatile int*)PS2_DUAL;
-    *(ptr + 0x1) = 0x1;
+    PS2->re = 0x1;
 
     // For debugging using screen buffer lmfao
     // volatile uint32_t* test_x_pos = (volatile uint32_t*)(0xC8000090);
@@ -89,35 +88,32 @@ struct movement_key_status movement_keys_bool = {
 
 void mouse_input_handler() {
 
-    volatile int * PS2_ptr = (int *)PS2_DUAL;
-    int PS2_data, RVALID;
+    struct ps2_data PS2_data;
 
     int numOfBytes = 0;
     unsigned char mousePackets[3] = {0, 0, 0};
 
     /*** Reading mouse data */
     while (numOfBytes < 3) {
-        PS2_data = *(PS2_ptr);
-        RVALID = (PS2_data & 0x8000);
+        PS2_data = PS2_DUAL->data;
+        if(!PS2_data.rvalid)
+            break;
 
-        if (RVALID) {
+        mousePackets[0] = mousePackets[1];
+        mousePackets[1] = mousePackets[2];
+        mousePackets[2] = PS2_data.data;
 
-            mousePackets[0] = mousePackets[1];
-            mousePackets[1] = mousePackets[2];
-            mousePackets[2] = PS2_data & 0xFF;
+        if(mouse_status == REPORTING)
+            numOfBytes++;
 
-            if(mouse_status == REPORTING)
-                numOfBytes++;
+        if(mouse_status == DEFAULT && mousePackets[1] == (unsigned char)0xAA && mousePackets[2] == (unsigned char)0x00) {
+            mouse_status = WAIT_ACKNOWLEDGE;
+            // *(PS2_DUAL) = 0xF4;
+        }
 
-            if(mouse_status == DEFAULT && mousePackets[1] == (unsigned char)0xAA && mousePackets[2] == (unsigned char)0x00) {
-                mouse_status = WAIT_ACKNOWLEDGE;
-                *(PS2_ptr) = 0xF4;
-            }
-
-            if(mouse_status == WAIT_ACKNOWLEDGE && mousePackets[2] == 0xFA) {
-                mouse_status = REPORTING;
-                continue;
-            }
+        if(mouse_status == WAIT_ACKNOWLEDGE && mousePackets[2] == 0xFA) {
+            mouse_status = REPORTING;
+            continue;
         }
 
     }

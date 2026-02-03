@@ -15,7 +15,7 @@ unsigned char* pixel_buffer_software;
 typedef struct { int x, y; } Point;
 
 void setup_pixel_buffer_software() {
-    pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+    pixel_buffer_software = PIXEL_BUF_CTRL->buffer;
 }
 
 void wait_for_vsync_software() {
@@ -70,7 +70,7 @@ void viewing_ray(
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0xFFFF;
+            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
 }
 
 static inline float my_fmaxf(float a, float b) {
@@ -278,10 +278,6 @@ void render_software() {
     struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
     struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
 
-    for(int x = 0; x < H_RESOLUTION; x++) 
-        for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
-        
     for(int x = 0; x < SIDE_LEN; x++) {
         for(int z = 0; z < SIDE_LEN; z++) {
             for(int y = 0; y < SIDE_LEN; y++) {
