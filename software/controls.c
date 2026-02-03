@@ -11,13 +11,12 @@ static struct Camera *camera = NULL;
 void config_inputs(void) {
     config_interrupt(MOUSE_IRQ_ID, config_mouse, mouse_input_handler);
     config_interrupt(KEYBOARD_IRQ_ID, config_keyboard, keyboard_input_handler);
-    
+
 
 }
 
 void config_mouse(void) {
-    volatile int* ptr = (volatile int*)PS2;
-    *(ptr + 0x1) = 0x1;
+    PS2->re = 0x1;
 
     camera = malloc(sizeof(struct Camera));
     *camera = (struct Camera){
@@ -89,12 +88,12 @@ struct movement_key_status movement_keys_bool = {
 };
 
 void mouse_input_handler() {
-    
+
     volatile int * PS2_ptr = (int *)PS2_DUAL;
     int PS2_data, RVALID;
 
     int numOfBytes = 0;
-    unsigned char mousePackets[3] = {0, 0, 0};  
+    unsigned char mousePackets[3] = {0, 0, 0};
 
     /*** Reading mouse data */
     while (numOfBytes < 3) {
@@ -113,7 +112,7 @@ void mouse_input_handler() {
             if(mouse_status == DEFAULT && mousePackets[1] == (unsigned char)0xAA && mousePackets[2] == (unsigned char)0x00) {
                 mouse_status = WAIT_ACKNOWLEDGE;
                 *(PS2_ptr) = 0xF4;
-            } 
+            }
 
             if(mouse_status == WAIT_ACKNOWLEDGE && mousePackets[2] == 0xFA) {
                 mouse_status = REPORTING;
@@ -143,7 +142,7 @@ void mouse_input_handler() {
         cross_product(&(camera->look), &(camera->up), &(camera->right));
         normalize(&(camera->right));
     }
-    
+
     // Vertical motion should rotate lookAt vector based on right-vector
     float angle_y = convert_mouse_val_to_rad(signedPos.y, SENSITIVITY_VERTICAL);
     // volatile int32_t* test_y_angle = (volatile int32_t*)(0xC80000D0);
@@ -182,18 +181,18 @@ void mouse_input_handler() {
 }
 
 void keyboard_input_handler() {
-    volatile int * PS2_ptr = (int *)PS2;
-    int PS2_data;
+    struct ps2_data PS2_data;
 
     uint8_t done = 0;
     unsigned char data[3];
 
     /*** Reading key press data */
     while(!done) {
-        PS2_data = *(PS2_ptr);
+        PS2_data = PS2->data;
+        if (!PS2_data.rvalid) break;
         data[0] = data[1];
         data[1] = data[2];
-        data[2] = PS2_data & 0xFF;
+        data[2] = PS2_data.data;
 
         if(keyboard_status == REPORTING && data[2] != 0xE0 && data[2] != 0xF0)
             done = 1;
@@ -208,8 +207,8 @@ void keyboard_input_handler() {
 
     if(data[0] == 0xF0 || data[1] == 0xF0) // If there is a break code detecting key releases
         return;
-    
-    /*** Movement of Camera Position */ 
+
+    /*** Movement of Camera Position */
     switch(data[2]) {
         case SPACE_KEY:
             applicable_vector = camera->up;
@@ -243,7 +242,7 @@ void keyboard_input_handler() {
 
     if(applicable_vector.x == 0 && applicable_vector.y == 0 && applicable_vector.z == 0) // No movement
         return;
-    
+
     applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
     camera->pos = add_vector(camera->pos, applicable_vector);
 
@@ -275,7 +274,7 @@ void keyboard_input_handler() {
             cross_product(&(camera->look), &(camera->up), &(camera->right));
             normalize(&(camera->right));
         }
-    
+
         if(angle_y != 0.0f) {
             struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
             camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);

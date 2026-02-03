@@ -123,11 +123,15 @@ struct __attribute__((__packed__, __aligned__(4))) key_registers {
 extern volatile struct key_registers *const KEY;
 #define KEY_IRQ 1U
 
-struct __attribute__((__packed__, __aligned__(4))) ps2_registers {
+struct __attribute__((__packed__, __aligned__(4))) ps2_data {
     uint32_t data : 8;
     uint32_t : 7;
     uint32_t rvalid : 1;
     uint32_t ravail : 16;
+};
+
+struct __attribute__((__packed__, __aligned__(4))) ps2_registers {
+    struct ps2_data data;
     uint32_t re : 1;
     uint32_t : 7;
     uint32_t ri : 1;
