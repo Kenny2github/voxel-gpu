@@ -8,6 +8,10 @@ struct Ray {
     struct Vector origin, direction;
 };
 
+struct Ray_fixed {
+    struct Vector_16fixed origin, direction;
+};
+
 void setup_pixel_buffer_software();
 
 void set_camera_software(struct Camera* cam);

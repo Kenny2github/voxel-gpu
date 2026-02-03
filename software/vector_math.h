@@ -20,8 +20,8 @@ struct Vector {
 };
 
 struct Vector_16fixed {
-    uint16_t x, y, z;
-};
+    int16_t x, y, z;
+} __attribute__((aligned(4)));
 
 float Q_rsqrt(float number); // Quake III method
 float sqrtf(float x); // Inverse of Q_rsqrt
@@ -74,9 +74,46 @@ struct Vector transform_vector(const struct AffineTransform3D *transform, const 
 struct Vector_16fixed convert_vector_format(const struct Vector* a);
 
 float max_vec(const struct Vector a);
+int16_t max_vec_fixed(const struct Vector_16fixed a);
 
 float min_vec(const struct Vector a);
+int16_t min_vec_fixed(const struct Vector_16fixed a);
 
 int16_t convert_float_to_fixed(float a);
+
+int16_t convert_int_to_fixed(int a);
+
+// Fixed-point vector functions (16-bit with FRAC_BITS fraction bits)
+
+/** @brief Computes 3D cross-product given fixed-point data
+ *  @param Vector_16fixed a first vector
+ *  @param Vector_16fixed b second vector
+ *  @param Vector_16fixed c output vector
+ */
+void cross_product_fixed(
+    const struct Vector_16fixed *a,
+    const struct Vector_16fixed *b,
+    struct Vector_16fixed *c
+);
+
+/** @brief Normalizes 3D fixed-point vector
+ *  @param Vector_16fixed a input and output vector
+ */
+void normalize_fixed(struct Vector_16fixed *a);
+
+/** @brief Effectively multiplies the fixed-point vector with -1 */
+void negative_vector_fixed(struct Vector_16fixed *a);
+
+/** @brief Adds two fixed-point vectors and returns a new vector */
+struct Vector_16fixed add_vector_fixed(const struct Vector_16fixed a, const struct Vector_16fixed b);
+
+/** @brief Subtracts two fixed-point vectors and returns a new vector */
+struct Vector_16fixed sub_vector_fixed(const struct Vector_16fixed a, const struct Vector_16fixed b);
+
+/** @brief Divides a fixed-point vector by a fixed-point divisor and returns a new vector */
+struct Vector_16fixed divide_vector_fixed(const struct Vector_16fixed a, int16_t divisor);
+
+/** @brief Multiplies a fixed-point vector with a fixed-point multiplier and returns a new vector */
+struct Vector_16fixed multiply_vector_fixed(const struct Vector_16fixed a, int16_t multiplier);
 
 #endif

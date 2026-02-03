@@ -110,7 +110,6 @@ void mouse_input_handler() {
             if(mouse_status == REPORTING)
                 numOfBytes++;
 
-
             if(mouse_status == DEFAULT && mousePackets[1] == (unsigned char)0xAA && mousePackets[2] == (unsigned char)0x00) {
                 mouse_status = WAIT_ACKNOWLEDGE;
                 *(PS2_ptr) = 0xF4;
