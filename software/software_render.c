@@ -315,6 +315,10 @@ void render_software() {
     // Update software camera before render
     update_camera();
 
+    int res_offset = (PIXEL_BUF_CTRL->x_resolution == 160) ? 1 : 0;
+    int x_factor = 0x1 << res_offset;
+    int y_factor = 0x1 << res_offset;
+
     // Ray-marching based implementation 
     /*
     for(int x = 0; x < H_RESOLUTION; x++) {
@@ -385,40 +389,40 @@ void render_software() {
     */
 
     // Ray-casting based implementation, optimization with 3-corner-camera-ray interpolation and partition-and-floodfill method 
-    uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
-    struct Vector ray_tracker[H_RESOLUTION*V_RESOLUTION];
-    struct Ray cameraRay;
-    cameraRay.origin = camera.pos;
+    // uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
+    // struct Vector ray_tracker[H_RESOLUTION*V_RESOLUTION];
+    // struct Ray cameraRay;
+    // cameraRay.origin = camera.pos;
     
-    // TODO: Create a ray for three corners, and during the loop, compute the ray
-    struct Vector topLeft, bottomLeft, topRight;
-    viewing_ray(0, 0, &topLeft);
-    viewing_ray(H_RESOLUTION - 1, 0, &topRight);
-    viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
+    // // TODO: Create a ray for three corners, and during the loop, compute the ray
+    // struct Vector topLeft, bottomLeft, topRight;
+    // viewing_ray(0, 0, &topLeft);
+    // viewing_ray(H_RESOLUTION - 1, 0, &topRight);
+    // viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
 
-    struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
-    struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
+    // struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
+    // struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
 
-    for(int x = 0; x < H_RESOLUTION; x++) 
-        for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
+    // for(int x = 0; x < H_RESOLUTION; x++) 
+    //     for(int y = 0; y < V_RESOLUTION; y++) 
+    //         *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
         
-    for(int x = 0; x < SIDE_LEN; x++) {
-        for(int z = 0; z < SIDE_LEN; z++) {
-            for(int y = 0; y < SIDE_LEN; y++) {
-                uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
-                if(palette == 0)
-                    continue;
+    // for(int x = 0; x < SIDE_LEN; x++) {
+    //     for(int z = 0; z < SIDE_LEN; z++) {
+    //         for(int y = 0; y < SIDE_LEN; y++) {
+    //             uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
+    //             if(palette == 0)
+    //                 continue;
                     
-                partition_and_fill(
-                    0, 0, H_RESOLUTION-1, V_RESOLUTION-1,
-                    x, y, z, palette,
-                    &cameraRay, &topLeft, &horizontalVec, &verticalVec,
-                    t_tracker, pixel_buffer_software, palette_data
-                );
-            }
-        }
-    }
+    //             partition_and_fill(
+    //                 0, 0, H_RESOLUTION-1, V_RESOLUTION-1,
+    //                 x, y, z, palette,
+    //                 &cameraRay, &topLeft, &horizontalVec, &verticalVec,
+    //                 t_tracker, pixel_buffer_software, palette_data
+    //             );
+    //         }
+    //     }
+    // }
     
  
     // Flood-fill partition but with fixed point computations
@@ -466,5 +470,125 @@ void render_software() {
     }
 
     */
+
+    // Rasterization, object-centric algorithm
+    int x_start, x_end, x_step;
+    if (camera.pos.x < (SIDE_LEN / 2.0f))
+    { 
+        x_start = 0; 
+        x_end = SIDE_LEN; 
+        x_step = 1; 
+    } 
+    else 
+    { 
+        x_start = SIDE_LEN - 1; 
+        x_end = -1; 
+        x_step = -1; 
+    }
+
+    int y_start, y_end, y_step;
+    if (camera.pos.y < (SIDE_LEN / 2.0f))
+    {
+        y_start = 0; 
+        y_end = SIDE_LEN; 
+        y_step = 1; 
+    }
+    else
+    { 
+        y_start = SIDE_LEN - 1;
+        y_end = -1;
+        y_step = -1; 
+    }
+
+    int z_start, z_end, z_step;
+    if (camera.pos.z < (SIDE_LEN / 2.0f))
+    { 
+        z_start = 0;
+        z_end = SIDE_LEN;
+        z_step = 1;
+    }
+    else
+    {
+        z_start = SIDE_LEN - 1;
+        z_end = -1;
+        z_step = -1; 
+    }
+
+    int filled_pixels = 0;
+    int total_pixels = H_RESOLUTION * V_RESOLUTION;
+
+    for (int y = y_start; y != y_end; y += y_step)
+    {
+        for (int z = z_start; z != z_end; z += z_step)
+        {
+            for (int x = x_start; x != x_end; x += x_step)
+            {
+                uint8_t palette = *((uint8_t*)GRID_START + x + z * SIDE_LEN + y * SIDE_LEN * SIDE_LEN);
+                if (palette == 0)
+                {
+                    continue;
+                }
+
+                float vx = x + 0.5f;
+                float vy = y + 0.5f;
+                float vz = z + 0.5f;
+
+                struct Vector diff;
+                diff.x = vx - camera.pos.x;
+                diff.y = vy - camera.pos.y;
+                diff.z = vz - camera.pos.z;
+
+                float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
+                if (cam_z < 0.1f){
+                    continue;
+                }
+
+                float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
+                float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
+                
+                float x_frac = (cam_x * focal_length) / (cam_z * clip_plane_x);
+                float y_frac = -(cam_y * focal_length) / (cam_z * clip_plane_y);
+
+                float screen_cx = (x_frac + 1.0f) * 0.5f * H_RESOLUTION;
+                float screen_cy = (y_frac + 1.0f) * 0.5f * V_RESOLUTION;
+
+                float projected_size = (focal_length / cam_z) / clip_plane_x * (H_RESOLUTION / 2.0f);
+                if (projected_size < 1.0f) 
+                {
+                    projected_size = 1.0f;
+                }
+
+                int min_px = (int)(screen_cx - projected_size * 0.5f);
+                int max_px = (int)(screen_cx + projected_size * 0.5f);
+                int min_py = (int)(screen_cy - projected_size * 0.5f);
+                int max_py = (int)(screen_cy + projected_size * 0.5f);
+
+                if (max_px < 0 || min_px >= H_RESOLUTION || max_py < 0 || min_py >= V_RESOLUTION) continue;
+                if (min_px < 0) min_px = 0;
+                if (max_px >= H_RESOLUTION) max_px = H_RESOLUTION - 1;
+                if (min_py < 0) min_py = 0;
+                if (max_py >= V_RESOLUTION) max_py = V_RESOLUTION - 1;
+
+                uint16_t color = palette_data[palette];
+                
+                for (int py = min_py; py <= max_py; py++) 
+                {
+                    // Optimization: Compute row offset once
+                    uint32_t row_offset = (py << 10); 
+                    for (int px = min_px; px <= max_px; px++) 
+                    {
+                        // Check if pixel is empty (0)
+                        uint16_t* pixel_addr = (uint16_t*)((uint32_t)(pixel_buffer_software) + row_offset + (px << 1));
+                        
+                        if (*pixel_addr == 0) {
+                            *pixel_addr = color;
+                            filled_pixels++;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
 
 }
