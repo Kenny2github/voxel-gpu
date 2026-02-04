@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-extern const uint16_t palette_data[2];
+extern const uint16_t palette_data[1];
 
 #endif // PALETTE_H
