@@ -183,11 +183,12 @@ def convert_obj_to_voxel(N: int, WN: int, obj_path: str, ox: int, oy: int, oz: i
 void load_{output_path[:-2]}() {{
 ''')
                 for x in range(WN):
-                    for z in range(WN):
-                        for y in range(WN):
-                            if voxel_data[y * WN * WN + z * WN + x]:
+                    for y in range(WN):
+                        for z in range(WN):
+                            if voxel_data[z * WN * WN + y * WN + x]:
+                                # y and z are swapped
                                 f.write(f'''\
-    set_voxel((v_pos){{ .x = {x}, .y = {y}, .z = {z}}}, 1);
+    set_voxel((v_pos){{ .x = {x}, .y = {z}, .z = {y}}}, 1);
 ''')
                 f.write('}')
                 f.write("\n\n#endif")
