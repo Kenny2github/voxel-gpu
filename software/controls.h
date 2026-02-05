@@ -67,7 +67,7 @@ void set_camera_default(struct Vector pos, struct Vector look, struct Vector up)
 void mouse_input_handler();
 void keyboard_input_handler();
 
-float convert_mouse_val_to_rad(int x, float ratio); // Ratio is in (pixels / degrees)
+float convert_mouse_val_to_rad(const int x, const float ratio); // Ratio is in (pixels / degrees)
 
 void update_camera();
 

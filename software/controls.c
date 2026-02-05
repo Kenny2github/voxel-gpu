@@ -9,10 +9,8 @@
 static struct Camera *camera = NULL;
 
 void config_inputs(void) {
-    config_interrupt(PS2_DUAL_IRQ, config_mouse, mouse_input_handler);
-    config_interrupt(PS2_IRQ, config_keyboard, keyboard_input_handler);
-
-
+    config_interrupt(PS2_IRQ, config_mouse, mouse_input_handler);
+    config_interrupt(PS2_DUAL_IRQ, config_keyboard, keyboard_input_handler);    
 }
 
 void config_mouse(void) {
@@ -95,25 +93,23 @@ void mouse_input_handler() {
 
     /*** Reading mouse data */
     while (numOfBytes < 3) {
-        PS2_data = PS2_DUAL->data;
-        if(!PS2_data.rvalid)
-            break;
+        PS2_data = PS2->data;
 
-        mousePackets[0] = mousePackets[1];
-        mousePackets[1] = mousePackets[2];
-        mousePackets[2] = PS2_data.data;
+        if(PS2_data.rvalid) {
 
-        if(mouse_status == REPORTING)
-            numOfBytes++;
+            mousePackets[0] = mousePackets[1];
+            mousePackets[1] = mousePackets[2];
+            mousePackets[2] = PS2_data.data;
 
-        if(mouse_status == DEFAULT && mousePackets[1] == (unsigned char)0xAA && mousePackets[2] == (unsigned char)0x00) {
-            mouse_status = WAIT_ACKNOWLEDGE;
-            // *(PS2_DUAL) = 0xF4;
-        }
-
-        if(mouse_status == WAIT_ACKNOWLEDGE && mousePackets[2] == 0xFA) {
-            mouse_status = REPORTING;
-            continue;
+            if(mouse_status == REPORTING)
+                numOfBytes++;
+            else if(mouse_status == DEFAULT && mousePackets[1] == (unsigned char)0xAA && mousePackets[2] == (unsigned char)0x00) {
+                mouse_status = WAIT_ACKNOWLEDGE;
+                *((volatile int*)PS2) = 0xF4;
+            } else if(mouse_status == WAIT_ACKNOWLEDGE && mousePackets[2] == 0xFA) {
+                mouse_status = REPORTING;
+                continue;
+            }
         }
 
     }
@@ -123,9 +119,8 @@ void mouse_input_handler() {
         signed int y : 9;
     } signedPos;
 
-    signedPos.x = ((mousePackets[0] & 0b10000) << 4) | (mousePackets[1]);
-    signedPos.y = ((mousePackets[0] & 0b100000) << 3) | (mousePackets[2]);
-
+    signedPos.x = ((int)(mousePackets[0] & 0b10000) << 4) | (mousePackets[1]);
+    signedPos.y = ((int)(mousePackets[0] & 0b100000) << 3) | (mousePackets[2]);
     /*** Movement of Camera Look */
     // Horizontal motion should rotate lookAt vector based on up-vector
     float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);
@@ -150,30 +145,6 @@ void mouse_input_handler() {
         cross_product(&(camera->right), &(camera->look), &(camera->up));
         normalize(&(camera->up));
     }
-
-    // TODO: Call firmware API for camera update
-
-
-    // volatile int32_t* test_x_look = (volatile int32_t*)(0xC8000000);
-    // volatile int32_t* test_y_look = (volatile int32_t*)(0xC8000010);
-    // volatile int32_t* test_z_look = (volatile int32_t*)(0xC8000020);
-    // *test_x_look = convert_float_to_fixed(camera->look.x);
-    // *test_y_look = convert_float_to_fixed(camera->look.y);
-    // *test_z_look = convert_float_to_fixed(camera->look.z);
-
-    // volatile int32_t* test_x_up = (volatile int32_t*)(0xC8000030);
-    // volatile int32_t* test_y_up = (volatile int32_t*)(0xC8000040);
-    // volatile int32_t* test_z_up = (volatile int32_t*)(0xC8000050);
-    // *test_x_up = convert_float_to_fixed(camera->up.x);
-    // *test_y_up = convert_float_to_fixed(camera->up.y);
-    // *test_z_up = convert_float_to_fixed(camera->up.z);
-
-    // volatile int32_t* test_x_right = (volatile int32_t*)(0xC8000060);
-    // volatile int32_t* test_y_right = (volatile int32_t*)(0xC8000070);
-    // volatile int32_t* test_z_right = (volatile int32_t*)(0xC8000080);
-    // *test_x_right = convert_float_to_fixed(camera->right.x);
-    // *test_y_right = convert_float_to_fixed(camera->right.y);
-    // *test_z_right = convert_float_to_fixed(camera->right.z);
 }
 
 void keyboard_input_handler() {
@@ -208,30 +179,30 @@ void keyboard_input_handler() {
     switch(data[2]) {
         case SPACE_KEY:
             applicable_vector = camera->up;
-            printf("Space was pressed\n");
+            //printf("Space was pressed\n");
             break;
         case SHIFT_KEY:
             applicable_vector = camera->up;
             negative_vector(&applicable_vector);
-            printf("Shift was pressed\n");
+            //printf("Shift was pressed\n");
             break;
         case A_KEY:
             applicable_vector = camera->right;
             negative_vector(&applicable_vector);
-            printf("A was pressed\n");
+            //printf("A was pressed\n");
             break;
         case D_KEY:
             applicable_vector = camera->right;
-            printf("D was pressed\n");
+            //printf("D was pressed\n");
             break;
         case W_KEY:
             applicable_vector = camera->look;
-            printf("W was pressed\n");
+            //printf("W was pressed\n");
             break;
         case S_KEY:
             applicable_vector = camera->look;
             negative_vector(&applicable_vector);
-            printf("S was pressed\n");
+            //printf("S was pressed\n");
         default:
             break;
     }
@@ -280,19 +251,10 @@ void keyboard_input_handler() {
         }
 
     }
-
-
-    // TODO: Call firmware API for camera update
-    // volatile uint32_t* test_x_pos = (volatile uint32_t*)(0xC8000090);
-    // volatile uint32_t* test_y_pos = (volatile uint32_t*)(0xC80000A0);
-    // volatile uint32_t* test_z_pos = (volatile uint32_t*)(0xC80000B0);
-    // *test_x_pos = (uint32_t)convert_float_to_fixed(camera->pos.x);
-    // *test_y_pos = (uint32_t)convert_float_to_fixed(camera->pos.y);
-    // *test_z_pos = (uint32_t)convert_float_to_fixed(camera->pos.z);
 }
 
-float convert_mouse_val_to_rad(int x, float ratio) {
-    return ratio * x * (M_PI / 180.0);
+float convert_mouse_val_to_rad(const int x, const float ratio) {
+    return ratio * x * (M_PI / 180.0f);
 }
 
 void update_camera() {
