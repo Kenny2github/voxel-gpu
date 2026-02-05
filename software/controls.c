@@ -120,7 +120,7 @@ void mouse_input_handler() {
     } signedPos;
 
     signedPos.x = ((int)(mousePackets[0] & 0b10000) << 4) | (mousePackets[1]);
-    signedPos.y = ((int)(mousePackets[0] & 0b100000) << 3) | (mousePackets[2]);
+    signedPos.y = -(((int)(mousePackets[0] & 0b100000) << 3) | (mousePackets[2]));
     /*** Movement of Camera Look */
     // Horizontal motion should rotate lookAt vector based on up-vector
     float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);

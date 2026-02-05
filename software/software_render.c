@@ -67,10 +67,14 @@ void viewing_ray(
     ray->y = camera.look.y * focal_length + camera.right.y * clip_plane_x * x_frac - camera.up.y * clip_plane_y * y_frac;
 }
 
+void plot_pixel(int x, int y, short int line_color) {
+    *(short int *)(pixel_buffer_software + (y << 10) + (x << 1)) = line_color;
+}
+
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
+            plot_pixel(x, y, 0x0);
 }
 
 static inline float my_fmaxf(float a, float b) {
@@ -135,7 +139,7 @@ static int partition_and_fill(
     int voxel_x, int voxel_y, int voxel_z, uint8_t palette,
     struct Ray* cameraRay,
     struct Vector* topLeft, struct Vector* horizontalVec, struct Vector* verticalVec,
-    uint8_t* t_tracker, unsigned char* pixel_buffer_software, const uint16_t* palette_data
+    uint8_t* t_tracker, const uint16_t* palette_data
 ) {
     int q_start = 0, q_end = 0;
     int found = 0;
@@ -188,7 +192,7 @@ static int partition_and_fill(
         if (t2 == -1)
             continue;
         t_tracker[idx] = t2;
-        *(uint16_t*)((uint32_t)(pixel_buffer_software) + (ys << 10) + (xs << 1)) = palette_data[palette];
+        plot_pixel(xs, ys, palette_data[palette]);
         stack[stack_size++] = (Point){xs+1, ys};
         stack[stack_size++] = (Point){xs-1, ys};
         stack[stack_size++] = (Point){xs, ys+1};
@@ -296,7 +300,7 @@ void render_software() {
                     0, 0, H_RESOLUTION-1, V_RESOLUTION-1,
                     x, y, z, palette,
                     &cameraRay, &topLeft, &horizontalVec, &verticalVec,
-                    t_tracker, pixel_buffer_software, palette_data
+                    t_tracker, palette_data
                 );
             }
         }
