@@ -28,3 +28,13 @@ The complexity of the project will likely come from multiple sources:
 1. When prompted to "download the system", do so.
 1. Load (do not compile, you already did that) the program.
 1. Click Continue (or otherwise use the debugger).
+
+## Initializing Mouse on CPULator
+1. Send "0xAA", and "0x00"
+
+## Initializing Keyboard on CPULator
+1. Send "0xAA" only
+
+## Initializing peripherals on board
+1. Plug in peripherals after running DE1SoC
+
