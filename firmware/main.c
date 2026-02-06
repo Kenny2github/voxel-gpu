@@ -7,8 +7,9 @@
 static volatile int render_wait = 0;
 
 void wait_for_vsync() {
-    *((int*)PIXEL_BUF_CTRL) = 1;
-    while (*((int*)PIXEL_BUF_CTRL + 3) & 1);
+    
+    PIXEL_BUF_CTRL->buffer = 0x1;
+    while (PIXEL_BUF_CTRL->status.s);
     ++frames;
 
     GPU->pixel_buffer = PIXEL_BUF_CTRL->back_buffer;

@@ -140,9 +140,9 @@ struct __attribute__((__packed__, __aligned__(4))) ps2_registers {
     uint32_t : 21;
 };
 extern volatile struct ps2_registers *const PS2;
-#define PS2_IRQ 7U
+#define PS2_IRQ 79U
 extern volatile struct ps2_registers *const PS2_DUAL;
-#define PS2_DUAL_IRQ 23U
+#define PS2_DUAL_IRQ 89U
 
 struct __attribute__((__packed__, __aligned__(4))) jtag_uart_registers {
     uint32_t data : 8;

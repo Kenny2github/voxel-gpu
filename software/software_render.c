@@ -15,12 +15,12 @@ unsigned char* pixel_buffer_software;
 typedef struct { int x, y; } Point;
 
 void setup_pixel_buffer_software() {
-    pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+    pixel_buffer_software = PIXEL_BUF_CTRL->buffer;
 }
 
 void wait_for_vsync_software() {
-    *((int*)PIXEL_BUF_CTRL) = 1;
-    while ((*((int*)PIXEL_BUF_CTRL + 3) & 0x1) != 0);
+    PIXEL_BUF_CTRL->buffer = 0x1;
+    while (PIXEL_BUF_CTRL->status.s);
 
     pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
 
@@ -67,10 +67,14 @@ void viewing_ray(
     ray->y = camera.look.y * focal_length + camera.right.y * clip_plane_x * x_frac - camera.up.y * clip_plane_y * y_frac;
 }
 
+void plot_pixel(int x, int y, short int line_color) {
+    *(short int *)(pixel_buffer_software + (y << 10) + (x << 1)) = line_color;
+}
+
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0xFFFF;
+            plot_pixel(x, y, 0x0);
 }
 
 static inline float my_fmaxf(float a, float b) {
@@ -78,14 +82,6 @@ static inline float my_fmaxf(float a, float b) {
 }
 
 static inline float my_fminf(float a, float b) {
-    return (a < b) ? a : b;
-}
-
-static inline int16_t my_max_i16(int16_t a, int16_t b) {
-    return (a > b) ? a : b;
-}
-
-static inline int16_t my_min_i16(int16_t a, int16_t b) {
     return (a < b) ? a : b;
 }
 
@@ -133,47 +129,6 @@ float check_box_intersection(const uint8_t xp, const uint8_t yp, const uint8_t z
 
 }
 
-int check_box_intersection_fixed(const uint16_t xp, const uint16_t yp, const uint16_t zp, struct Ray_fixed* ray) {
-
-    // Parallel checks for each axis
-    if (abs(ray->direction.x) == 0) {
-        if (ray->origin.x < xp || ray->origin.x > xp + 1) return -1;
-    }
-    if (abs(ray->direction.y) == 0) {
-        if (ray->origin.y < yp || ray->origin.y > yp + 1) return -1;
-    }
-    if (abs(ray->direction.z) == 0) {
-        if (ray->origin.z < zp || ray->origin.z > zp + 1) return -1;
-    }
-
-    struct Vector_16fixed low;
-    low.x = (int16_t)(((int32_t)(xp - ray->origin.x) << FRAC_BITS) / ray->direction.x);
-    low.y = (int16_t)(((int32_t)(yp - ray->origin.y) << FRAC_BITS) / -ray->direction.y);
-    low.z = (int16_t)(((int32_t)(zp - ray->origin.z) << FRAC_BITS) / ray->direction.z);
-
-    struct Vector_16fixed high;
-    high.x = (int16_t)(((int32_t)(xp + 1 - ray->origin.x) << FRAC_BITS) / ray->direction.x);
-    high.y = (int16_t)(((int32_t)(yp + 1 - ray->origin.y) << FRAC_BITS) / -ray->direction.y);
-    high.z = (int16_t)(((int32_t)(zp + 1 - ray->origin.z) << FRAC_BITS) / ray->direction.z);
-
-    struct Vector_16fixed close, far;
-    close.x = my_min_i16(low.x, high.x);
-    close.y = my_min_i16(low.y, high.y);
-    close.z = my_min_i16(low.z, high.z);
-
-    far.x = my_max_i16(low.x, high.x);
-    far.y = my_max_i16(low.y, high.y);
-    far.z = my_max_i16(low.z, high.z);
-
-    int16_t min_t = max_vec_fixed(close);
-    int16_t max_t = min_vec_fixed(far);
-
-    if (max_t < 0) return -1;
-    if (min_t > max_t) return -1;
-    return min_t > 0 ? min_t : max_t;
-
-}
-
 
 // Recursive partitioning and flood fill for voxel hits
 // Returns 1 if a hit was found and filled, 0 otherwise
@@ -184,12 +139,13 @@ static int partition_and_fill(
     int voxel_x, int voxel_y, int voxel_z, uint8_t palette,
     struct Ray* cameraRay,
     struct Vector* topLeft, struct Vector* horizontalVec, struct Vector* verticalVec,
-    uint8_t* t_tracker, unsigned char* pixel_buffer_software, const uint16_t* palette_data
+    uint8_t* t_tracker, const uint16_t* palette_data
 ) {
-    Partition queue[H_RESOLUTION * V_RESOLUTION];
     int q_start = 0, q_end = 0;
     int found = 0;
     int cx = 0, cy = 0;
+    
+    Partition* queue = (Partition*)malloc(H_RESOLUTION * V_RESOLUTION * sizeof(Partition));
     queue[q_end++] = (Partition){x0, y0, x1, y1};
     while (!found && q_start < q_end) {
         Partition part = queue[q_start++];
@@ -209,18 +165,18 @@ static int partition_and_fill(
                 queue[q_end++] = (Partition){part.x0, my+1, mx, part.y1};
                 queue[q_end++] = (Partition){mx+1, my+1, part.x1, part.y1};
             }
-            
+            continue;
         } else {
             found = 1;
         }
     }
+    free(queue);
 
     if(!found)
         return 0;
 
     // If hit, flood fill within this section (across the whole screen)
-    int stack_cap = H_RESOLUTION * V_RESOLUTION;
-    Point* stack = (Point*)__builtin_alloca(sizeof(Point) * stack_cap);
+    Point* stack = (Point*)malloc(H_RESOLUTION * V_RESOLUTION * sizeof(Point));
     int stack_size = 0;
     stack[stack_size++] = (Point){cx, cy};
     while (stack_size > 0) {
@@ -236,80 +192,17 @@ static int partition_and_fill(
         if (t2 == -1)
             continue;
         t_tracker[idx] = t2;
-        *(uint16_t*)((uint32_t)(pixel_buffer_software) + (ys << 10) + (xs << 1)) = palette_data[palette];
+        plot_pixel(xs, ys, palette_data[palette]);
         stack[stack_size++] = (Point){xs+1, ys};
         stack[stack_size++] = (Point){xs-1, ys};
         stack[stack_size++] = (Point){xs, ys+1};
         stack[stack_size++] = (Point){xs, ys-1};
     }
+    free(stack);
     return 1;
 }
 
-static int partition_and_fill_fixed(
-    int x0, int y0, int x1, int y1,
-    int voxel_x, int voxel_y, int voxel_z, uint8_t palette,
-    struct Ray_fixed* cameraRay,
-    struct Vector_16fixed* topLeft, struct Vector_16fixed* horizontalVec, struct Vector_16fixed* verticalVec,
-    int16_t* t_tracker, unsigned char* pixel_buffer_software, const uint16_t* palette_data
-) {
-    Partition queue[H_RESOLUTION * V_RESOLUTION];
-    int q_start = 0, q_end = 0;
-    int found = 0;
-    int cx = 0, cy = 0;
-    queue[q_end++] = (Partition){x0, y0, x1, y1};
-    while (!found && q_start < q_end) {
-        Partition part = queue[q_start++];
-        if (part.x0 > part.x1 || part.y0 > part.y1) continue;
-        cx = (part.x0 + part.x1) / 2;
-        cy = (part.y0 + part.y1) / 2;
-        cameraRay->direction = add_vector_fixed(add_vector_fixed(*topLeft, multiply_vector_fixed(*horizontalVec, convert_int_to_fixed(cx))), multiply_vector_fixed(*verticalVec, convert_int_to_fixed(V_RESOLUTION-1 - cy)));
-        int t = check_box_intersection_fixed(voxel_x, voxel_y, voxel_z, cameraRay);
-        if (t == -1) {
-            // No hit, subdivide if possible
-            if (part.x0 == part.x1 && part.y0 == part.y1) continue;
-            int mx = (part.x0 + part.x1) / 2;
-            int my = (part.y0 + part.y1) / 2;
-            if (part.x0 < part.x1 || part.y0 < part.y1) {
-                queue[q_end++] = (Partition){part.x0, part.y0, mx, my};
-                queue[q_end++] = (Partition){mx+1, part.y0, part.x1, my};
-                queue[q_end++] = (Partition){part.x0, my+1, mx, part.y1};
-                queue[q_end++] = (Partition){mx+1, my+1, part.x1, part.y1};
-            }
-            
-        } else {
-            found = 1;
-        }
-    }
 
-    if(!found)
-        return 0;
-
-    // If hit, flood fill within this section (across the whole screen)
-    int stack_cap = H_RESOLUTION * V_RESOLUTION;
-    Point* stack = (Point*)__builtin_alloca(sizeof(Point) * stack_cap);
-    int stack_size = 0;
-    stack[stack_size++] = (Point){cx, cy};
-    while (stack_size > 0) {
-        Point p = stack[--stack_size];
-        int xs = p.x, ys = p.y;
-        if (xs < 0 || xs >= H_RESOLUTION || ys < 0 || ys >= V_RESOLUTION)
-            continue;
-        int idx = xs * V_RESOLUTION + ys;
-        if (t_tracker[idx] != 0)
-            continue;
-        cameraRay->direction = add_vector_fixed(add_vector_fixed(*topLeft, multiply_vector_fixed(*horizontalVec, convert_int_to_fixed(xs))), multiply_vector_fixed(*verticalVec, convert_int_to_fixed(V_RESOLUTION-1 - ys)));
-        int t2 = check_box_intersection_fixed(voxel_x, voxel_y, voxel_z, cameraRay);
-        if (t2 == -1)
-            continue;
-        t_tracker[idx] = t2;
-        *(uint16_t*)((uint32_t)(pixel_buffer_software) + (ys << 10) + (xs << 1)) = palette_data[palette];
-        stack[stack_size++] = (Point){xs+1, ys};
-        stack[stack_size++] = (Point){xs-1, ys};
-        stack[stack_size++] = (Point){xs, ys+1};
-        stack[stack_size++] = (Point){xs, ys-1};
-    }
-    return 1;
-}
 
 void render_software() {
     // Update software camera before render
@@ -349,7 +242,7 @@ void render_software() {
     */
 
     // Ray-casting based implementation
-    /* 
+    /*
     uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
     struct Ray ray_tracker[H_RESOLUTION*V_RESOLUTION];
     
@@ -390,11 +283,9 @@ void render_software() {
 
     // Ray-casting based implementation, optimization with 3-corner-camera-ray interpolation and partition-and-floodfill method 
     // uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
-    // struct Vector ray_tracker[H_RESOLUTION*V_RESOLUTION];
     // struct Ray cameraRay;
     // cameraRay.origin = camera.pos;
     
-    // // TODO: Create a ray for three corners, and during the loop, compute the ray
     // struct Vector topLeft, bottomLeft, topRight;
     // viewing_ray(0, 0, &topLeft);
     // viewing_ray(H_RESOLUTION - 1, 0, &topRight);
@@ -403,10 +294,6 @@ void render_software() {
     // struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
     // struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
 
-    // for(int x = 0; x < H_RESOLUTION; x++) 
-    //     for(int y = 0; y < V_RESOLUTION; y++) 
-    //         *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
-        
     // for(int x = 0; x < SIDE_LEN; x++) {
     //     for(int z = 0; z < SIDE_LEN; z++) {
     //         for(int y = 0; y < SIDE_LEN; y++) {
@@ -418,114 +305,33 @@ void render_software() {
     //                 0, 0, H_RESOLUTION-1, V_RESOLUTION-1,
     //                 x, y, z, palette,
     //                 &cameraRay, &topLeft, &horizontalVec, &verticalVec,
-    //                 t_tracker, pixel_buffer_software, palette_data
+    //                 t_tracker, palette_data
     //             );
     //         }
     //     }
     // }
     
- 
-    // Flood-fill partition but with fixed point computations
-    /*
-    uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
-    struct Vector ray_tracker[H_RESOLUTION*V_RESOLUTION];
-    struct Ray cameraRay;
-    cameraRay.origin = camera.pos;
-    
-    struct Vector topLeft, bottomLeft, topRight;
-    viewing_ray(0, 0, &topLeft);
-    viewing_ray(H_RESOLUTION - 1, 0, &topRight);
-    viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
-
-    struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
-    struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
-
-    struct Ray_fixed cameraRayFixed;
-    cameraRayFixed.origin = convert_vector_format(&camera.pos);
-
-    struct Vector_16fixed topLeftFixed, horizontalVecFixed, verticalVecFixed;
-    topLeftFixed = convert_vector_format(&topLeft);
-    horizontalVecFixed = convert_vector_format(&horizontalVec);
-    verticalVecFixed = convert_vector_format(&verticalVec);
-
-    for(int x = 0; x < H_RESOLUTION; x++) 
-        for(int y = 0; y < V_RESOLUTION; y++) 
-            *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
-        
-    for(int x = 0; x < SIDE_LEN; x++) {
-        for(int z = 0; z < SIDE_LEN; z++) {
-            for(int y = 0; y < SIDE_LEN; y++) {
-                uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
-                if(palette == 0)
-                    continue;
-                    
-                partition_and_fill_fixed(
-                    0, 0, H_RESOLUTION-1, V_RESOLUTION-1,
-                    x, y, z, palette,
-                    &cameraRayFixed, &topLeftFixed, &horizontalVecFixed, &verticalVecFixed,
-                    t_tracker, pixel_buffer_software, palette_data
-                );
-            }
-        }
-    }
-
-    */
-
     // Rasterization, object-centric algorithm
-    int x_start, x_end, x_step;
-    if (camera.pos.x < (SIDE_LEN / 2.0f))
-    { 
-        x_start = 0; 
-        x_end = SIDE_LEN; 
-        x_step = 1; 
-    } 
-    else 
-    { 
-        x_start = SIDE_LEN - 1; 
-        x_end = -1; 
-        x_step = -1; 
-    }
-
-    int y_start, y_end, y_step;
-    if (camera.pos.y < (SIDE_LEN / 2.0f))
-    {
-        y_start = 0; 
-        y_end = SIDE_LEN; 
-        y_step = 1; 
-    }
-    else
-    { 
-        y_start = SIDE_LEN - 1;
-        y_end = -1;
-        y_step = -1; 
-    }
-
-    int z_start, z_end, z_step;
-    if (camera.pos.z < (SIDE_LEN / 2.0f))
-    { 
-        z_start = 0;
-        z_end = SIDE_LEN;
-        z_step = 1;
-    }
-    else
-    {
-        z_start = SIDE_LEN - 1;
-        z_end = -1;
-        z_step = -1; 
-    }
-
-    int filled_pixels = 0;
     int total_pixels = H_RESOLUTION * V_RESOLUTION;
 
-    for (int y = y_start; y != y_end; y += y_step)
+    /*
+    Rasterization method:
+    - Project the 8 corners of the cube into the clip plane
+    - Take the min and max of the screen's X and Y
+    - Iterate through a pixels between min and max of X and Y
+    - Check if pixel is inside the projected faces (Simply brute force and consider all 6 faces. Can optimize based on normal of face and camera look vector)
+    - If in pixel, color. 
+    */
+    
+    for (int y = 0; y < SIDE_LEN; y += 1)
     {
-        for (int z = z_start; z != z_end; z += z_step)
+        for (int z = 0; z < SIDE_LEN; z += 1)
         {
-            for (int x = x_start; x != x_end; x += x_step)
+            for (int x = 0; x < SIDE_LEN; x += 1)
             {
+
                 uint8_t palette = *((uint8_t*)GRID_START + x + z * SIDE_LEN + y * SIDE_LEN * SIDE_LEN);
-                if (palette == 0)
-                {
+                if (palette == 0) {
                     continue;
                 }
 
@@ -538,21 +344,21 @@ void render_software() {
                 diff.y = vy - camera.pos.y;
                 diff.z = vz - camera.pos.z;
 
-                float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
-                if (cam_z < 0.1f){
-                    continue;
+                float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z; // Finding distnace in camera's coordinates
+                if (cam_z < 0.1f) {
+                    continue; // if too close, ignore
                 }
 
-                float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
+                float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z; // Finding the cube's position in camera coordinates
                 float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
                 
-                float x_frac = (cam_x * focal_length) / (cam_z * clip_plane_x);
-                float y_frac = -(cam_y * focal_length) / (cam_z * clip_plane_y);
+                float x_frac = (cam_x * focal_length) / (cam_z * clip_plane_x); // Two operations here; dividing cam_z by focal_length, and dividing cam_x by the clip plane. Ultimately gives the x_fraction at the clip plane
+                float y_frac = -(cam_y * focal_length) / (cam_z * clip_plane_y); // Y is flipped due to convention of screen
 
-                float screen_cx = (x_frac + 1.0f) * 0.5f * H_RESOLUTION;
+                float screen_cx = (x_frac + 1.0f) * 0.5f * H_RESOLUTION; // Getting screen location. If x_frac is in screen, it is [-1.0, 1.0], then moved to [0, 1.0], then converted to [0, H_RESOLUTION]
                 float screen_cy = (y_frac + 1.0f) * 0.5f * V_RESOLUTION;
 
-                float projected_size = (focal_length / cam_z) / clip_plane_x * (H_RESOLUTION / 2.0f);
+                float projected_size = (focal_length / cam_z) / clip_plane_x * (H_RESOLUTION / 2.0f); // Voxel size is always 1 unit long/wide/tall. Just need to convert to clip plane. Here is the issue. 
                 if (projected_size < 1.0f) 
                 {
                     projected_size = 1.0f;
@@ -568,22 +374,12 @@ void render_software() {
                 if (max_px >= H_RESOLUTION) max_px = H_RESOLUTION - 1;
                 if (min_py < 0) min_py = 0;
                 if (max_py >= V_RESOLUTION) max_py = V_RESOLUTION - 1;
-
-                uint16_t color = palette_data[palette];
                 
                 for (int py = min_py; py <= max_py; py++) 
                 {
-                    // Optimization: Compute row offset once
-                    uint32_t row_offset = (py << 10); 
                     for (int px = min_px; px <= max_px; px++) 
                     {
-                        // Check if pixel is empty (0)
-                        uint16_t* pixel_addr = (uint16_t*)((uint32_t)(pixel_buffer_software) + row_offset + (px << 1));
-                        
-                        if (*pixel_addr == 0) {
-                            *pixel_addr = color;
-                            filled_pixels++;
-                        }
+                        plot_pixel(px, py, palette_data[palette]);
                     }
                 }
 
@@ -591,4 +387,5 @@ void render_software() {
         }
     }
 
+ 
 }
