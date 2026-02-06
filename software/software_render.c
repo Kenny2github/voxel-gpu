@@ -4,8 +4,8 @@
 #include "firmware/firmware.h"
 #include "firmware/palette.h"
 
-#define H_RESOLUTION 256
-#define V_RESOLUTION 192
+#define H_RESOLUTION 320
+#define V_RESOLUTION 240
 
 static struct Camera camera;
 static float clip_plane_x, clip_plane_y;
