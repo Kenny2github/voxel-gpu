@@ -103,12 +103,15 @@ module pixel_shader #(
       cycle_counter <= '0;
       _pixel <= '0;
       closest_voxel <= '0;
-      closest_t <= -'1;
-      t_min <= '0;
+      closest_t <= (COORD_BITS+FRAC_BITS-1)'('1);
+      t_min <= (COORD_BITS+FRAC_BITS-1)'('1);
+      t_max <= ~(COORD_BITS+FRAC_BITS-1)'('1);
     end else begin
       case (state)
         IDLE: begin
-          closest_t <= '1;
+          closest_t <= (COORD_BITS+FRAC_BITS-1)'('1);
+          t_min <= (COORD_BITS+FRAC_BITS-1)'('1);
+          t_max <= ~(COORD_BITS+FRAC_BITS-1)'('1);
           cycle_counter <= '0;
         end
         MEASURE: begin
