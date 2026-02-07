@@ -202,7 +202,14 @@ static int partition_and_fill(
     return 1;
 }
 
-
+const int faces[6][4] = {
+    {0,1,3,2}, // front
+    {4,5,7,6}, // back
+    {0,1,5,4}, // top
+    {2,3,7,6}, // bottom
+    {0,2,6,4}, // left
+    {1,3,7,5}  // right
+};
 
 void render_software() {
     // Update software camera before render
@@ -282,17 +289,17 @@ void render_software() {
     */
 
     // Ray-casting based implementation, optimization with 3-corner-camera-ray interpolation and partition-and-floodfill method 
-    // uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
-    // struct Ray cameraRay;
-    // cameraRay.origin = camera.pos;
+    uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
+    struct Ray cameraRay;
+    cameraRay.origin = camera.pos;
     
-    // struct Vector topLeft, bottomLeft, topRight;
-    // viewing_ray(0, 0, &topLeft);
-    // viewing_ray(H_RESOLUTION - 1, 0, &topRight);
-    // viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
+    struct Vector topLeft, bottomLeft, topRight;
+    viewing_ray(0, 0, &topLeft);
+    viewing_ray(H_RESOLUTION - 1, 0, &topRight);
+    viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
 
-    // struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
-    // struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
+    struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
+    struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
 
     // for(int x = 0; x < SIDE_LEN; x++) {
     //     for(int z = 0; z < SIDE_LEN; z++) {
@@ -312,7 +319,6 @@ void render_software() {
     // }
     
     // Rasterization, object-centric algorithm
-    int total_pixels = H_RESOLUTION * V_RESOLUTION;
 
     /*
     Rasterization method:
@@ -322,67 +328,98 @@ void render_software() {
     - Check if pixel is inside the projected faces (Simply brute force and consider all 6 faces. Can optimize based on normal of face and camera look vector)
     - If in pixel, color. 
     */
-    
-    for (int y = 0; y < SIDE_LEN; y += 1)
-    {
-        for (int z = 0; z < SIDE_LEN; z += 1)
-        {
-            for (int x = 0; x < SIDE_LEN; x += 1)
-            {
+    const float frac_x_const = focal_length / clip_plane_x;
+    const float frac_y_const = focal_length / clip_plane_y;
 
-                uint8_t palette = *((uint8_t*)GRID_START + x + z * SIDE_LEN + y * SIDE_LEN * SIDE_LEN);
-                if (palette == 0) {
-                    continue;
+    const float V_RESOLUTION_HALF = (V_RESOLUTION >> 1);
+    const float H_RESOLUTION_HALF = (H_RESOLUTION >> 1);
+
+    for(uint8_t x = 0; x < SIDE_LEN; x++) {
+        for(uint8_t z = 0; z < SIDE_LEN; z++) {
+            for(uint8_t y = 0; y < SIDE_LEN; y++) {
+                uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
+                if (palette == 0) continue;
+
+                struct Vector corners[8];
+                corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
+                corners[1] = (struct Vector){x+1,   y,     z+1};     // top-right-front
+                corners[2] = (struct Vector){x,     y+1,   z+1};     // bottom-left-front
+                corners[3] = (struct Vector){x+1,   y+1,   z+1};     // bottom-right-front
+                corners[4] = (struct Vector){x,     y,     z};   // top-left-back
+                corners[5] = (struct Vector){x+1,   y,     z};   // top-right-back
+                corners[6] = (struct Vector){x,     y+1,   z};   // bottom-left-back
+                corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
+
+                float screen_x[8], screen_y[8];
+                for (int i = 0; i < 8; i++) {
+                    struct Vector diff;
+                    diff.x = corners[i].x - camera.pos.x;
+                    diff.y = corners[i].y - camera.pos.y;
+                    diff.z = corners[i].z - camera.pos.z;
+
+                    float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
+                    float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
+                    float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
+
+                    float x_frac = (cam_x * frac_x_const) / (cam_z);
+                    float y_frac = -(cam_y * frac_y_const) / (cam_z);
+
+                    screen_x[i] = (x_frac + 1.0f) * H_RESOLUTION_HALF;
+                    screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
                 }
 
-                float vx = x + 0.5f;
-                float vy = y + 0.5f;
-                float vz = z + 0.5f;
-
-                struct Vector diff;
-                diff.x = vx - camera.pos.x;
-                diff.y = vy - camera.pos.y;
-                diff.z = vz - camera.pos.z;
-
-                float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z; // Finding distnace in camera's coordinates
-                if (cam_z < 0.1f) {
-                    continue; // if too close, ignore
+                float min_px = screen_x[0], max_px = screen_x[0];
+                float min_py = screen_y[0], max_py = screen_y[0];
+                for (int i = 1; i < 8; i++) {
+                    if (screen_x[i] < min_px) min_px = screen_x[i];
+                    if (screen_x[i] > max_px) max_px = screen_x[i];
+                    if (screen_y[i] < min_py) min_py = screen_y[i];
+                    if (screen_y[i] > max_py) max_py = screen_y[i];
                 }
 
-                float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z; // Finding the cube's position in camera coordinates
-                float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
-                
-                float x_frac = (cam_x * focal_length) / (cam_z * clip_plane_x); // Two operations here; dividing cam_z by focal_length, and dividing cam_x by the clip plane. Ultimately gives the x_fraction at the clip plane
-                float y_frac = -(cam_y * focal_length) / (cam_z * clip_plane_y); // Y is flipped due to convention of screen
+                int min_px_i = (int)(min_px);
+                int max_px_i = (int)(max_px);
+                int min_py_i = (int)(min_py);
+                int max_py_i = (int)(max_py);
 
-                float screen_cx = (x_frac + 1.0f) * 0.5f * H_RESOLUTION; // Getting screen location. If x_frac is in screen, it is [-1.0, 1.0], then moved to [0, 1.0], then converted to [0, H_RESOLUTION]
-                float screen_cy = (y_frac + 1.0f) * 0.5f * V_RESOLUTION;
+                if (min_px_i < 0) min_px_i = 0;
+                if (max_px_i >= H_RESOLUTION) max_px_i = H_RESOLUTION - 1;
+                if (min_py_i < 0) min_py_i = 0;
+                if (max_py_i >= V_RESOLUTION) max_py_i = V_RESOLUTION - 1;
 
-                float projected_size = (focal_length / cam_z) / clip_plane_x * (H_RESOLUTION / 2.0f); // Voxel size is always 1 unit long/wide/tall. Just need to convert to clip plane. Here is the issue. 
-                if (projected_size < 1.0f) 
-                {
-                    projected_size = 1.0f;
-                }
+                for (int py = min_py_i; py <= max_py_i; py++) {
+                    for (int px = min_px_i; px <= max_px_i; px++) {
 
-                int min_px = (int)(screen_cx - projected_size * 0.5f);
-                int max_px = (int)(screen_cx + projected_size * 0.5f);
-                int min_py = (int)(screen_cy - projected_size * 0.5f);
-                int max_py = (int)(screen_cy + projected_size * 0.5f);
-
-                if (max_px < 0 || min_px >= H_RESOLUTION || max_py < 0 || min_py >= V_RESOLUTION) continue;
-                if (min_px < 0) min_px = 0;
-                if (max_px >= H_RESOLUTION) max_px = H_RESOLUTION - 1;
-                if (min_py < 0) min_py = 0;
-                if (max_py >= V_RESOLUTION) max_py = V_RESOLUTION - 1;
-                
-                for (int py = min_py; py <= max_py; py++) 
-                {
-                    for (int px = min_px; px <= max_px; px++) 
-                    {
-                        plot_pixel(px, py, palette_data[palette]);
+                        int inside = 0;
+                        for (int f = 0; f < 6; f++) {
+                            int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
+                            float sx[4] = {screen_x[i0], screen_x[i1], screen_x[i2], screen_x[i3]};
+                            float sy[4] = {screen_y[i0], screen_y[i1], screen_y[i2], screen_y[i3]};
+                            int sign = 0;
+                            uint8_t set_sign = 0;
+                            for (int e = 0; e < 4; e++) {
+                                int next = (e + 1) % 4;
+                                float ex = sx[next] - sx[e];
+                                float ey = sy[next] - sy[e];
+                                float pxex = px - sx[e];
+                                float pyey = py - sy[e];
+                                float cross = ex * pyey - ey * pxex;
+                                if (cross == 0) continue; // On edge
+                                if (set_sign == 0 && ++set_sign) sign = (cross > 0) ? 1 : -1;
+                                else if ((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
+                                    sign = 0;
+                                    break;
+                                }
+                            }
+                            if (sign != 0) {
+                                inside = 1;
+                                break;
+                            }
+                        }
+                        if (inside)
+                            plot_pixel(px, py, palette_data[palette]);
                     }
                 }
-
             }
         }
     }
