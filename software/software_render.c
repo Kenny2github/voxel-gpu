@@ -388,8 +388,10 @@ void render_software() {
                 if (max_py_i >= V_RESOLUTION) max_py_i = V_RESOLUTION - 1;
 
                 for (int py = min_py_i; py <= max_py_i; py++) {
-                    for (int px = min_px_i; px <= max_px_i; px++) {
-
+                    int left = min_px_i, right = max_px_i;
+                    int found_left = 0, found_right = 0;
+                    // Find leftmost inside pixel
+                    for (; left <= max_px_i; left++) {
                         int inside = 0;
                         for (int f = 0; f < 6; f++) {
                             int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
@@ -401,10 +403,10 @@ void render_software() {
                                 int next = (e + 1) % 4;
                                 float ex = sx[next] - sx[e];
                                 float ey = sy[next] - sy[e];
-                                float pxex = px - sx[e];
+                                float pxex = left - sx[e];
                                 float pyey = py - sy[e];
                                 float cross = ex * pyey - ey * pxex;
-                                if (cross == 0) continue; // On edge
+                                if (cross == 0) continue;
                                 if (set_sign == 0 && ++set_sign) sign = (cross > 0) ? 1 : -1;
                                 else if ((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
                                     sign = 0;
@@ -416,8 +418,43 @@ void render_software() {
                                 break;
                             }
                         }
-                        if (inside)
+                        if (inside) { found_left = 1; break; }
+                    }
+                    
+                    // Find rightmost inside pixel
+                    for (; right >= min_px_i; right--) {
+                        int inside = 0;
+                        for (int f = 0; f < 6; f++) {
+                            int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
+                            float sx[4] = {screen_x[i0], screen_x[i1], screen_x[i2], screen_x[i3]};
+                            float sy[4] = {screen_y[i0], screen_y[i1], screen_y[i2], screen_y[i3]};
+                            int sign = 0;
+                            uint8_t set_sign = 0;
+                            for (int e = 0; e < 4; e++) {
+                                int next = (e + 1) % 4;
+                                float ex = sx[next] - sx[e];
+                                float ey = sy[next] - sy[e];
+                                float pxex = right - sx[e];
+                                float pyey = py - sy[e];
+                                float cross = ex * pyey - ey * pxex;
+                                if (cross == 0) continue;
+                                if (set_sign == 0 && ++set_sign) sign = (cross > 0) ? 1 : -1;
+                                else if ((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
+                                    sign = 0;
+                                    break;
+                                }
+                            }
+                            if (sign != 0) {
+                                inside = 1;
+                                break;
+                            }
+                        }
+                        if (inside) { found_right = 1; break; }
+                    }
+                    if (found_left && found_right && left <= right) {
+                        for (int px = left; px <= right; px++) {
                             plot_pixel(px, py, palette_data[palette]);
+                        }
                     }
                 }
             }
