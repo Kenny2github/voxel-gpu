@@ -1,4 +1,5 @@
 
+
 #include "software/software_render.h"
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
@@ -202,6 +203,49 @@ static int partition_and_fill(
     return 1;
 }
 
+// Helper function to draw a line using Bresenham's algorithm
+void draw_line(int x0, int y0, int x1, int y1, uint16_t color) {
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2;
+    while (1) {
+        plot_pixel(x0, y0, color);
+        if (x0 == x1 && y0 == y1) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+}
+
+
+// Helper to get/set pixel for flood fill
+uint16_t get_pixel(int x, int y) {
+    return *(uint16_t *)(pixel_buffer_software + (y << 10) + (x << 1));
+}
+
+// Helper function for stack-based flood fill
+void flood_fill(int x, int y, uint16_t color) {
+    typedef struct { int x, y; } Point;
+    Point stack[H_RESOLUTION * V_RESOLUTION];
+    int stack_size = 0;
+    uint16_t target = get_pixel(x, y);
+    stack[stack_size++] = (Point){x, y};
+    while (stack_size > 0) {
+        Point p = stack[--stack_size];
+        if (p.x < 0 || p.x >= H_RESOLUTION || p.y < 0 || p.y >= V_RESOLUTION)
+            continue;
+        
+        if (get_pixel(p.x, p.y) != 0) continue;
+
+        plot_pixel(p.x, p.y, color);
+        stack[stack_size++] = (Point){p.x+1, p.y};
+        stack[stack_size++] = (Point){p.x-1, p.y};
+        stack[stack_size++] = (Point){p.x, p.y+1};
+        stack[stack_size++] = (Point){p.x, p.y-1};
+    }
+}
+
+
 const int faces[6][4] = {
     {0,1,3,2}, // front
     {4,5,7,6}, // back
@@ -389,26 +433,8 @@ void render_software() {
                     screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
                 }
 
-                float min_px = screen_x[0], max_px = screen_x[0];
-                float min_py = screen_y[0], max_py = screen_y[0];
-                for (int i = 1; i < 8; i++) {
-                    if (screen_x[i] < min_px) min_px = screen_x[i];
-                    if (screen_x[i] > max_px) max_px = screen_x[i];
-                    if (screen_y[i] < min_py) min_py = screen_y[i];
-                    if (screen_y[i] > max_py) max_py = screen_y[i];
-                }
-
-                int min_px_i = (int)(min_px);
-                int max_px_i = (int)(max_px);
-                int min_py_i = (int)(min_py);
-                int max_py_i = (int)(max_py);
-
-                if (min_px_i < 0) min_px_i = 0;
-                if (max_px_i >= H_RESOLUTION) max_px_i = H_RESOLUTION - 1;
-                if (min_py_i < 0) min_py_i = 0;
-                if (max_py_i >= V_RESOLUTION) max_py_i = V_RESOLUTION - 1;
-                
                 uint8_t face_enable[6] = {0};
+                uint16_t face_palette[6] = {0};
 
                 for(int i = 0; i < 6; i++) {
                     struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
@@ -417,89 +443,43 @@ void render_software() {
                     diff.y += normal[i].y == 1;
                     diff.z += normal[i].z == 1;
 
+                    // normalize(&diff);
+
                     float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
                     face_enable[i] = dot < 0;
+
+                    // if(face_enable[i]) {
+                    //     uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
+                    //     uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
+                    //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
+                    //     face_palette[i] = blue | (green << 5) | (red << 11);
+                    // }
+                    
                 }
 
-                for (int py = min_py_i; py <= max_py_i; py++) {
-                    int left = min_px_i, right = max_px_i;
-                    int found_left = 0, found_right = 0;
-                    // Find leftmost inside pixel
-                    for (; left <= max_px_i; left++) {
-                        int inside = 0;
-                        for (int f = 0; f < 6; f++) {
-                        
-                            
-                            if(!face_enable[f])
-                                continue;
-
-            
-                            int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
-                            float sx[4] = {screen_x[i0], screen_x[i1], screen_x[i2], screen_x[i3]};
-                            float sy[4] = {screen_y[i0], screen_y[i1], screen_y[i2], screen_y[i3]};
-                            int sign = 0;
-                            uint8_t set_sign = 0;
-                            for (int e = 0; e < 4; e++) {
-                                int next = (e + 1) % 4;
-                                float ex = sx[next] - sx[e];
-                                float ey = sy[next] - sy[e];
-                                float pxex = left - sx[e];
-                                float pyey = py - sy[e];
-                                float cross = ex * pyey - ey * pxex;
-                                if (cross == 0) continue;
-                                if (set_sign == 0 && ++set_sign) sign = (cross > 0) ? 1 : -1;
-                                else if ((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
-                                    sign = 0;
-                                    break;
-                                }
-                            }
-                            if (sign != 0) {
-                                inside = 1;
-                                break;
-                            }
-                        }
-                        if (inside) { found_left = 1; break; }
-                    }
-                    
-                    // Find rightmost inside pixel
-                    for (; right >= min_px_i; right--) {
-                        int inside = 0;
-                        for (int f = 0; f < 6; f++) {
-                            
-                            if(!face_enable[f])
-                                continue;
-
-                            int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
-                            float sx[4] = {screen_x[i0], screen_x[i1], screen_x[i2], screen_x[i3]};
-                            float sy[4] = {screen_y[i0], screen_y[i1], screen_y[i2], screen_y[i3]};
-                            int sign = 0;
-                            uint8_t set_sign = 0;
-                            for (int e = 0; e < 4; e++) {
-                                int next = (e + 1) % 4;
-                                float ex = sx[next] - sx[e];
-                                float ey = sy[next] - sy[e];
-                                float pxex = right - sx[e];
-                                float pyey = py - sy[e];
-                                float cross = ex * pyey - ey * pxex;
-                                if (cross == 0) continue;
-                                if (set_sign == 0 && ++set_sign) sign = (cross > 0) ? 1 : -1;
-                                else if ((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
-                                    sign = 0;
-                                    break;
-                                }
-                            }
-                            if (sign != 0) {
-                                inside = 1;
-                                break;
-                            }
-                        }
-                        if (inside) { found_right = 1; break; }
-                    }
-                    if (found_left && found_right && left <= right) {
-                        for (int px = left; px <= right; px++) {
-                            plot_pixel(px, py, palette_data[palette]);
-                        }
-                    }
+                for(int i = 0; i < 6; i++) {
+                    if(!face_enable[i])
+                        continue;
+                    // Example: Draw lines and flood fill for one face of a voxel (replace with your loop as needed)
+                    // Pick a face index, e.g., 0 for front face
+                    int i0 = faces[i][0], i1 = faces[i][1], i2 = faces[i][2], i3 = faces[i][3];
+                    // Projected screen coordinates for the corners (assume screen_x, screen_y are filled for the voxel)
+                    int x0 = (int)screen_x[i0], y0 = (int)screen_y[i0];
+                    int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
+                    int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
+                    int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
+                    uint16_t color = palette_data[palette];
+                    // Draw the four edges
+                    draw_line(x0, y0, x1, y1, color);
+                    draw_line(x1, y1, x2, y2, color);
+                    draw_line(x2, y2, x3, y3, color);
+                    draw_line(x3, y3, x0, y0, color);
+                    // Compute center point (mean of four corners)
+                    int cx = (x0 + x1 + x2 + x3) / 4;
+                    int cy = (y0 + y1 + y2 + y3) / 4;
+                    // Flood fill from center
+                    flood_fill(cx, cy, color);
+                
                 }
             }
         }
