@@ -211,6 +211,15 @@ const int faces[6][4] = {
     {1,3,7,5}  // right
 };
 
+const struct Vector normal[6] = {
+    {0.0f, 0.0f, 1.0f},   // front
+    {0.0f, 0.0f, -1.0f},  // back
+    {0.0f, -1.0f, 0.0f},   // top
+    {0.0f, 1.0f, 0.0f},  // bottom
+    {-1.0f, 0.0f, 0.0f},  // left
+    {1.0f, 0.0f, 0.0f}    // right
+};
+
 void render_software() {
     // Update software camera before render
     update_camera();
@@ -289,17 +298,17 @@ void render_software() {
     */
 
     // Ray-casting based implementation, optimization with 3-corner-camera-ray interpolation and partition-and-floodfill method 
-    uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
-    struct Ray cameraRay;
-    cameraRay.origin = camera.pos;
+    // uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
+    // struct Ray cameraRay;
+    // cameraRay.origin = camera.pos;
     
-    struct Vector topLeft, bottomLeft, topRight;
-    viewing_ray(0, 0, &topLeft);
-    viewing_ray(H_RESOLUTION - 1, 0, &topRight);
-    viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
+    // struct Vector topLeft, bottomLeft, topRight;
+    // viewing_ray(0, 0, &topLeft);
+    // viewing_ray(H_RESOLUTION - 1, 0, &topRight);
+    // viewing_ray(0, V_RESOLUTION - 1, &bottomLeft);
 
-    struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
-    struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
+    // struct Vector horizontalVec = divide_vector(sub_vector(topRight, topLeft), H_RESOLUTION - 1);
+    // struct Vector verticalVec = divide_vector(sub_vector(bottomLeft, topLeft), V_RESOLUTION - 1);
 
     // for(int x = 0; x < SIDE_LEN; x++) {
     //     for(int z = 0; z < SIDE_LEN; z++) {
@@ -334,6 +343,17 @@ void render_software() {
     const float V_RESOLUTION_HALF = (V_RESOLUTION >> 1);
     const float H_RESOLUTION_HALF = (H_RESOLUTION >> 1);
 
+    // Compute if a face is pointing at the camera or not
+    //     const int faces[6][4] = {
+    //     {0,1,3,2}, // front
+    //     {4,5,7,6}, // back
+    //     {0,1,5,4}, // top
+    //     {2,3,7,6}, // bottom
+    //     {0,2,6,4}, // left
+    //     {1,3,7,5}  // right
+    // };
+
+
     for(uint8_t x = 0; x < SIDE_LEN; x++) {
         for(uint8_t z = 0; z < SIDE_LEN; z++) {
             for(uint8_t y = 0; y < SIDE_LEN; y++) {
@@ -361,8 +381,9 @@ void render_software() {
                     float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
                     float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
 
-                    float x_frac = (cam_x * frac_x_const) / (cam_z);
-                    float y_frac = -(cam_y * frac_y_const) / (cam_z);
+                    float cam_z_inv = 1 / cam_z;
+                    float x_frac = (cam_x * frac_x_const) * cam_z_inv;
+                    float y_frac = -(cam_y * frac_y_const) * cam_z_inv;
 
                     screen_x[i] = (x_frac + 1.0f) * H_RESOLUTION_HALF;
                     screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
@@ -386,6 +407,19 @@ void render_software() {
                 if (max_px_i >= H_RESOLUTION) max_px_i = H_RESOLUTION - 1;
                 if (min_py_i < 0) min_py_i = 0;
                 if (max_py_i >= V_RESOLUTION) max_py_i = V_RESOLUTION - 1;
+                
+                uint8_t face_enable[6] = {0};
+
+                for(int i = 0; i < 6; i++) {
+                    struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
+
+                    diff.x += normal[i].x == 1;
+                    diff.y += normal[i].y == 1;
+                    diff.z += normal[i].z == 1;
+
+                    float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
+                    face_enable[i] = dot < 0;
+                }
 
                 for (int py = min_py_i; py <= max_py_i; py++) {
                     int left = min_px_i, right = max_px_i;
@@ -394,6 +428,12 @@ void render_software() {
                     for (; left <= max_px_i; left++) {
                         int inside = 0;
                         for (int f = 0; f < 6; f++) {
+                        
+                            
+                            if(!face_enable[f])
+                                continue;
+
+            
                             int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
                             float sx[4] = {screen_x[i0], screen_x[i1], screen_x[i2], screen_x[i3]};
                             float sy[4] = {screen_y[i0], screen_y[i1], screen_y[i2], screen_y[i3]};
@@ -425,6 +465,10 @@ void render_software() {
                     for (; right >= min_px_i; right--) {
                         int inside = 0;
                         for (int f = 0; f < 6; f++) {
+                            
+                            if(!face_enable[f])
+                                continue;
+
                             int i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2], i3 = faces[f][3];
                             float sx[4] = {screen_x[i0], screen_x[i1], screen_x[i2], screen_x[i3]};
                             float sy[4] = {screen_y[i0], screen_y[i1], screen_y[i2], screen_y[i3]};
