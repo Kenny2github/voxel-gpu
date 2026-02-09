@@ -42,7 +42,7 @@ int main(void) {
     // fill_voxel_range(firstPos, endPos, 0x0);
     
     set_voxel(startPos, 1);
-    // set_voxel((v_pos){33, 32, 32}, 1);
+    // set_voxel((v_pos){34, 32, 32}, 1);
     // load_monkey();
     clear_screen_software();
     wait_for_vsync_software(); // wait_for_vsync();
