@@ -264,10 +264,6 @@ void render_software() {
     // Update software camera before render
     update_camera();
 
-    int res_offset = (PIXEL_BUF_CTRL->x_resolution == 160) ? 1 : 0;
-    int x_factor = 0x1 << res_offset;
-    int y_factor = 0x1 << res_offset;
-
     // Ray-marching based implementation 
     /*
     for(int x = 0; x < H_RESOLUTION; x++) {
