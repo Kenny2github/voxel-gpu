@@ -24,7 +24,7 @@ enum render_status : uint32_t { RS_READY, RS_ERROR };
 
 #define VOXEL_BITS 2
 #define COORD_BITS 10
-#define COLOR_BITS 16
+#define PIXEL_BITS 16
 
 PA_STRUCT gpu_voxel {
     uint32_t voxel_id : VOXEL_BITS;
@@ -36,11 +36,16 @@ assert_word_size(struct gpu_voxel, "Voxel type");
 
 PA_STRUCT gpu_palette_entry {
     uint32_t voxel_id : VOXEL_BITS;
-uint32_t:
-    (sizeof(uint32_t) * 8 - COLOR_BITS - VOXEL_BITS);
-    uint32_t color : COLOR_BITS;
+    uint32_t : (sizeof(uint32_t) * 8 - PIXEL_BITS - VOXEL_BITS);
+    uint32_t color : PIXEL_BITS;
 };
 assert_word_size(struct gpu_palette_entry, "Palette entry type");
+
+PA_STRUCT gpu_start_coords {
+    uint16_t row;
+    uint16_t col;
+};
+assert_word_size(struct gpu_start_coords, "Start coordinates type");
 
 PA_STRUCT gpu_registers {
     /**
@@ -56,19 +61,15 @@ PA_STRUCT gpu_registers {
     /**
 	 * Write to this register to write out the pixel at the written coordinate
      * to the written memory address (in X-Y addressing mode; the coordinate
-     * must fall within the current chunk of pixels)
+     * must fall within the current chunk of pixels for it to be written)
 	 */
     unsigned char *write_pixel;
     /*
-     * Row of first pixel in chunk
+     * Coordinates of first pixel in chunk
      */
-    uint32_t start_row;
-    /*
-     * Column of first pixel in chunk
-     */
-    uint32_t start_col;
+    struct gpu_start_coords start_coords;
     // reserved space
-    uint32_t _reserved_0x14_0x3C[10];
+    uint32_t _reserved_0x10_0x3C[11];
     /*
      * Status of render (read only)
      */
