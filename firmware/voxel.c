@@ -9,8 +9,8 @@ void set_voxel(v_pos pos, uint8_t palette) {
     // ++GPU->voxel_count;
 
     /* sparse implementation : 10b per axis, 2b for palette */
-    uint32_t write_val = pos.x & 0x2FF << 22 | pos.y & 0x2FF << 12 | pos.z & 0x2FF << 2 | palette & 3;
-    memset(VOXEL_SPACE_START + GPU->voxel_count * 4, write_val, 4);
+    uint32_t write_val = pos.x & 0x3FF << 22 | pos.y & 0x3FF << 12 | pos.z & 0x3FF << 2 | palette & 3;
+    *(uint32_t*)(VOXEL_SPACE_START + GPU->voxel_count * 4) = write_val;
     ++GPU->voxel_count;
 }
 
