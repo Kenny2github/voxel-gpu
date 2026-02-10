@@ -31,6 +31,7 @@ module pixel_shader #(
 );
   enum logic [3:0] {
     IDLE,
+    DIVIDE,
     MEASURE,
     STORE_VOXEL,
     DONE_RASTERIZING,
@@ -46,7 +47,8 @@ module pixel_shader #(
 
   logic [7:0] cycle_counter;
 
-  logic signed [COORD_BITS+FRAC_BITS-1:0] AOx, AOy, AOz, BOx, BOy, BOz, tAx, tAy, tAz, tBx, tBy, tBz, closest_t, t_min, t_max;
+  logic signed [COORD_BITS+FRAC_BITS-1:0]
+      AOx, AOy, AOz, BOx, BOy, BOz, tAx, tAy, tAz, tBx, tBy, tBz, closest_t, t_min, t_max;
 
   assign AOx = {voxel_x, FRAC_BITS'(0)} - cam_pos_x;
   assign AOy = {voxel_y, FRAC_BITS'(0)} - cam_pos_y;
@@ -55,12 +57,105 @@ module pixel_shader #(
   assign BOy = {voxel_y + 1'b1, FRAC_BITS'(0)} - cam_pos_y;
   assign BOz = {voxel_z + 1'b1, FRAC_BITS'(0)} - cam_pos_z;
 
-  assign tAx = {AOx, FRAC_BITS'(0)} / (cam_look_x || 1);
-  assign tAy = {AOy, FRAC_BITS'(0)} / (cam_look_y || 1);
-  assign tAz = {AOz, FRAC_BITS'(0)} / (cam_look_z || 1);
-  assign tBx = {BOx, FRAC_BITS'(0)} / (cam_look_x || 1);
-  assign tBy = {BOy, FRAC_BITS'(0)} / (cam_look_y || 1);
-  assign tBz = {BOz, FRAC_BITS'(0)} / (cam_look_z || 1);
+  logic div_start;
+  wand  div_valid;
+
+  div #(
+      .WIDTH(COORD_BITS + FRAC_BITS),
+      .FBITS(FRAC_BITS)
+  ) divAx (
+      .clk(clock),
+      .rst(reset),
+      .start(div_start),
+      .valid(div_valid),
+      .busy(),
+      .done(div_valid),
+      .dbz(),
+      .ovf(),
+      .a(AOx),
+      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRAC_BITS)'(1)),
+      .val(tAx)
+  );
+  div #(
+      .WIDTH(COORD_BITS + FRAC_BITS),
+      .FBITS(FRAC_BITS)
+  ) divAy (
+      .clk(clock),
+      .rst(reset),
+      .start(div_start),
+      .valid(div_valid),
+      .busy(),
+      .done(div_valid),
+      .dbz(),
+      .ovf(),
+      .a(AOy),
+      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRAC_BITS)'(1)),
+      .val(tAy)
+  );
+  div #(
+      .WIDTH(COORD_BITS + FRAC_BITS),
+      .FBITS(FRAC_BITS)
+  ) divAz (
+      .clk(clock),
+      .rst(reset),
+      .start(div_start),
+      .valid(div_valid),
+      .busy(),
+      .done(div_valid),
+      .dbz(),
+      .ovf(),
+      .a(AOz),
+      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRAC_BITS)'(1)),
+      .val(tAz)
+  );
+  div #(
+      .WIDTH(COORD_BITS + FRAC_BITS),
+      .FBITS(FRAC_BITS)
+  ) divBx (
+      .clk(clock),
+      .rst(reset),
+      .start(div_start),
+      .valid(div_valid),
+      .busy(),
+      .done(div_valid),
+      .dbz(),
+      .ovf(),
+      .a(BOx),
+      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRAC_BITS)'(1)),
+      .val(tBx)
+  );
+  div #(
+      .WIDTH(COORD_BITS + FRAC_BITS),
+      .FBITS(FRAC_BITS)
+  ) divBy (
+      .clk(clock),
+      .rst(reset),
+      .start(div_start),
+      .valid(div_valid),
+      .busy(),
+      .done(div_valid),
+      .dbz(),
+      .ovf(),
+      .a(BOy),
+      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRAC_BITS)'(1)),
+      .val(tBy)
+  );
+  div #(
+      .WIDTH(COORD_BITS + FRAC_BITS),
+      .FBITS(FRAC_BITS)
+  ) divBz (
+      .clk(clock),
+      .rst(reset),
+      .start(div_start),
+      .valid(div_valid),
+      .busy(),
+      .done(div_valid),
+      .dbz(),
+      .ovf(),
+      .a(BOz),
+      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRAC_BITS)'(1)),
+      .val(tBz)
+  );
 
   always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
@@ -73,19 +168,22 @@ module pixel_shader #(
   always_comb begin
     case (state)
       IDLE: begin
-        if (do_rasterize) next_state = MEASURE;
+        if (do_rasterize) next_state = DIVIDE;
         else if (do_shade) next_state = STORE_PIXEL;
         else next_state = IDLE;
       end
+      DIVIDE: begin
+        if (div_valid) next_state = MEASURE;
+        else next_state = DIVIDE;
+      end
       MEASURE: begin
-        if (cycle_counter == 8'd7) next_state = STORE_VOXEL;
-        else next_state = MEASURE;
+        next_state = STORE_VOXEL;
       end
       STORE_VOXEL: begin
         next_state = DONE_RASTERIZING;
       end
       DONE_RASTERIZING: begin
-        if (do_rasterize) next_state = MEASURE;
+        if (do_rasterize) next_state = DIVIDE;
         else next_state = IDLE;
       end
       STORE_PIXEL: begin
@@ -103,29 +201,28 @@ module pixel_shader #(
       cycle_counter <= '0;
       _pixel <= '0;
       closest_voxel <= '0;
-      closest_t <= (COORD_BITS+FRAC_BITS-1)'('1);
-      t_min <= (COORD_BITS+FRAC_BITS-1)'('1);
-      t_max <= ~(COORD_BITS+FRAC_BITS-1)'('1);
+      closest_t <= (COORD_BITS + FRAC_BITS - 1)'('1);
+      t_min <= (COORD_BITS + FRAC_BITS - 1)'('1);
+      t_max <= ~(COORD_BITS + FRAC_BITS - 1)'('1);
     end else begin
       case (state)
         IDLE: begin
-          closest_t <= (COORD_BITS+FRAC_BITS-1)'('1);
-          t_min <= (COORD_BITS+FRAC_BITS-1)'('1);
-          t_max <= ~(COORD_BITS+FRAC_BITS-1)'('1);
+          closest_t <= (COORD_BITS + FRAC_BITS - 1)'('1);
+          t_min <= (COORD_BITS + FRAC_BITS - 1)'('1);
+          t_max <= ~(COORD_BITS + FRAC_BITS - 1)'('1);
           cycle_counter <= '0;
         end
+        DIVIDE: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          t_min <= ((AOx < BOx) ? tAx : tBx) > ((AOy < BOy) ? tAy : tBy) ? ((AOx < BOx) ? tAx : tBx) : ((AOy < BOy) ? tAy : tBy);
+          t_max <= ((AOx < BOx) ? tAx : tBx) < ((AOy < BOy) ? tAy : tBy) ? ((AOx < BOx) ? tAx : tBx) : ((AOy < BOy) ? tAy : tBy);
+        end
         MEASURE: begin
-          cycle_counter <= cycle_counter + 1'b1;
-          if (cycle_counter == 8'd6) begin
-            t_min <= ((AOx < BOx) ? tAx : tBx) > ((AOy < BOy) ? tAy : tBy) ? ((AOx < BOx) ? tAx : tBx) : ((AOy < BOy) ? tAy : tBy);
-            t_max <= ((AOx < BOx) ? tAx : tBx) < ((AOy < BOy) ? tAy : tBy) ? ((AOx < BOx) ? tAx : tBx) : ((AOy < BOy) ? tAy : tBy);
-          end else if (cycle_counter == 8'd7) begin
-            t_min <= t_min > ((AOz < BOz) ? tAz : tBz) ? t_min : ((AOz < BOz) ? tAz : tBz);
-            t_max <= t_max < ((AOz < BOz) ? tAz : tBz) ? t_max : ((AOz < BOz) ? tAz : tBz);
-          end
+          t_min <= t_min > ((AOz < BOz) ? tAz : tBz) ? t_min : ((AOz < BOz) ? tAz : tBz);
+          t_max <= t_max < ((AOz < BOz) ? tAz : tBz) ? t_max : ((AOz < BOz) ? tAz : tBz);
         end
         STORE_VOXEL: begin
-          if (t_min < t_max && t_min < closest_t) begin  // intersection!
+          if (t_min <= t_max && t_min < closest_t) begin  // intersection!
             closest_t <= t_min;
             closest_voxel <= voxel_id;
           end
@@ -133,14 +230,24 @@ module pixel_shader #(
         STORE_PIXEL: begin
           if (voxel_id == closest_voxel) _pixel <= palette_entry;
         end
+        DONE_RASTERIZING: begin
+          cycle_counter <= '0;
+        end
+        DONE_SHADING: begin
+          cycle_counter <= '0;
+        end
       endcase
     end
   end
 
   always_comb begin
+    div_start = 1'b0;
     rasterizing_done = 1'b0;
     shading_done = 1'b0;
     case (state)
+      DIVIDE: begin
+        div_start = cycle_counter < 8'd2;
+      end
       DONE_RASTERIZING: begin
         rasterizing_done = 1'b1;
       end
