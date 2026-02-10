@@ -20,7 +20,7 @@ PA_STRUCT _vec3 {
     uint32_t x, y, z;
 };
 
-enum render_status : uint32_t { RS_READY, RS_ERROR };
+enum render_status : uint32_t { RS_READY = 0, RS_WORKING = 1, RS_ERROR = 2 };
 
 #define VOXEL_BITS 2
 #define COORD_BITS 10
@@ -64,16 +64,23 @@ PA_STRUCT gpu_registers {
      * must fall within the current chunk of pixels for it to be written)
 	 */
     unsigned char *write_pixel;
-    /*
-     * Coordinates of first pixel in chunk
+    /**
+     * Write to this register to update the coordinates of the first pixel in
+     * the chunk (triggers linear interpolation routines)
      */
     struct gpu_start_coords start_coords;
     // reserved space
     uint32_t _reserved_0x10_0x3C[11];
-    /*
-     * Status of render (read only)
-     */
-    enum render_status render_status;
+    union {
+        /**
+         * Status of render (read only); reading clears interrupt
+         */
+        enum render_status render_status;
+        /**
+         * Write 1 to this register to clear an error state
+         */
+        uint32_t clear_error;
+    };
     /**
      * Position and orientation of the camera
      */
