@@ -47,14 +47,9 @@ module testbench #(
 
     do_rasterize = 1'b0;
     do_shade = 1'b0;
-    voxel_x = 8'b0;
-    voxel_y = 8'b0;
-    voxel_z = 8'b0;
-    voxel_id = 8'b1;
-    palette_entry = 8'hff;
-    cam_pos_x = {8'd2, 8'd0};
-    cam_pos_y = {8'd2, 8'd0};
-    cam_pos_z = {8'd2, 8'd0};
+    cam_pos_x = {8'd4, 8'd0};
+    cam_pos_y = {8'd4, 8'd0};
+    cam_pos_z = {8'd4, 8'd0};
     cam_look_x = {8'(-1), 8'd0};
     cam_look_y = {8'(-1), 8'd0};
     cam_look_z = {8'(-1), 8'd0};
@@ -65,11 +60,44 @@ module testbench #(
     reset = 1'b0;
 
     do_rasterize = 1'b1;
+    // rasterize first voxel
+    voxel_x = 8'd0;
+    voxel_y = 8'd0;
+    voxel_z = 8'd0;
+    voxel_id = 8'd1;
     @(posedge rasterizing_done);
+    @(posedge clock);
+    // rasterize second voxel
+    voxel_x  = 8'd2;
+    voxel_y  = 8'd2;
+    voxel_z  = 8'd2;
+    voxel_id = 8'd2;
+    @(posedge rasterizing_done);
+    @(posedge clock);
+    // rasterize first voxel a second time just for kicks
+    // (to confirm it's actually checking min distance
+    // and not just the last voxel rasterized)
+    voxel_x  = 8'd0;
+    voxel_y  = 8'd0;
+    voxel_z  = 8'd0;
+    voxel_id = 8'd1;
+    @(posedge rasterizing_done);
+    @(posedge clock);
     do_rasterize = 1'b0;
-    @(negedge clock);
+
+    // shade first voxel
+    voxel_id = 8'd1;
+    palette_entry = 8'h11;
     do_shade = 1'b1;
     @(posedge shading_done);
+    @(posedge clock);
+    // shade second voxel
+    voxel_id = 8'd2;
+    palette_entry = 8'h22;
+    @(posedge shading_done);
+    @(posedge clock);
+
+    // one more cycle for good measure
     do_shade = 1'b0;
     @(posedge clock);
 
