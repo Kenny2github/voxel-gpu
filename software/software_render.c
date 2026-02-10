@@ -364,7 +364,8 @@ void render_software() {
             corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
             
             // Somehow optimize by projecting only one vertex, as a voxel's size is known
-            float screen_x[8], screen_y[8];
+            float screen_x[8] = {-1}, screen_y[8] = {-1};
+            uint8_t good_point[8] = {0};
 
             uint8_t inside = 0;
             for (int i = 0; i < 8; i++) {
@@ -374,13 +375,18 @@ void render_software() {
                 diff.z = corners[i].z - camera.pos.z;
 
                 float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
+                if(cam_z < focal_length)
+                    continue;
+                
+                if(!inside && cam_z >= focal_length)
+                    inside = 1;
+                
+                good_point[i] = 1;
                 float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
                 float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
 
+                
                 float cam_z_inv = 1 / cam_z;
-                if(!inside && cam_z > 0)
-                    inside = 1;
-
                 float x_frac = (cam_x * frac_x_const) * cam_z_inv;
                 float y_frac = -(cam_y * frac_y_const) * cam_z_inv;
 
@@ -389,7 +395,8 @@ void render_software() {
             }
             if(!inside)
                 continue;
-
+            // printf("screen_y: %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n", screen_y[0], screen_y[1], screen_y[2], screen_y[3], screen_y[4], screen_y[5], screen_y[6], screen_y[7]);
+        
             uint8_t face_enable = 0;
             // uint16_t face_palette[6] = {0};
 
@@ -420,21 +427,21 @@ void render_software() {
                     continue;
 
                 int i0 = faces[i][0], i1 = faces[i][1], i2 = faces[i][2], i3 = faces[i][3];
-                
+
+                if(!good_point[i0] || !good_point[i1] || !good_point[i2] || !good_point[i3])
+                    continue;
 
                 int x0 = (int)screen_x[i0], y0 = (int)screen_y[i0];
                 int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
                 int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
                 int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
-                if((x0 < 0 && x1 < 0 && x2 < 0 && x3 < 0) ||
-                   (x0 >= H_RESOLUTION && x1 >= H_RESOLUTION && x2 >= H_RESOLUTION && x3 >= H_RESOLUTION) ||
+        
+                if((x0 >= H_RESOLUTION && x1 >= H_RESOLUTION && x2 >= H_RESOLUTION && x3 >= H_RESOLUTION) ||
                    (y0 < 0 && y1 < 0 && y2 < 0 && y3 < 0) ||
                    (y0 >= V_RESOLUTION && y1 >= V_RESOLUTION && y2 >= V_RESOLUTION && y3 >= V_RESOLUTION))
                     continue;
 
-                    
-                if(x0 < 0 && x1 < 0 && x2 < 0 && x3 < 0 && y0 < 0 && y1 < 0 && y2 < 0 && y3 < 0)
-                    continue;
+       
                 uint16_t color = palette_data[palette];
 
                 draw_line(x0, y0, x1, y1, color);
@@ -501,7 +508,7 @@ void render_software() {
             
                 }
                 // printf("Point %d %d %d\n", cx, cy, color);
-                // flood_fill(cx, cy, color);
+                flood_fill(cx, cy, color);
             
             }
             voxel_pointer += 1;
