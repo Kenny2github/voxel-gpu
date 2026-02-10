@@ -232,7 +232,7 @@ void flood_fill(int x, int y, uint16_t color) {
         Point p = stack[--stack_size];
         
         if (p.x < 0 || p.x >= H_RESOLUTION || p.y < 0 || p.y >= V_RESOLUTION) continue;
-        if (get_pixel(p.x, p.y) != 0) continue;
+        if (get_pixel(p.x, p.y) == color) continue;
 
         plot_pixel(p.x, p.y, color);
         stack[stack_size++] = (Point){p.x+1, p.y};
@@ -398,7 +398,7 @@ void render_software() {
             // printf("screen_y: %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n", screen_y[0], screen_y[1], screen_y[2], screen_y[3], screen_y[4], screen_y[5], screen_y[6], screen_y[7]);
         
             uint8_t face_enable = 0;
-            // uint16_t face_palette[6] = {0};
+            uint16_t face_palette[6] = {0};
 
             for(int i = 0; i < 6; i++) {
                 struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
@@ -407,17 +407,17 @@ void render_software() {
                 diff.y += normal[i].y == 1;
                 diff.z += normal[i].z == 1;
 
-                // normalize(&diff);
+                normalize(&diff);
 
                 float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
                 face_enable |= (dot < 0) << i;
 
-                // if((face_enable >> i) & 0b1)) {
-                //     uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
-                //     uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
-                //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
-                //     face_palette[i] = blue | (green << 5) | (red << 11);
-                // }
+                if((face_enable >> i) & 0b1) {
+                    uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
+                    uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
+                    uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
+                    face_palette[i] = blue | (green << 5) | (red << 11);
+                }
                 
             }
             
@@ -442,7 +442,7 @@ void render_software() {
                     continue;
 
        
-                uint16_t color = palette_data[palette];
+                uint16_t color = face_palette[i];
 
                 draw_line(x0, y0, x1, y1, color);
                 draw_line(x1, y1, x2, y2, color);
