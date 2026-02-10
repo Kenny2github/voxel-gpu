@@ -10,7 +10,8 @@ void wait_for_vsync() {
     PIXEL_BUF_CTRL->buffer = 0x1;
     while (PIXEL_BUF_CTRL->status.s);
 
-    compute_fps();
+    // compute_fps();
+    ++frames;
 
     GPU->pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
 }

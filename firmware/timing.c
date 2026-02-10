@@ -2,8 +2,9 @@
 #include "interrupts.h"
 #include "hardware/hardware.h"
 
-double frame_time;
-int fps;
+// double frame_time;
+// int fps;
+int frames;
 unsigned int fw_time;
 double gpu_latency;
 
@@ -34,18 +35,24 @@ static void handle_timer_interrupt(void) {
 	// reset interrupt bit by writting 1 to it
 	MPCORE_PRIV_TIMER->f = 1;
 	struct hex3_hex0_registers frames_display;
-	frames_display.hex0 = num_to_hex[fps % 10];
-	frames_display.hex1 = num_to_hex[(fps / 10) % 10];
-	frames_display.hex2 = num_to_hex[(fps / 100) % 10];
-	frames_display.hex3 = num_to_hex[(fps / 1000) % 10];
+	// frames_display.hex0 = num_to_hex[fps % 10];
+	// frames_display.hex1 = num_to_hex[(fps / 10) % 10];
+	// frames_display.hex2 = num_to_hex[(fps / 100) % 10];
+	// frames_display.hex3 = num_to_hex[(fps / 1000) % 10];
+	frames_display.hex0 = num_to_hex[frames % 10];
+	frames_display.hex1 = num_to_hex[(frames / 10) % 10];
+	frames_display.hex2 = num_to_hex[(frames / 100) % 10];
+	frames_display.hex3 = num_to_hex[(frames / 1000) % 10];
 	*HEX3_HEX0 = frames_display;
+	frames = 0;
 	++fw_time;
-	if (fw_time % 5 == 0) printf("GPU latency: %e sec\n", gpu_latency);
+	// if (fw_time % 5 == 0) printf("GPU latency: %e sec\n", gpu_latency);
 }
 
 void enable_timer(void) {
-	frame_time = 0;
-	fps = 0;
+	// frame_time = 0;
+	// fps = 0;
+	frames = 0;
 	fw_time = 0;
 	gpu_latency = 0;
 	config_interrupt(PRIVATE_TIMER_IRQ, NULL, &handle_timer_interrupt);
@@ -63,12 +70,12 @@ uint32_t cur_time(void) {
 	return MPCORE_PRIV_TIMER->counter;
 }
 
-void compute_fps() {
-    const float smoothing = 0.9;
+// void compute_fps() {
+//     const float smoothing = 0.9;
 
-    double new_time = cur_time() / 1E6 + fw_time;
-    if (frame_time != 0) {
-        fps = fps * smoothing + (1 - smoothing) / (new_time - frame_time);
-    }
-    frame_time = new_time;
-}
+//     double new_time = cur_time() / 1E6 + fw_time;
+//     if (frame_time != 0) {
+//         fps = fps * smoothing + (1 - smoothing) / (new_time - frame_time);
+//     }
+//     frame_time = new_time;
+// }
