@@ -70,7 +70,8 @@ void viewing_ray(
 }
 
 void plot_pixel(int x, int y, short int line_color) {
-    *(short int *)(pixel_buffer_software + (y << 10) + (x << 1)) = line_color;
+    if(x >=0 && y >= 0 && x < H_RESOLUTION && y < V_RESOLUTION) 
+        *(short int *)(pixel_buffer_software + (y << 10) + (x << 1)) = line_color;
 }
 
 void clear_screen_software() {
@@ -209,7 +210,7 @@ void draw_line(int x0, int y0, int x1, int y1, uint16_t color) {
     int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
     int err = dx + dy, e2;
     while (1) {
-        if(x0 < H_RESOLUTION && y0 < V_RESOLUTION) plot_pixel(x0, y0, color);
+        plot_pixel(x0, y0, color);
         if (x0 == x1 && y0 == y1) break;
         e2 = 2 * err;
         if (e2 >= dy) { err += dy; x0 += sx; }
@@ -364,6 +365,8 @@ void render_software() {
             
             // Somehow optimize by projecting only one vertex, as a voxel's size is known
             float screen_x[8], screen_y[8];
+
+            uint8_t inside = 0;
             for (int i = 0; i < 8; i++) {
                 struct Vector diff;
                 diff.x = corners[i].x - camera.pos.x;
@@ -375,12 +378,17 @@ void render_software() {
                 float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
 
                 float cam_z_inv = 1 / cam_z;
+                if(!inside && cam_z > 0)
+                    inside = 1;
+
                 float x_frac = (cam_x * frac_x_const) * cam_z_inv;
                 float y_frac = -(cam_y * frac_y_const) * cam_z_inv;
 
                 screen_x[i] = (x_frac + 1.0f) * H_RESOLUTION_HALF;
                 screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
             }
+            if(!inside)
+                continue;
 
             uint8_t face_enable = 0;
             // uint16_t face_palette[6] = {0};
@@ -412,11 +420,21 @@ void render_software() {
                     continue;
 
                 int i0 = faces[i][0], i1 = faces[i][1], i2 = faces[i][2], i3 = faces[i][3];
+                
 
                 int x0 = (int)screen_x[i0], y0 = (int)screen_y[i0];
                 int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
                 int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
                 int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
+                if((x0 < 0 && x1 < 0 && x2 < 0 && x3 < 0) ||
+                   (x0 >= H_RESOLUTION && x1 >= H_RESOLUTION && x2 >= H_RESOLUTION && x3 >= H_RESOLUTION) ||
+                   (y0 < 0 && y1 < 0 && y2 < 0 && y3 < 0) ||
+                   (y0 >= V_RESOLUTION && y1 >= V_RESOLUTION && y2 >= V_RESOLUTION && y3 >= V_RESOLUTION))
+                    continue;
+
+                    
+                if(x0 < 0 && x1 < 0 && x2 < 0 && x3 < 0 && y0 < 0 && y1 < 0 && y2 < 0 && y3 < 0)
+                    continue;
                 uint16_t color = palette_data[palette];
 
                 draw_line(x0, y0, x1, y1, color);
@@ -483,7 +501,7 @@ void render_software() {
             
                 }
                 // printf("Point %d %d %d\n", cx, cy, color);
-                flood_fill(cx, cy, color);
+                // flood_fill(cx, cy, color);
             
             }
             voxel_pointer += 1;
