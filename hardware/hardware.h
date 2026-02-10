@@ -16,46 +16,67 @@
 
 void memcpy_32(volatile uint32_t *dest, uint32_t *src, size_t n);
 
-struct __attribute__((__packed__, __aligned__(4))) _vec3 {
+PA_STRUCT _vec3 {
     uint32_t x, y, z;
 };
 
-struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
+enum render_status : uint32_t { RS_READY, RS_ERROR };
+
+#define VOXEL_BITS 2
+#define COORD_BITS 10
+#define COLOR_BITS 16
+
+PA_STRUCT gpu_voxel {
+    uint32_t voxel_id : VOXEL_BITS;
+    uint32_t z : COORD_BITS;
+    uint32_t y : COORD_BITS;
+    uint32_t x : COORD_BITS;
+};
+assert_word_size(struct gpu_voxel, "Voxel type");
+
+PA_STRUCT gpu_palette_entry {
+    uint32_t voxel_id : VOXEL_BITS;
+uint32_t:
+    (sizeof(uint32_t) * 8 - COLOR_BITS - VOXEL_BITS);
+    uint32_t color : COLOR_BITS;
+};
+assert_word_size(struct gpu_palette_entry, "Palette entry type");
+
+PA_STRUCT gpu_registers {
     /**
-	 * Starting address of back pixel buffer
+     * Write to this register to rasterize the written voxel
+     * at the written coordinates for all pixels in the current chunk
+     */
+    struct gpu_voxel rasterize_voxel;
+    /**
+     * Write to this register to shade pixels of the written voxel type
+     * with the written color for all pixels in the current chunk
+     */
+    struct gpu_palette_entry shade_entry;
+    /**
+	 * Write to this register to write out the pixel at the written coordinate
+     * to the written memory address (in X-Y addressing mode; the coordinate
+     * must fall within the current chunk of pixels)
 	 */
-    unsigned char *pixel_buffer;
-    /**
-     * Starting address of voxel data buffer
+    unsigned char *write_pixel;
+    /*
+     * Row of first pixel in chunk
      */
-    unsigned char *voxel_buffer;
-    /**
-     * Minimum number of voxels containing all non-empty voxels
+    uint32_t start_row;
+    /*
+     * Column of first pixel in chunk
      */
-    uint32_t voxel_count;
-    /**
-     * Starting address of palette data buffer
-     */
-    unsigned char *palette_buffer;
-    /**
-     * Number of palette entries
-     */
-    uint32_t palette_length;
+    uint32_t start_col;
     // reserved space
     uint32_t _reserved_0x14_0x3C[10];
-    /**
-     * WRITE ONLY
+    /*
+     * Status of render (read only)
      */
-    union {
-        // write 1 to this register to begin rendering
-        uint32_t do_render;
-        // write 0 to this register to clear interrupt
-        uint32_t render_irq;
-    };
+    enum render_status render_status;
     /**
      * Position and orientation of the camera
      */
-    struct __attribute__((__packed__, __aligned__(4))) {
+    PA_STRUCT {
         struct _vec3 pos;
         // "look-at" directions for top left, top right,
         // bottom left, and bottom right pixels, in that order
@@ -63,7 +84,7 @@ struct __attribute__((__packed__, __aligned__(4))) gpu_registers {
     } camera;
 };
 _Static_assert(
-    offsetof(struct gpu_registers, do_render) == 0x0f * 4,
+    offsetof(struct gpu_registers, render_status) == 0x0f * 4,
     "Wrong register offset"
 );
 _Static_assert(
