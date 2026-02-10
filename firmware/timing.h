@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-extern int frames;
 extern unsigned int fw_time;
 extern double gpu_latency;
 
@@ -26,5 +25,10 @@ void disable_timer(void);
  * Get current time in A9 private timer
  */
 uint32_t cur_time(void);
+
+/**
+ * Update FPS based on frame time
+ */
+void compute_fps(void);
 
 #endif

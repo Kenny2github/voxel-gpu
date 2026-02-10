@@ -7,10 +7,10 @@
 static volatile int render_wait = 0;
 
 void wait_for_vsync() {
-    
     PIXEL_BUF_CTRL->buffer = 0x1;
     while (PIXEL_BUF_CTRL->status.s);
-    ++frames;
+
+    compute_fps();
 
     GPU->pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
 }
@@ -22,9 +22,9 @@ void render() {
     update_camera();
 
     GPU->do_render = 1;
-    double start = cur_time() / 200E6 * fw_time;
+    double start = cur_time() / 1E6 + fw_time;
     while (render_wait);
-    gpu_latency = cur_time() / 200E6 + fw_time - start;
+    gpu_latency = cur_time() / 1E6 + fw_time - start;
 
     /* GPU interrupt handled, swap buffers */
     wait_for_vsync();
