@@ -1,11 +1,9 @@
 module pixel_shader #(
-    parameter ROW = 0,
-    parameter COL = 0,
-    parameter ROW_BITS = 8,
-    parameter COL_BITS = 8,
+    parameter INDEX = 0,
+    parameter INDEX_BITS = 32,
     parameter COORD_BITS = 8,
-    parameter PALETTE_BITS = 8,
-    parameter FRAC_BITS = 8,
+    parameter PALETTE_BITS = 32 - (COORD_BITS * 3),
+    parameter FRACT_BITS = 8,
     parameter PIXEL_BITS = 8
 ) (
     input logic do_rasterize,
@@ -15,14 +13,13 @@ module pixel_shader #(
     input logic [COORD_BITS-1:0] voxel_z,
     input logic [PALETTE_BITS-1:0] voxel_id,
     input logic [PIXEL_BITS-1:0] palette_entry,
-    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_x,
-    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_y,
-    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_z,
-    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_x,
-    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_y,
-    input logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_z,
-    input logic [ROW_BITS-1:0] row,
-    input logic [COL_BITS-1:0] col,
+    input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_x,
+    input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_y,
+    input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_z,
+    input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x,
+    input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_y,
+    input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_z,
+    input logic [INDEX_BITS-1:0] pixel_index,
     output logic rasterizing_done,
     output logic shading_done,
     output wire [PIXEL_BITS-1:0] pixel,
@@ -41,28 +38,28 @@ module pixel_shader #(
       state, next_state;
 
   logic [PIXEL_BITS-1:0] _pixel;
-  assign pixel = (row == ROW && col == COL) ? _pixel : 'z;
+  assign pixel = (pixel_index == INDEX) ? _pixel : 'z;
 
   logic [PALETTE_BITS-1:0] closest_voxel;
 
   logic [7:0] cycle_counter;
 
-  logic signed [COORD_BITS+FRAC_BITS-1:0]
+  logic signed [COORD_BITS+FRACT_BITS-1:0]
       AOx, AOy, AOz, BOx, BOy, BOz, tAx, tAy, tAz, tBx, tBy, tBz, closest_t, t_min, t_max;
 
-  assign AOx = {voxel_x, FRAC_BITS'(0)} - cam_pos_x;
-  assign AOy = {voxel_y, FRAC_BITS'(0)} - cam_pos_y;
-  assign AOz = {voxel_z, FRAC_BITS'(0)} - cam_pos_z;
-  assign BOx = {voxel_x + 1'b1, FRAC_BITS'(0)} - cam_pos_x;
-  assign BOy = {voxel_y + 1'b1, FRAC_BITS'(0)} - cam_pos_y;
-  assign BOz = {voxel_z + 1'b1, FRAC_BITS'(0)} - cam_pos_z;
+  assign AOx = {voxel_x, FRACT_BITS'(0)} - cam_pos_x;
+  assign AOy = {voxel_y, FRACT_BITS'(0)} - cam_pos_y;
+  assign AOz = {voxel_z, FRACT_BITS'(0)} - cam_pos_z;
+  assign BOx = {voxel_x + 1'b1, FRACT_BITS'(0)} - cam_pos_x;
+  assign BOy = {voxel_y + 1'b1, FRACT_BITS'(0)} - cam_pos_y;
+  assign BOz = {voxel_z + 1'b1, FRACT_BITS'(0)} - cam_pos_z;
 
   logic div_start;
   wand  div_valid;
 
   div #(
-      .WIDTH(COORD_BITS + FRAC_BITS),
-      .FBITS(FRAC_BITS)
+      .WIDTH(COORD_BITS + FRACT_BITS),
+      .FBITS(FRACT_BITS)
   ) divAx (
       .clk(clock),
       .rst(reset),
@@ -73,12 +70,12 @@ module pixel_shader #(
       .dbz(),
       .ovf(),
       .a(AOx),
-      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRAC_BITS)'(1)),
+      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tAx)
   );
   div #(
-      .WIDTH(COORD_BITS + FRAC_BITS),
-      .FBITS(FRAC_BITS)
+      .WIDTH(COORD_BITS + FRACT_BITS),
+      .FBITS(FRACT_BITS)
   ) divAy (
       .clk(clock),
       .rst(reset),
@@ -89,12 +86,12 @@ module pixel_shader #(
       .dbz(),
       .ovf(),
       .a(AOy),
-      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRAC_BITS)'(1)),
+      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tAy)
   );
   div #(
-      .WIDTH(COORD_BITS + FRAC_BITS),
-      .FBITS(FRAC_BITS)
+      .WIDTH(COORD_BITS + FRACT_BITS),
+      .FBITS(FRACT_BITS)
   ) divAz (
       .clk(clock),
       .rst(reset),
@@ -105,12 +102,12 @@ module pixel_shader #(
       .dbz(),
       .ovf(),
       .a(AOz),
-      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRAC_BITS)'(1)),
+      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tAz)
   );
   div #(
-      .WIDTH(COORD_BITS + FRAC_BITS),
-      .FBITS(FRAC_BITS)
+      .WIDTH(COORD_BITS + FRACT_BITS),
+      .FBITS(FRACT_BITS)
   ) divBx (
       .clk(clock),
       .rst(reset),
@@ -121,12 +118,12 @@ module pixel_shader #(
       .dbz(),
       .ovf(),
       .a(BOx),
-      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRAC_BITS)'(1)),
+      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tBx)
   );
   div #(
-      .WIDTH(COORD_BITS + FRAC_BITS),
-      .FBITS(FRAC_BITS)
+      .WIDTH(COORD_BITS + FRACT_BITS),
+      .FBITS(FRACT_BITS)
   ) divBy (
       .clk(clock),
       .rst(reset),
@@ -137,12 +134,12 @@ module pixel_shader #(
       .dbz(),
       .ovf(),
       .a(BOy),
-      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRAC_BITS)'(1)),
+      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tBy)
   );
   div #(
-      .WIDTH(COORD_BITS + FRAC_BITS),
-      .FBITS(FRAC_BITS)
+      .WIDTH(COORD_BITS + FRACT_BITS),
+      .FBITS(FRACT_BITS)
   ) divBz (
       .clk(clock),
       .rst(reset),
@@ -153,7 +150,7 @@ module pixel_shader #(
       .dbz(),
       .ovf(),
       .a(BOz),
-      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRAC_BITS)'(1)),
+      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tBz)
   );
 
@@ -199,14 +196,14 @@ module pixel_shader #(
       cycle_counter <= '0;
       _pixel <= '0;
       closest_voxel <= '0;
-      closest_t <= (COORD_BITS + FRAC_BITS - 1)'('1);
-      t_min <= (COORD_BITS + FRAC_BITS - 1)'('1);
-      t_max <= ~(COORD_BITS + FRAC_BITS - 1)'('1);
+      closest_t <= (COORD_BITS + FRACT_BITS - 1)'('1);
+      t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
+      t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
     end else begin
       case (state)
         IDLE: begin
-          t_min <= (COORD_BITS + FRAC_BITS - 1)'('1);
-          t_max <= ~(COORD_BITS + FRAC_BITS - 1)'('1);
+          t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
+          t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
           cycle_counter <= '0;
         end
         DIVIDE: begin
