@@ -54,7 +54,7 @@ void init_firmware() {
     fill_palette_buffer();
     clear_grid();
 
-    GPU->voxel_buffer = (unsigned char *)GRID_START;
+    GPU->voxel_buffer = (unsigned char *)VOXEL_SPACE_START;
     GPU->voxel_count = 0;
 
     GPU->palette_buffer = (unsigned char *)PALETTE_START;

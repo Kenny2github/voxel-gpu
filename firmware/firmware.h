@@ -6,11 +6,14 @@
 
 /* defs */
 
-#define PALETTE_START 0xC2FFFF00 // enough for 128 colors (1B palette -> 2B color)
-#define GRID_START 0xC3000000
+#define PALETTE_START 0xC0FFFFFC // enough for 4 colors (1B palette -> 2B color)
+#define VOXEL_SPACE_START 0xC1000000 // 48MB for voxel space
 
-#define SIDE_LEN 64
+#define SIDE_LEN 1024
+#define VOXEL_SPACE_SIZE 0x300000
 #define ASPECT_RATIO (4.0f/3.0f)
+
+extern int voxel_count;
 
 /* main */
 
@@ -25,7 +28,7 @@ void init_firmware();
 void render();
 
 /**
- * call every time we
+ * call every time we want to swap buffers (after a render)
  */
 void wait_for_vsync();
 
@@ -33,9 +36,9 @@ void wait_for_vsync();
 /* voxels */
 
 typedef struct v_pos {
-    uint8_t x;
-    uint8_t y;
-    uint8_t z;
+    uint16_t x;
+    uint16_t y;
+    uint16_t z;
 } v_pos;
 
 /**
@@ -45,14 +48,14 @@ typedef struct v_pos {
  */
 void set_voxel(v_pos pos, uint8_t palette);
 
-/**
- * sets all voxels in cube defined by corner0 and corner1
- * to the given palette index.
- * @param corner0 one corner of cube
- * @param corner1 opposite corner of cube
- * @param palette palette index to set the voxels to
- */
-void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
+// /**
+//  * sets all voxels in cube defined by corner0 and corner1
+//  * to the given palette index.
+//  * @param corner0 one corner of cube
+//  * @param corner1 opposite corner of cube
+//  * @param palette palette index to set the voxels to
+//  */
+// void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette);
 
 /**
  * clears the entire voxel grid
