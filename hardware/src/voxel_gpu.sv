@@ -1,32 +1,32 @@
 import gpu::*;
 
 module voxel_gpu #(
-    parameter H_RESOLUTION = 256,
-    parameter V_RESOLUTION = 192,
+    parameter H_RESOLUTION = 320,
+    parameter V_RESOLUTION = 240,
+    parameter NUM_SHADERS  = H_RESOLUTION,
     parameter VOXEL_BITS   = 2,
     parameter COORD_BITS   = 10,
+    parameter FRACT_BITS   = COORD_BITS,
     parameter PIXEL_BITS   = 16
 ) (
-    input  logic [ 7:0] s1_address,       //    s1.address
-    input  logic        s1_read,          //      .read
-    output logic [31:0] s1_readdata,      //      .readdata
-    input  logic [31:0] s1_writedata,     //      .writedata
-    input  logic        s1_write,         //      .write
-    output logic        s1_waitrequest,   //      .waitrequest
-    input  logic        reset,            // reset.reset
-    input  logic        clock,            // clock.clk
-    output logic        irq,              //   irq.irq
-    output logic [31:0] m1_address,       //    m1.address
-    output logic [ 7:0] m1_writedata,     //      .writedata
-    output logic        m1_write,         //      .write
-    input  logic        m1_waitrequest,   //      .waitrequest
-    input  logic [ 7:0] m1_readdata,      //      .readdata
-    output logic        m1_read,          //      .read
-    input  logic        m1_readdatavalid  //      .readdatavalid
+    input  logic [ 7:0] s1_address,      //    s1.address
+    input  logic        s1_read,         //      .read
+    output logic [31:0] s1_readdata,     //      .readdata
+    input  logic [31:0] s1_writedata,    //      .writedata
+    input  logic        s1_write,        //      .write
+    output logic        s1_waitrequest,  //      .waitrequest
+    input  logic        reset,           // reset.reset
+    input  logic        clock,           // clock.clk
+    output logic        irq,             //   irq.irq
+    output logic [31:0] m1_address,      //    m1.address
+    output logic [15:0] m1_writedata,    //      .writedata
+    output logic        m1_write,        //      .write
+    input  logic        m1_waitrequest   //      .waitrequest
 );
   enum logic [3:0] {
     IDLE,
-    POSITION,
+    COORDINATE,
+    RAYCAST,
     RASTERIZE,
     SHADE,
     WRITE_OUT,
@@ -38,10 +38,120 @@ module voxel_gpu #(
   assign ready = (state == IDLE) || (state == INTERRUPT);
 
   // GPU.*
-  logic [31:0] rasterize_voxel, shade_entry, write_pixel;
-  logic [15:0] start_row, start_col;
+  logic [31:0] rasterize_voxel, shade_entry, write_pixel, start_pixel;
   // GPU.camera
   camera cam;
+
+  // local variables
+  logic [31:0] cycle_counter;
+
+  // shader variables
+  localparam ROW_BITS = $clog2(V_RESOLUTION);
+  localparam COL_BITS = $clog2(H_RESOLUTION);
+  logic [COORD_BITS-1:0] voxel_x, voxel_y, voxel_z;
+  logic [(32-COORD_BITS*3)-1:0] voxel_id;
+  assign {voxel_x, voxel_y, voxel_z, voxel_id} = rasterize_voxel;
+  logic [PIXEL_BITS-1:0] palette_entry;
+  assign palette_entry = shade_entry[31-:PIXEL_BITS];
+  logic [ROW_BITS+COL_BITS-1:0] pixel_index;
+  assign pixel_index = write_pixel[(COL_BITS + 1) +: ROW_BITS] * H_RESOLUTION + write_pixel[1 +: COL_BITS] - start_pixel;
+  wire [PIXEL_BITS-1:0] pixel;
+  logic raycast_start, coordinate_start, do_rasterize, do_shade;
+  wand raycast_valid, coordinate_valid, rasterizing_done, shading_done;
+
+  genvar i;
+  generate
+    for (i = 0; i < NUM_SHADERS; ++i) begin
+      // compute row and column of shader
+      logic [ROW_BITS-1:0] shader_row;
+      logic [COL_BITS-1:0] shader_col;
+      div #(
+          .WIDTH(ROW_BITS + COL_BITS),
+          .FBITS(0)
+      ) div_i (
+          .clk(clock),
+          .rst(reset),
+          .start(coordinate_start),
+          .valid(coordinate_valid),
+          .busy(),
+          .done(coordinate_valid),
+          .dbz(),
+          .ovf(),
+          .a(i + start_pixel),
+          .b(H_RESOLUTION),
+          .val(shader_row)
+      );
+      assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
+      // compute camera look direction
+      logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x, cam_look_y, cam_look_z;
+      lerp2 #(
+          .WIDTH(COORD_BITS + FRACT_BITS),
+          .FBITS(FRACT_BITS)
+      ) lerp2_x (
+          .p0(cam.look0.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p1(cam.look1.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p2(cam.look2.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p3(cam.look3.x[COORD_BITS+FRACT_BITS-1:0]),
+          .x(shader_col),
+          .y(shader_row),
+          .X(H_RESOLUTION),
+          .Y(V_RESOLUTION),
+          .val(cam_look_x),
+          .start(raycast_start),
+          .done(raycast_valid),
+          .clock,
+          .reset
+      );
+      lerp2 #(
+          .WIDTH(COORD_BITS + FRACT_BITS),
+          .FBITS(FRACT_BITS)
+      ) lerp2_y (
+          .p0(cam.look0.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p1(cam.look1.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p2(cam.look2.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p3(cam.look3.y[COORD_BITS+FRACT_BITS-1:0]),
+          .x(shader_col),
+          .y(shader_row),
+          .X(H_RESOLUTION),
+          .Y(V_RESOLUTION),
+          .val(cam_look_y),
+          .start(raycast_start),
+          .done(raycast_valid),
+          .clock,
+          .reset
+      );
+      lerp2 #(
+          .WIDTH(COORD_BITS + FRACT_BITS),
+          .FBITS(FRACT_BITS)
+      ) lerp2_z (
+          .p0(cam.look0.z[COORD_BITS+FRACT_BITS-1:0]),
+          .p1(cam.look1.z[COORD_BITS+FRACT_BITS-1:0]),
+          .p2(cam.look2.z[COORD_BITS+FRACT_BITS-1:0]),
+          .p3(cam.look3.z[COORD_BITS+FRACT_BITS-1:0]),
+          .x(shader_col),
+          .y(shader_row),
+          .X(H_RESOLUTION),
+          .Y(V_RESOLUTION),
+          .val(cam_look_z),
+          .start(raycast_start),
+          .done(raycast_valid),
+          .clock,
+          .reset
+      );
+      pixel_shader #(
+          .INDEX(i),
+          .INDEX_BITS(ROW_BITS + COL_BITS),
+          .COORD_BITS(COORD_BITS),
+          .FRACT_BITS(FRACT_BITS),
+          .PIXEL_BITS(PIXEL_BITS)
+      ) shader (
+          .cam_pos_x(cam.pos.x[COORD_BITS+FRACT_BITS-1:0]),
+          .cam_pos_y(cam.pos.y[COORD_BITS+FRACT_BITS-1:0]),
+          .cam_pos_z(cam.pos.z[COORD_BITS+FRACT_BITS-1:0]),
+          .*
+      );
+    end
+  endgenerate
 
   always_ff @(posedge clock or posedge reset) begin
     if (reset) begin
@@ -49,9 +159,9 @@ module voxel_gpu #(
       rasterize_voxel <= '0;
       shade_entry <= '0;
       write_pixel <= '0;
-      start_row <= '0;
-      start_col <= '0;
+      start_pixel <= '0;
       cam <= '{default: 0};
+      cycle_counter <= 0;
     end else begin
       if (s1_write) begin
         case (s1_address)
@@ -81,7 +191,7 @@ module voxel_gpu #(
           end
           8'h03: begin
             if (ready) begin
-              {start_col, start_row} <= s1_writedata;
+              start_pixel <= s1_writedata;
               state <= POSITION;
             end else begin
               state <= ERROR;
@@ -153,7 +263,63 @@ module voxel_gpu #(
           end
         endcase
       end
+      cycle_counter <= cycle_counter + 1;
+      case (state)
+        IDLE: begin
+          cycle_counter <= 0;
+        end
+        COORDINATE: begin
+          if (coordinate_valid) state <= RAYCAST;
+        end
+        RAYCAST: begin
+          if (raycast_valid) state <= INTERRUPT;
+        end
+        RASTERIZE: begin
+          if (rasterizing_done) state <= INTERRUPT;
+        end
+        SHADE: begin
+          if (shading_done) state <= INTERRUPT;
+        end
+        WRITE_OUT: begin
+          if (!m1_waitrequest) state <= INTERRUPT;
+        end
+        INTERRUPT: begin
+          cycle_counter <= 0;
+        end
+        ERROR: begin
+          cycle_counter <= 0;
+        end
+      endcase
     end
+  end
+
+  always_comb begin
+    coordinate_start = 1'b0;
+    raycast_start = 1'b0;
+    do_rasterize = 1'b0;
+    do_shade = 1'b0;
+    m1_address = '0;
+    m1_write = 1'b0;
+    m1_writedata = '0;
+    case (state)
+      COORDINATE: begin
+        coordinate_start = cycle_counter < 2;
+      end
+      RAYCAST: begin
+        raycast_start = cycle_counter < 2;
+      end
+      RASTERIZE: begin
+        do_rasterize = cycle_counter < 2;
+      end
+      SHADE: begin
+        do_shade = cycle_counter < 2;
+      end
+      WRITE_OUT: begin
+        m1_address = write_pixel;
+        m1_write = 1'b1;
+        m1_writedata = pixel;
+      end
+    endcase
   end
 
   always_comb begin

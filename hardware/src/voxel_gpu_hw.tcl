@@ -162,7 +162,7 @@ add_interface m1 avalon start
 set_interface_property m1 addressUnits SYMBOLS
 set_interface_property m1 associatedClock clock
 set_interface_property m1 associatedReset reset
-set_interface_property m1 bitsPerSymbol 8
+set_interface_property m1 bitsPerSymbol 16
 set_interface_property m1 burstOnBurstBoundariesOnly false
 set_interface_property m1 burstcountUnits WORDS
 set_interface_property m1 doStreamReads false
@@ -183,9 +183,6 @@ set_interface_property m1 CMSIS_SVD_VARIABLES ""
 set_interface_property m1 SVD_ADDRESS_GROUP ""
 
 add_interface_port m1 m1_address address Output 32
-add_interface_port m1 m1_writedata writedata Output 8
+add_interface_port m1 m1_writedata writedata Output 16
 add_interface_port m1 m1_write write Output 1
 add_interface_port m1 m1_waitrequest waitrequest Input 1
-add_interface_port m1 m1_readdata readdata Input 8
-add_interface_port m1 m1_read read Output 1
-add_interface_port m1 m1_readdatavalid readdatavalid Input 1
