@@ -23,7 +23,8 @@ void config_mouse(void) {
         {0, 0, 256}, // pos
         {0, 0, -1}, // look
         {0, 1, 0}, // up
-        {1, 0, 0} // right
+        {1, 0, 0}, // right
+        {0, 1, 0}, // true up
     };
 }
 
@@ -36,7 +37,8 @@ void set_camera_default(struct Vector pos, struct Vector look, struct Vector up)
         pos,
         look,
         up,
-        {0, 0, 1}
+        {0, 0, 1},
+        up
     };
 
     cross_product(&(camera->look), &(camera->up), &(camera->right));
@@ -87,27 +89,26 @@ void mouse_input_handler() {
 
     signedPos.x = ((int)(mousePackets[0] & 0b10000) << 4) | (mousePackets[1]);
     signedPos.y = (((int)(mousePackets[0] & 0b100000) << 3) | (mousePackets[2]));
-    /*** Movement of Camera Look */
-    // Horizontal motion should rotate lookAt vector based on up-vector
-    float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);
-    // volatile uint32_t* test_x_angle = (volatile uint32_t*)(0xC80000C0);
-    // *test_x_angle = convert_float_to_fixed(angle_x);
-    if(angle_x != 0.0f) {
-        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
-        camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
-        normalize(&(camera->look));
-        cross_product(&(camera->look), &(camera->up), &(camera->right));
-        normalize(&(camera->right));
-    }
 
-    // Vertical motion should rotate lookAt vector based on right-vector
+    float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);
     float angle_y = convert_mouse_val_to_rad(signedPos.y, SENSITIVITY_VERTICAL);
-    // volatile int32_t* test_y_angle = (volatile int32_t*)(0xC80000D0);
-    // *test_y_angle = convert_float_to_fixed(angle_y);
+
+
+    // Rough instruction count: 10,000 per mouse movement
+    if(angle_x != 0.0f) {
+        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->true_up);
+        camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+    }
+    
     if(angle_y != 0.0f) {
         struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+    }
+
+    if(angle_x != 0 || angle_y != 0) {
         normalize(&(camera->look));
+        cross_product(&(camera->look), &(camera->true_up), &(camera->right));
+        normalize(&(camera->right));
         cross_product(&(camera->right), &(camera->look), &(camera->up));
         normalize(&(camera->up));
     }
@@ -144,11 +145,11 @@ void keyboard_input_handler() {
     /*** Movement of Camera Position */
     switch(data[2]) {
         case SPACE_KEY:
-            applicable_vector = camera->up;
+            applicable_vector = camera->true_up;
             //printf("Space was pressed\n");
             break;
         case SHIFT_KEY:
-            applicable_vector = camera->up;
+            applicable_vector = camera->true_up;
             negative_vector(&applicable_vector);
             //printf("Shift was pressed\n");
             break;
@@ -173,11 +174,10 @@ void keyboard_input_handler() {
             break;
     }
 
-    if(applicable_vector.x == 0 && applicable_vector.y == 0 && applicable_vector.z == 0) // No movement
-        return;
-
-    applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
-    camera->pos = add_vector(camera->pos, applicable_vector);
+    if(applicable_vector.x != 0 || applicable_vector.y != 0 || applicable_vector.z != 0) {
+        applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
+        camera->pos = add_vector(camera->pos, applicable_vector);
+    }
 
     /** Movement of Camera View */
     float angle_x = 0;
@@ -185,32 +185,32 @@ void keyboard_input_handler() {
     if(data[1] == ARROW_KEY) {
         switch(data[2]) {
             case ARROW_LEFT:
-                angle_y = M_PI / 6.0;
+                angle_x = -M_PI / 6.0;
                 break;
             case ARROW_RIGHT:
-                angle_y = -M_PI / 6.0;
-                break;
-            case ARROW_UP:
                 angle_x = M_PI / 6.0;
                 break;
+            case ARROW_UP:
+                angle_y = -M_PI / 6.0;
+                break;
             case ARROW_DOWN:
-                angle_x = -M_PI / 6.0;;
+                angle_y = M_PI / 6.0;;
                 break;
             default:
                 break;
         }
 
         if(angle_x != 0.0f) {
-            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
+            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->true_up);
             camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
             normalize(&(camera->look));
-            cross_product(&(camera->look), &(camera->up), &(camera->right));
+            cross_product(&(camera->look), &(camera->true_up), &(camera->right));
             normalize(&(camera->right));
         }
 
         if(angle_y != 0.0f) {
-            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
-            camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+            struct AffineTransform3D rotate_vertical_transform = rotate_transform(angle_y, camera->right);
+            camera->look = transform_vector(&(rotate_vertical_transform), camera->look);
             normalize(&(camera->look));
             cross_product(&(camera->right), &(camera->look), &(camera->up));
             normalize(&(camera->up));

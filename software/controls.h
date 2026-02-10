@@ -49,6 +49,7 @@ struct Camera {
     struct Vector look;
     struct Vector up;
     struct Vector right;
+    struct Vector true_up;
 };
 
 struct Camera_formatted {

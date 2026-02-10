@@ -33,7 +33,8 @@ void set_camera_default_software(struct Vector pos, struct Vector look, struct V
         pos,
         look,
         up,
-        {0, 0, 1}
+        {0, 0, 1},
+        up
     };
 
     cross_product(&(camera.look), &(camera.up), &(camera.right));
@@ -48,6 +49,7 @@ void set_camera_software(struct Camera* cam) {
     camera.pos = cam->pos;
     camera.up = cam->up;
     camera.right = cam->right;
+    camera.true_up = cam->true_up;
 }
 
 void set_camera_settings_software(float _fov_degrees, float _focal_length) {
@@ -351,7 +353,6 @@ void render_software() {
         */
         // Rough instruction count: 296860-1571296 per voxel, based on distance to voxel (96% reduction from ray-casting optimized)
         {
-            debug_start();
 
             struct Vector corners[8];
             corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
@@ -512,7 +513,6 @@ void render_software() {
             
             }
             voxel_pointer += 1;
-            debug_end();
         }
     
     }
