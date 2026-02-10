@@ -1,60 +1,6 @@
 import gpu::*;
 `timescale 1ns / 100ps
 
-module mock_sdram #(
-    parameter MEM_SIZE = 64
-) (
-    input logic clk,
-    input logic reset,
-    input logic read_n,
-    input logic [1:0] writebyteenable_n,
-    input logic chipselect,
-    output logic waitrequest,
-    input logic [24:0] address,
-    output logic readdatavalid,
-    output logic [15:0] readdata,
-    input logic [15:0] writedata
-);
-  logic [15:0] mem[0:MEM_SIZE-1];
-
-  logic last_chipselect;
-
-  always_ff @(posedge clk, posedge reset) begin
-    last_chipselect <= chipselect;
-    if (reset) $readmemh("sdram.hex", mem);
-    else begin
-      if (chipselect && read_n) begin
-        unique case (~writebyteenable_n)
-          2'b00: begin
-          end
-          2'b01: begin
-            mem[address][7:0] <= writedata[7:0];
-          end
-          2'b10: begin
-            mem[address][15:8] <= writedata[7:0];
-          end
-          2'b11: begin
-            mem[address] <= writedata;
-          end
-        endcase
-      end
-    end
-  end
-
-  always_comb begin
-    waitrequest = 1'b1;
-    readdatavalid = 1'b0;
-    readdata = 'x;
-    if (chipselect && !read_n) begin
-      waitrequest = !last_chipselect;
-      readdatavalid = last_chipselect;
-      readdata = mem[address];
-    end else if (chipselect) begin
-      waitrequest = !last_chipselect;
-    end
-  end
-endmodule
-
 module mock_ocram #(
     parameter MEM_SIZE = 262144
 ) (
@@ -183,8 +129,6 @@ module mock_ocram #(
 endmodule
 
 module testbench #(
-    parameter SDRAM_BASE = 'hC0000000,
-    parameter SDRAM_SIZE = 64,
     parameter OCRAM_BASE = 'h08000000,
     parameter OCRAM_SIZE = 262144
 ) ();
@@ -198,54 +142,27 @@ module testbench #(
   logic        clock;
   logic        irq;
   logic [31:0] m1_address;
-  logic [ 7:0] m1_writedata;
+  logic [15:0] m1_writedata;
   logic        m1_write;
   logic        m1_waitrequest;
-  logic [ 7:0] m1_readdata;
-  logic        m1_read;
-  logic        m1_readdatavalid;
 
-  logic sdram_waitrequest, sdram_readdatavalid;
-  logic [15:0] sdram_readdata;
   logic [31:0] ocram_readdata;
-  logic is_sdram_address, is_ocram_address;
-  assign is_sdram_address = (m1_address >= SDRAM_BASE && m1_address < (SDRAM_BASE + SDRAM_SIZE));
+  logic is_ocram_address;
   assign is_ocram_address = (m1_address >= OCRAM_BASE && m1_address < (OCRAM_BASE + OCRAM_SIZE));
-  assign m1_waitrequest = is_sdram_address ? sdram_waitrequest : (is_ocram_address ? 1'b0 : 1'b1);
-  assign m1_readdatavalid = is_sdram_address ? sdram_readdatavalid : (is_ocram_address ? 1'b1 : 1'b0);
-  assign m1_readdata = is_sdram_address ? sdram_readdata[7:0] : (is_ocram_address ? ocram_readdata[7:0] : 'x);
+  assign m1_waitrequest   = (is_ocram_address ? 1'b0 : 1'b1);
 
   voxel_gpu #() DUT (.*);
-  mock_sdram #(
-      .MEM_SIZE(SDRAM_SIZE)
-  ) sdram (
-      .clk(clock),
-      .reset,
-      .read_n(!m1_read),
-      .writebyteenable_n(~{m1_address[0] == 1'b1, m1_address[0] == 1'b0}),
-      .chipselect(is_sdram_address && (m1_read || m1_write)),
-      .waitrequest(sdram_waitrequest),
-      .address(m1_address[25:1] - SDRAM_BASE[25:1]),
-      .readdatavalid(sdram_readdatavalid),
-      .readdata(sdram_readdata),
-      .writedata({8'b0, m1_writedata})
-  );
   mock_ocram #(
       .MEM_SIZE(OCRAM_SIZE)
   ) ocram (
       .clk(clock),
       .reset,
       .write(m1_write),
-      .chipselect(is_ocram_address && (m1_read || m1_write)),
+      .chipselect(is_ocram_address && m1_write),
       .address(m1_address[17:2] - OCRAM_BASE[17:2]),
-      .byteenable({
-        m1_address[1:0] == 2'b11,
-        m1_address[1:0] == 2'b10,
-        m1_address[1:0] == 2'b01,
-        m1_address[1:0] == 2'b00
-      }),
+      .byteenable({m1_address[0], m1_address[0], !m1_address[0], !m1_address[0]}),
       .readdata(ocram_readdata),
-      .writedata({24'b0, m1_writedata})
+      .writedata({16'b0, m1_writedata})
   );
 
   // set up clock
@@ -255,6 +172,16 @@ module testbench #(
       #5 clock <= ~clock;
     end
   end
+
+  task read_s1(input logic [7:0] addr, output logic [31:0] data);
+    begin
+      s1_address = addr;
+      s1_read = 1'b1;
+      @(posedge clock);
+      s1_read = 1'b0;
+      data = s1_readdata;
+    end
+  endtask
 
   task write_s1(input logic [7:0] addr, input logic [31:0] data);
     begin
@@ -266,6 +193,16 @@ module testbench #(
     end
   endtask
 
+  task clear_irq;
+    logic [31:0] _readdata;
+    begin
+      @(posedge irq);
+      read_s1(15, _readdata);
+      if (_readdata) $stop;
+    end
+  endtask
+
+  int row, col;
   initial begin
     // default values for inputs
     s1_address = '0;
@@ -275,14 +212,8 @@ module testbench #(
     reset = 1'b1;
     // m1 inputs set by blocks above
     @(negedge clock);
+    @(negedge clock);
     reset = 1'b0;
-
-    // set up MMIO inputs
-    write_s1(0, OCRAM_BASE);  // pixel_buffer
-    write_s1(1, SDRAM_BASE);  // voxel_buffer
-    write_s1(2, 1);  // voxel_count
-    write_s1(3, SDRAM_BASE + 32);  // palette_buffer
-    write_s1(4, 2);  // palette_length
 
     // set up camera at (4, 1, 1)
     // render plane at (2, 3, 0), (2, 3, 6), (2, 0, 0), (2, 0, 6)
@@ -302,10 +233,24 @@ module testbench #(
     write_s1(29, {8'(-1), 8'd0});  // cam.look3.y
     write_s1(30, {8'd5, 8'd0});  // cam.look3.z
 
-    write_s1(15, 1);
-    @(posedge irq);
-    write_s1(15, 0);
-    #10;
+    for (int i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
+      // select chunk
+      write_s1(3, i);
+      clear_irq();
+
+      write_s1(0, {10'd0, 10'd0, 10'd0, 2'd1});
+      clear_irq();
+
+      write_s1(1, {16'd11, 14'd0, 2'd1});
+      clear_irq();
+
+      for (int j = i; j < DUT.NUM_SHADERS; ++j) begin
+        row = j / DUT.H_RESOLUTION;
+        col = j % DUT.H_RESOLUTION;
+        write_s1(2, OCRAM_BASE + {8'(row), 9'(col), 1'b0});
+        clear_irq();
+      end
+    end
 
     $writememh("ocram.hex", ocram.mem);
     $system("./ocram_to_bmp.py");
