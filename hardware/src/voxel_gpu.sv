@@ -4,8 +4,8 @@ module voxel_gpu #(
     parameter H_RESOLUTION = 320,
     parameter V_RESOLUTION = 240,
     parameter NUM_SHADERS  = H_RESOLUTION,
-    parameter VOXEL_BITS   = 2,
     parameter COORD_BITS   = 10,
+    parameter VOXEL_BITS   = 32 - (COORD_BITS * 3),
     parameter FRACT_BITS   = COORD_BITS,
     parameter PIXEL_BITS   = 16
 ) (
@@ -48,7 +48,7 @@ module voxel_gpu #(
   // shader variables
   localparam ROW_BITS = $clog2(V_RESOLUTION);
   localparam COL_BITS = $clog2(H_RESOLUTION);
-  logic [COORD_BITS-1:0] voxel_x, voxel_y, voxel_z;
+  logic signed [COORD_BITS-1:0] voxel_x, voxel_y, voxel_z;
   logic [(32-COORD_BITS*3)-1:0] voxel_id;
   assign {voxel_x, voxel_y, voxel_z, voxel_id} = rasterize_voxel;
   logic [PIXEL_BITS-1:0] palette_entry;
@@ -63,7 +63,7 @@ module voxel_gpu #(
   generate
     for (i = 0; i < NUM_SHADERS; ++i) begin
       // compute row and column of shader
-      logic [ROW_BITS-1:0] shader_row;
+      logic [ROW_BITS+COL_BITS-1:0] shader_row;
       logic [COL_BITS-1:0] shader_col;
       div #(
           .WIDTH(ROW_BITS + COL_BITS),
@@ -77,8 +77,8 @@ module voxel_gpu #(
           .done(coordinate_valid),
           .dbz(),
           .ovf(),
-          .a(i + start_pixel),
-          .b(H_RESOLUTION),
+          .a((ROW_BITS + COL_BITS)'(i + start_pixel)),
+          .b((ROW_BITS + COL_BITS)'(H_RESOLUTION)),
           .val(shader_row)
       );
       assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
@@ -92,10 +92,10 @@ module voxel_gpu #(
           .p1(cam.look1.x[COORD_BITS+FRACT_BITS-1:0]),
           .p2(cam.look2.x[COORD_BITS+FRACT_BITS-1:0]),
           .p3(cam.look3.x[COORD_BITS+FRACT_BITS-1:0]),
-          .x(shader_col),
-          .y(shader_row),
-          .X(H_RESOLUTION),
-          .Y(V_RESOLUTION),
+          .x((COORD_BITS + FRACT_BITS)'(shader_col)),
+          .y((COORD_BITS + FRACT_BITS)'(shader_row)),
+          .X((COORD_BITS + FRACT_BITS)'(H_RESOLUTION)),
+          .Y((COORD_BITS + FRACT_BITS)'(V_RESOLUTION)),
           .val(cam_look_x),
           .start(raycast_start),
           .done(raycast_valid),
@@ -110,10 +110,10 @@ module voxel_gpu #(
           .p1(cam.look1.y[COORD_BITS+FRACT_BITS-1:0]),
           .p2(cam.look2.y[COORD_BITS+FRACT_BITS-1:0]),
           .p3(cam.look3.y[COORD_BITS+FRACT_BITS-1:0]),
-          .x(shader_col),
-          .y(shader_row),
-          .X(H_RESOLUTION),
-          .Y(V_RESOLUTION),
+          .x((COORD_BITS + FRACT_BITS)'(shader_col)),
+          .y((COORD_BITS + FRACT_BITS)'(shader_row)),
+          .X((COORD_BITS + FRACT_BITS)'(H_RESOLUTION)),
+          .Y((COORD_BITS + FRACT_BITS)'(V_RESOLUTION)),
           .val(cam_look_y),
           .start(raycast_start),
           .done(raycast_valid),
@@ -128,10 +128,10 @@ module voxel_gpu #(
           .p1(cam.look1.z[COORD_BITS+FRACT_BITS-1:0]),
           .p2(cam.look2.z[COORD_BITS+FRACT_BITS-1:0]),
           .p3(cam.look3.z[COORD_BITS+FRACT_BITS-1:0]),
-          .x(shader_col),
-          .y(shader_row),
-          .X(H_RESOLUTION),
-          .Y(V_RESOLUTION),
+          .x((COORD_BITS + FRACT_BITS)'(shader_col)),
+          .y((COORD_BITS + FRACT_BITS)'(shader_row)),
+          .X((COORD_BITS + FRACT_BITS)'(H_RESOLUTION)),
+          .Y((COORD_BITS + FRACT_BITS)'(V_RESOLUTION)),
           .val(cam_look_z),
           .start(raycast_start),
           .done(raycast_valid),
