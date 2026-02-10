@@ -5,6 +5,7 @@
 #include "firmware/firmware.h"
 #include "firmware/palette.h"
 #include "software/debug.h"
+#include "firmware/timing.h"
 
 #define H_RESOLUTION 256
 #define V_RESOLUTION 192
@@ -25,6 +26,7 @@ void wait_for_vsync_software() {
     while (PIXEL_BUF_CTRL->status.s);
 
     pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+    ++frames;
 
 }
 
