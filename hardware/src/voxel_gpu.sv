@@ -269,7 +269,10 @@ module voxel_gpu #(
           cycle_counter <= 0;
         end
         COORDINATE: begin
-          if (coordinate_valid) state <= RAYCAST;
+          if (coordinate_valid) begin
+            state <= RAYCAST;
+            cycle_counter <= 0;
+          end
         end
         RAYCAST: begin
           if (raycast_valid) state <= INTERRUPT;
