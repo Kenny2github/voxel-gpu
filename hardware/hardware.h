@@ -17,7 +17,7 @@
 void memcpy_32(volatile uint32_t *dest, uint32_t *src, size_t n);
 
 PA_STRUCT _vec3 {
-    uint32_t x, y, z;
+    int32_t x, y, z;
 };
 
 enum render_status : uint32_t { RS_READY = 0, RS_WORKING = 1, RS_ERROR = 2 };
@@ -29,9 +29,9 @@ enum render_status : uint32_t { RS_READY = 0, RS_WORKING = 1, RS_ERROR = 2 };
 
 PA_STRUCT gpu_voxel {
     uint32_t voxel_id : VOXEL_BITS;
-    uint32_t z : COORD_BITS;
-    uint32_t y : COORD_BITS;
-    uint32_t x : COORD_BITS;
+    int32_t z : COORD_BITS;
+    int32_t y : COORD_BITS;
+    int32_t x : COORD_BITS;
 };
 assert_word_size(struct gpu_voxel, "Voxel type");
 
