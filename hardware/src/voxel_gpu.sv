@@ -192,7 +192,7 @@ module voxel_gpu #(
           8'h03: begin
             if (ready) begin
               start_pixel <= s1_writedata;
-              state <= POSITION;
+              state <= COORDINATE;
             end else begin
               state <= ERROR;
             end
