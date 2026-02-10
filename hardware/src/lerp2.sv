@@ -12,12 +12,14 @@ module lerp2 #(
     input logic signed [WIDTH-1:0] Y,
     output logic signed [WIDTH-1:0] val,
     input logic start,
-    output wand done,
+    output logic done,
     input logic clock,
     input logic reset
 );
   logic [WIDTH-1:0] lerp_x, lerp_y, lerp_xy;
   assign val = p0 + lerp_x + lerp_y + lerp_xy;
+  wand _done;
+  assign done = _done;
 
   div #(
       .WIDTH(WIDTH),
@@ -26,9 +28,9 @@ module lerp2 #(
       .clk(clock),
       .rst(reset),
       .start(start),
-      .valid(done),
+      .valid(_done),
       .busy(),
-      .done(done),
+      .done(_done),
       .dbz(),
       .ovf(),
       .a((p1 - p0) * x),
@@ -38,13 +40,13 @@ module lerp2 #(
   div #(
       .WIDTH(WIDTH),
       .FBITS(FBITS)
-  ) div_x (
+  ) div_y (
       .clk(clock),
       .rst(reset),
       .start(start),
-      .valid(done),
+      .valid(_done),
       .busy(),
-      .done(done),
+      .done(_done),
       .dbz(),
       .ovf(),
       .a((p2 - p0) * y),
@@ -54,13 +56,13 @@ module lerp2 #(
   div #(
       .WIDTH(WIDTH),
       .FBITS(FBITS)
-  ) div_x (
+  ) div_xy (
       .clk(clock),
       .rst(reset),
       .start(start),
-      .valid(done),
+      .valid(_done),
       .busy(),
-      .done(done),
+      .done(_done),
       .dbz(),
       .ovf(),
       .a((p0 - p1 + p3 - p2) * x * y),
