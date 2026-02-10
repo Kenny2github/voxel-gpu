@@ -72,8 +72,7 @@ void viewing_ray(
 }
 
 void plot_pixel(int x, int y, short int line_color) {
-    if(x >=0 && y >= 0 && x < H_RESOLUTION && y < V_RESOLUTION) 
-        *(short int *)(pixel_buffer_software + (y << 10) + (x << 1)) = line_color;
+    *(short int *)(pixel_buffer_software + (y << 10) + (x << 1)) = line_color;
 }
 
 void clear_screen_software() {
@@ -212,7 +211,9 @@ void draw_line(int x0, int y0, int x1, int y1, uint16_t color) {
     int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
     int err = dx + dy, e2;
     while (1) {
-        plot_pixel(x0, y0, color);
+        
+        if(x0 >=0 && y0 >= 0 && x0 < H_RESOLUTION && y0 < V_RESOLUTION) 
+            plot_pixel(x0, y0, color);
         if (x0 == x1 && y0 == y1) break;
         e2 = 2 * err;
         if (e2 >= dy) { err += dy; x0 += sx; }
@@ -236,6 +237,7 @@ void flood_fill(int x, int y, uint16_t color) {
         if (p.x < 0 || p.x >= H_RESOLUTION || p.y < 0 || p.y >= V_RESOLUTION) continue;
         if (get_pixel(p.x, p.y) == color) continue;
 
+        
         plot_pixel(p.x, p.y, color);
         stack[stack_size++] = (Point){p.x+1, p.y};
         stack[stack_size++] = (Point){p.x-1, p.y};
@@ -351,9 +353,9 @@ void render_software() {
         - Check if pixel is inside the projected faces (Simply brute force and consider all 6 faces. Can optimize based on normal of face and camera look vector)
         - If in pixel, color. 
         */
-        // Rough instruction count: 296860-1571296 per voxel, based on distance to voxel (96% reduction from ray-casting optimized)
+        // Rough instruction count: 300000 - 1500000 per voxel, based on distance to voxel (~90% reduction from ray-casting optimized)
         {
-
+            debug_start();
             struct Vector corners[8];
             corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
             corners[1] = (struct Vector){x+1,   y,     z+1};     // top-right-front
@@ -385,7 +387,6 @@ void render_software() {
                 good_point[i] = 1;
                 float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
                 float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
-
                 
                 float cam_z_inv = 1 / cam_z;
                 float x_frac = (cam_x * frac_x_const) * cam_z_inv;
@@ -396,8 +397,7 @@ void render_software() {
             }
             if(!inside)
                 continue;
-            // printf("screen_y: %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n", screen_y[0], screen_y[1], screen_y[2], screen_y[3], screen_y[4], screen_y[5], screen_y[6], screen_y[7]);
-        
+     
             uint8_t face_enable = 0;
             uint16_t face_palette[6] = {0};
 
@@ -508,11 +508,13 @@ void render_software() {
                     }
             
                 }
-                // printf("Point %d %d %d\n", cx, cy, color);
+
+                // Instructions: 232895
                 flood_fill(cx, cy, color);
             
             }
             voxel_pointer += 1;
+            debug_end();
         }
     
     }
