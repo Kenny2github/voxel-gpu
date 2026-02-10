@@ -205,7 +205,6 @@ module pixel_shader #(
     end else begin
       case (state)
         IDLE: begin
-          closest_t <= (COORD_BITS + FRAC_BITS - 1)'('1);
           t_min <= (COORD_BITS + FRAC_BITS - 1)'('1);
           t_max <= ~(COORD_BITS + FRAC_BITS - 1)'('1);
           cycle_counter <= '0;
