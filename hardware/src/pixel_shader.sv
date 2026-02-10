@@ -183,15 +183,13 @@ module pixel_shader #(
         next_state = DONE_RASTERIZING;
       end
       DONE_RASTERIZING: begin
-        if (do_rasterize) next_state = DIVIDE;
-        else next_state = IDLE;
+        next_state = IDLE;
       end
       STORE_PIXEL: begin
         next_state = DONE_SHADING;
       end
       DONE_SHADING: begin
-        if (do_shade) next_state = STORE_PIXEL;
-        else next_state = IDLE;
+        next_state = IDLE;
       end
     endcase
   end
@@ -229,12 +227,6 @@ module pixel_shader #(
         end
         STORE_PIXEL: begin
           if (voxel_id == closest_voxel) _pixel <= palette_entry;
-        end
-        DONE_RASTERIZING: begin
-          cycle_counter <= '0;
-        end
-        DONE_SHADING: begin
-          cycle_counter <= '0;
         end
       endcase
     end
