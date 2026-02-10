@@ -5,7 +5,7 @@ vopt +acc testbench -o tb
 vsim tb
 
 log *
-add wave -recursive *
+add wave -depth 5 -recursive *
 
 # rely on testbench to $stop
 run -all
