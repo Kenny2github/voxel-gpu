@@ -28,6 +28,7 @@ add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
 set_fileset_property QUARTUS_SYNTH TOP_LEVEL voxel_gpu
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
+add_fileset_file gpu.sv SYSTEM_VERILOG PATH gpu.sv
 add_fileset_file voxel_gpu.sv SYSTEM_VERILOG PATH voxel_gpu.sv TOP_LEVEL_FILE
 add_fileset_file gpu_controller.sv SYSTEM_VERILOG PATH gpu_controller.sv
 add_fileset_file pixel_shader.sv SYSTEM_VERILOG PATH pixel_shader.sv

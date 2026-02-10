@@ -120,6 +120,14 @@ struct Vector add_vector(const struct Vector a, const struct Vector b) {
     return r;
 }
 
+struct Vector sub_vector(const struct Vector a, const struct Vector b) {
+    struct Vector r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    return r;
+}
+
 
 struct Vector divide_vector(const struct Vector a, float divisor) {
     struct Vector r;
@@ -165,6 +173,73 @@ float min_vec(const struct Vector a) {
     return a.x < a.y && a.x < a.z ? a.x : a.y < a.z ? a.y : a.z;
 }
 
+int16_t max_vec_fixed(const struct Vector_16fixed a) {
+    return a.x > a.y && a.x > a.z ? a.x : a.y > a.z ? a.y : a.z;
+}
+
+int16_t min_vec_fixed(const struct Vector_16fixed a) {
+    return a.x < a.y && a.x < a.z ? a.x : a.y < a.z ? a.y : a.z;
+}
+
+
 inline int16_t convert_float_to_fixed(float a) {
     return (int16_t)(a * (1 << FRAC_BITS));
+}
+
+inline int16_t convert_int_to_fixed(int a) {
+    return (int16_t)(a << FRAC_BITS);
+}
+
+// Fixed-point vector implementations
+
+void cross_product_fixed(const struct Vector_16fixed *a, const struct Vector_16fixed *b, struct Vector_16fixed *c) {
+    if (!a || !b) return;
+    // For fixed-point: multiply, then shift right by FRAC_BITS to maintain precision
+    int32_t x = ((int32_t)a->y * b->z - (int32_t)a->z * b->y) >> FRAC_BITS;
+    int32_t y = ((int32_t)a->z * b->x - (int32_t)a->x * b->z) >> FRAC_BITS;
+    int32_t z = ((int32_t)a->x * b->y - (int32_t)a->y * b->x) >> FRAC_BITS;
+    
+    c->x = (int16_t)x;
+    c->y = (int16_t)y;
+    c->z = (int16_t)z;
+}
+
+void negative_vector_fixed(struct Vector_16fixed *a) {
+    if (!a) return;
+    a->x = -(int16_t)a->x;
+    a->y = -(int16_t)a->y;
+    a->z = -(int16_t)a->z;
+}
+
+struct Vector_16fixed add_vector_fixed(const struct Vector_16fixed a, const struct Vector_16fixed b) {
+    struct Vector_16fixed r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    r.z = a.z + b.z;
+    return r;
+}
+
+struct Vector_16fixed sub_vector_fixed(const struct Vector_16fixed a, const struct Vector_16fixed b) {
+    struct Vector_16fixed r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    return r;
+}
+
+struct Vector_16fixed divide_vector_fixed(const struct Vector_16fixed a, int16_t divisor) {
+    struct Vector_16fixed r;
+    if (divisor == 0) return a;
+    r.x = (int16_t)(((int32_t)a.x << FRAC_BITS) / divisor);
+    r.y = (int16_t)(((int32_t)a.y << FRAC_BITS) / divisor);
+    r.z = (int16_t)(((int32_t)a.z << FRAC_BITS) / divisor);
+    return r;
+}
+
+struct Vector_16fixed multiply_vector_fixed(const struct Vector_16fixed a, int16_t multiplier) {
+    struct Vector_16fixed r;
+    r.x = (int16_t)(((int32_t)a.x * multiplier) >> FRAC_BITS);
+    r.y = (int16_t)(((int32_t)a.y * multiplier) >> FRAC_BITS);
+    r.z = (int16_t)(((int32_t)a.z * multiplier) >> FRAC_BITS);
+    return r;
 }

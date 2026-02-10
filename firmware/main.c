@@ -7,8 +7,9 @@
 static volatile int render_wait = 0;
 
 void wait_for_vsync() {
-    *((int*)PIXEL_BUF_CTRL) = 1;
-    while (*((int*)PIXEL_BUF_CTRL + 3) & 1);
+    
+    PIXEL_BUF_CTRL->buffer = 0x1;
+    while (PIXEL_BUF_CTRL->status.s);
     ++frames;
 
     GPU->pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
@@ -16,6 +17,10 @@ void wait_for_vsync() {
 
 void render() {
     render_wait = 1;
+
+    // Before render, update GPU camera settings
+    update_camera();
+
     GPU->do_render = 1;
     double start = cur_time() / 200E6 * fw_time;
     while (render_wait);

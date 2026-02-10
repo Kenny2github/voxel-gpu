@@ -8,8 +8,8 @@
 #define MOUSE_IRQ_ID 89
 #define KEYBOARD_IRQ_ID 79
 
-#define SENSITIVITY_VERTICAL 1.0
-#define SENSITIVITY_HORIZONTAL 1.0
+#define SENSITIVITY_VERTICAL 0.1f
+#define SENSITIVITY_HORIZONTAL 0.1f
 
 #define W_KEY 0x1D
 #define A_KEY 0x1C
@@ -67,6 +67,8 @@ void set_camera_default(struct Vector pos, struct Vector look, struct Vector up)
 void mouse_input_handler();
 void keyboard_input_handler();
 
-float convert_mouse_val_to_rad(int x, float ratio); // Ratio is in (pixels / degrees)
+float convert_mouse_val_to_rad(const int x, const float ratio); // Ratio is in (pixels / degrees)
+
+void update_camera();
 
 #endif

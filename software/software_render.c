@@ -67,7 +67,7 @@ void viewing_ray(
 
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
-        for(int y = 0; y < V_RESOLUTION; y++) 
+        for(int y = 0; y < V_RESOLUTION; y++)
             *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0xFFFF;
 }
 
@@ -122,13 +122,13 @@ float check_box_intersection(const uint8_t xp, const uint8_t yp, const uint8_t z
 
 void render_software() {
 
-    // Ray-marching based implementation 
+    // Ray-marching based implementation
     /*
     for(int x = 0; x < H_RESOLUTION; x++) {
         for(int y = 0; y < V_RESOLUTION; y++) {
             struct Ray camera_ray;
             viewing_ray(x, y, &camera_ray);
-            
+
             struct Vector add_vec = divide_vector(camera_ray.direction, my_fmaxf(max_vec(camera_ray.direction), fabsf(min_vec(camera_ray.direction))));
 
             struct Vector curr_pos = add_vector(camera_ray.origin, camera_ray.direction);
@@ -146,7 +146,7 @@ void render_software() {
                 *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
 
             }
-            
+
         }
     }
     */
@@ -154,8 +154,8 @@ void render_software() {
     // Ray-casting based implementation
     uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
     struct Ray ray_tracker[H_RESOLUTION*V_RESOLUTION];
-    
-    for(int x = 0; x < H_RESOLUTION; x++) 
+
+    for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) {
             viewing_ray(x, y, &(ray_tracker[x*V_RESOLUTION + y]));
             *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
@@ -167,7 +167,7 @@ void render_software() {
                 uint8_t palette = *((uint8_t*)VOXEL_SPACE_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
                 if(palette == 0)
                     continue;
-                
+
                 for(int xs = 0; xs < H_RESOLUTION; xs++) {
                     for(int ys = 0; ys < V_RESOLUTION; ys++) {
                         float t = check_box_intersection(x, y, z, &(ray_tracker[xs*V_RESOLUTION + ys]));
@@ -180,12 +180,12 @@ void render_software() {
                         t_tracker[xs*V_RESOLUTION + ys] = t;
 
                         *(uint16_t*)((uint32_t)(pixel_buffer_software) + (ys << 10) + (xs << 1)) = palette_data[palette];
-                        
-                        
+
+
                     }
                 }
             }
         }
     }
- 
+
 }

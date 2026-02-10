@@ -29,7 +29,7 @@ int main(void) {
     set_camera_settings_software(90.0, 1);
 
     // Setting up camera
-    struct Vector camPos = {32, 32, 34};
+    struct Vector camPos = {34, 34, 36};
     struct Vector camLook = {0, 0, -1};
     struct Vector camUp = {0, 1, 0};
     set_camera_default(camPos, camLook, camUp);
@@ -40,7 +40,10 @@ int main(void) {
     v_pos firstPos = {0, 0, 0};
     v_pos endPos = {SIDE_LEN-1, SIDE_LEN-1, SIDE_LEN-1};
     // fill_voxel_range(firstPos, endPos, 0x0);
-    load_monkey();
+    
+    set_voxel(startPos, 1);
+    // set_voxel((v_pos){33, 32, 32}, 1);
+    // load_monkey();
     clear_screen_software();
     wait_for_vsync_software(); // wait_for_vsync();
     while(1) {
