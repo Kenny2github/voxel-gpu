@@ -22,7 +22,7 @@ static const uint8_t num_to_hex[10] = {
 
 void enable_timer_interrupt(void) {
 	// timer is 200MHz, set to count by microsec
-	MPCORE_PRIV_TIMER->load = 200E6;
+	MPCORE_PRIV_TIMER->load = 1E6;
 	MPCORE_PRIV_TIMER->prescaler = 199;
 	// enable interrupts and countdown
 	MPCORE_PRIV_TIMER->e = 1;
