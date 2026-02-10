@@ -42,12 +42,6 @@ PA_STRUCT gpu_palette_entry {
 };
 assert_word_size(struct gpu_palette_entry, "Palette entry type");
 
-PA_STRUCT gpu_start_coords {
-    uint16_t row;
-    uint16_t col;
-};
-assert_word_size(struct gpu_start_coords, "Start coordinates type");
-
 PA_STRUCT gpu_registers {
     /**
      * Write to this register to rasterize the written voxel
@@ -66,10 +60,10 @@ PA_STRUCT gpu_registers {
 	 */
     unsigned char *write_pixel;
     /**
-     * Write to this register to update the coordinates of the first pixel in
+     * Write to this register to update the index of the first pixel in
      * the chunk (triggers linear interpolation routines)
      */
-    struct gpu_start_coords start_coords;
+    uint32_t start_pixel;
     // reserved space
     uint32_t _reserved_0x10_0x3C[11];
     union {
