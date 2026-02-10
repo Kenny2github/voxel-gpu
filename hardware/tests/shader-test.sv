@@ -6,7 +6,7 @@ module testbench #(
     parameter COL_BITS = 8,
     parameter COORD_BITS = 8,
     parameter PALETTE_BITS = 8,
-    parameter FRAC_BITS = 8,
+    parameter FRACT_BITS = 8,
     parameter PIXEL_BITS = 8
 ) ();
 
@@ -17,12 +17,12 @@ module testbench #(
   logic [COORD_BITS-1:0] voxel_z;
   logic [PALETTE_BITS-1:0] voxel_id;
   logic [PIXEL_BITS-1:0] palette_entry;
-  logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_x;
-  logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_y;
-  logic signed [COORD_BITS+FRAC_BITS-1:0] cam_pos_z;
-  logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_x;
-  logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_y;
-  logic signed [COORD_BITS+FRAC_BITS-1:0] cam_look_z;
+  logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_x;
+  logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_y;
+  logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_z;
+  logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x;
+  logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_y;
+  logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_z;
   logic [ROW_BITS-1:0] row;
   logic [COL_BITS-1:0] col;
   logic rasterizing_done;

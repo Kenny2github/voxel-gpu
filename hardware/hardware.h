@@ -24,6 +24,7 @@ enum render_status : uint32_t { RS_READY = 0, RS_WORKING = 1, RS_ERROR = 2 };
 
 #define VOXEL_BITS 2
 #define COORD_BITS 10
+#define FRACT_BITS COORD_BITS
 #define PIXEL_BITS 16
 
 PA_STRUCT gpu_voxel {
