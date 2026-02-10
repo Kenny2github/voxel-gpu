@@ -52,9 +52,9 @@ module testbench #(
     voxel_z = 8'b0;
     voxel_id = 8'b1;
     palette_entry = 8'hff;
-    cam_pos_x = {8'd1, 8'd0};
-    cam_pos_y = {8'd1, 8'd0};
-    cam_pos_z = {8'd1, 8'd0};
+    cam_pos_x = {8'd2, 8'd0};
+    cam_pos_y = {8'd2, 8'd0};
+    cam_pos_z = {8'd2, 8'd0};
     cam_look_x = {8'(-1), 8'd0};
     cam_look_y = {8'(-1), 8'd0};
     cam_look_z = {8'(-1), 8'd0};
