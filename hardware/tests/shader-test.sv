@@ -2,8 +2,7 @@ import gpu::*;
 `timescale 1ns / 100ps
 
 module testbench #(
-    parameter ROW_BITS = 8,
-    parameter COL_BITS = 8,
+    parameter INDEX_BITS = 32,
     parameter COORD_BITS = 8,
     parameter PALETTE_BITS = 8,
     parameter FRACT_BITS = 8,
@@ -23,8 +22,7 @@ module testbench #(
   logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x;
   logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_y;
   logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_z;
-  logic [ROW_BITS-1:0] row;
-  logic [COL_BITS-1:0] col;
+  logic [INDEX_BITS-1:0] pixel_index;
   logic rasterizing_done;
   logic shading_done;
   wire [PIXEL_BITS-1:0] pixel;
@@ -53,8 +51,7 @@ module testbench #(
     cam_look_x = {8'(-1), 8'd0};
     cam_look_y = {8'(-1), 8'd0};
     cam_look_z = {8'(-1), 8'd0};
-    row = 8'b0;
-    col = 8'b0;
+    pixel_index = 32'b0;
 
     @(negedge clock);
     reset = 1'b0;
