@@ -64,10 +64,11 @@ module voxel_gpu #(
   generate
     for (i = 0; i < NUM_SHADERS; ++i) begin
       // compute row and column of shader
-      logic [ROW_BITS+COL_BITS-1:0] shader_row;
+      logic [ROW_BITS+COL_BITS:0] shader_row;
       logic [COL_BITS-1:0] shader_col;
       div #(
-          .WIDTH(ROW_BITS + COL_BITS),
+          // + 1 sign bit
+          .WIDTH(ROW_BITS + COL_BITS + 1),
           .FBITS(0)
       ) div_i (
           .clk(clock),
@@ -78,8 +79,8 @@ module voxel_gpu #(
           .done(coordinate_valid),
           .dbz(position_error),
           .ovf(position_error),
-          .a((ROW_BITS + COL_BITS)'(i + start_pixel)),
-          .b((ROW_BITS + COL_BITS)'(H_RESOLUTION)),
+          .a((ROW_BITS + COL_BITS + 1)'(i + start_pixel)),
+          .b((ROW_BITS + COL_BITS + 1)'(H_RESOLUTION)),
           .val(shader_row)
       );
       assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
