@@ -64,7 +64,8 @@ module voxel_gpu #(
   generate
     for (i = 0; i < NUM_SHADERS; ++i) begin
       // compute row and column of shader
-      logic [ROW_BITS+COL_BITS:0] shader_row;
+      logic [ROW_BITS+COL_BITS:0] div_i_val;
+      logic [ROW_BITS-1:0] shader_row;
       logic [COL_BITS-1:0] shader_col;
       div #(
           // + 1 sign bit
@@ -81,8 +82,9 @@ module voxel_gpu #(
           .ovf(position_error),
           .a((ROW_BITS + COL_BITS + 1)'(i + start_pixel)),
           .b((ROW_BITS + COL_BITS + 1)'(H_RESOLUTION)),
-          .val(shader_row)
+          .val(div_i_val)
       );
+      assign shader_row = div_i_val[ROW_BITS-1:0];
       assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
       // compute camera look direction
       logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x, cam_look_y, cam_look_z;
