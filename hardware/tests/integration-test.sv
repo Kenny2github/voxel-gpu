@@ -241,7 +241,7 @@ module testbench #(
       write_s1(0, {10'd0, 10'd0, 10'd0, 2'd1});
       clear_irq();
 
-      write_s1(1, {16'd11, 14'd0, 2'd1});
+      write_s1(1, {16'h1111, 14'd0, 2'd1});
       clear_irq();
 
       for (j = i; j < i + DUT.NUM_SHADERS; ++j) begin
