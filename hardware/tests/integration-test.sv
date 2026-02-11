@@ -147,7 +147,7 @@ module testbench #(
   logic        m1_waitrequest;
 
   logic [31:0] ocram_readdata;
-  logic is_ocram_address;
+  logic        is_ocram_address;
   assign is_ocram_address = (m1_address >= OCRAM_BASE && m1_address < (OCRAM_BASE + OCRAM_SIZE));
   assign m1_waitrequest   = (is_ocram_address ? 1'b0 : 1'b1);
 
@@ -218,21 +218,21 @@ module testbench #(
 
     // set up camera at (4, 1, 1)
     // render plane at (2, 3, 0), (2, 3, 6), (2, 0, 0), (2, 0, 6)
-    write_s1(16, {8'd4, 8'b0});  // cam.pos.x
-    write_s1(17, {8'd1, 8'b0});  // cam.pos.y
-    write_s1(18, {8'd1, 8'b0});  // cam.pos.z
-    write_s1(19, {8'(-2), 8'd0});  // cam.look0.x
-    write_s1(20, {8'd2, 8'd0});  // cam.look0.y
-    write_s1(21, {8'(-1), 8'd0});  // cam.look0.z
-    write_s1(22, {8'(-2), 8'd0});  // cam.look1.x
-    write_s1(23, {8'd2, 8'd0});  // cam.look1.y
-    write_s1(24, {8'd5, 8'd0});  // cam.look1.z
-    write_s1(25, {8'(-2), 8'd0});  // cam.look2.x
-    write_s1(26, {8'(-1), 8'd0});  // cam.look2.y
-    write_s1(27, {8'(-1), 8'd0});  // cam.look2.z
-    write_s1(28, {8'(-2), 8'd0});  // cam.look3.x
-    write_s1(29, {8'(-1), 8'd0});  // cam.look3.y
-    write_s1(30, {8'd5, 8'd0});  // cam.look3.z
+    write_s1(16, {10'd4, 10'b0});  // cam.pos.x
+    write_s1(17, {10'd1, 10'b0});  // cam.pos.y
+    write_s1(18, {10'd1, 10'b0});  // cam.pos.z
+    write_s1(19, {10'(-2), 10'd0});  // cam.look0.x
+    write_s1(20, {10'd2, 10'd0});  // cam.look0.y
+    write_s1(21, {10'(-1), 10'd0});  // cam.look0.z
+    write_s1(22, {10'(-2), 10'd0});  // cam.look1.x
+    write_s1(23, {10'd2, 10'd0});  // cam.look1.y
+    write_s1(24, {10'd5, 10'd0});  // cam.look1.z
+    write_s1(25, {10'(-2), 10'd0});  // cam.look2.x
+    write_s1(26, {10'(-1), 10'd0});  // cam.look2.y
+    write_s1(27, {10'(-1), 10'd0});  // cam.look2.z
+    write_s1(28, {10'(-2), 10'd0});  // cam.look3.x
+    write_s1(29, {10'(-1), 10'd0});  // cam.look3.y
+    write_s1(30, {10'd5, 10'd0});  // cam.look3.z
 
     for (i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
       // select chunk
