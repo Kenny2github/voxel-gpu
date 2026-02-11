@@ -93,10 +93,22 @@ module voxel_gpu #(
           .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
           .FBITS(FRACT_BITS)
       ) lerp2_x (
-          .p0({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look0.x[COORD_BITS+FRACT_BITS-1]}}, cam.look0.x[COORD_BITS+FRACT_BITS-1:0]}),
-          .p1({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look1.x[COORD_BITS+FRACT_BITS-1]}}, cam.look1.x[COORD_BITS+FRACT_BITS-1:0]}),
-          .p2({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look2.x[COORD_BITS+FRACT_BITS-1]}}, cam.look2.x[COORD_BITS+FRACT_BITS-1:0]}),
-          .p3({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look3.x[COORD_BITS+FRACT_BITS-1]}}, cam.look3.x[COORD_BITS+FRACT_BITS-1:0]}),
+          .p0({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look0.x[COORD_BITS+FRACT_BITS-1]}},
+            cam.look0.x[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p1({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look1.x[COORD_BITS+FRACT_BITS-1]}},
+            cam.look1.x[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p2({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look2.x[COORD_BITS+FRACT_BITS-1]}},
+            cam.look2.x[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p3({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look3.x[COORD_BITS+FRACT_BITS-1]}},
+            cam.look3.x[COORD_BITS+FRACT_BITS-1:0]
+          }),
           .x((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_col << FRACT_BITS)),
           .y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_row << FRACT_BITS)),
           .X((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(H_RESOLUTION << FRACT_BITS)),
@@ -113,10 +125,22 @@ module voxel_gpu #(
           .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
           .FBITS(FRACT_BITS)
       ) lerp2_y (
-          .p0({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look0.y[COORD_BITS+FRACT_BITS-1]}}, cam.look0.y[COORD_BITS+FRACT_BITS-1:0]}),
-          .p1({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look1.y[COORD_BITS+FRACT_BITS-1]}}, cam.look1.y[COORD_BITS+FRACT_BITS-1:0]}),
-          .p2({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look2.y[COORD_BITS+FRACT_BITS-1]}}, cam.look2.y[COORD_BITS+FRACT_BITS-1:0]}),
-          .p3({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look3.y[COORD_BITS+FRACT_BITS-1]}}, cam.look3.y[COORD_BITS+FRACT_BITS-1:0]}),
+          .p0({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look0.y[COORD_BITS+FRACT_BITS-1]}},
+            cam.look0.y[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p1({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look1.y[COORD_BITS+FRACT_BITS-1]}},
+            cam.look1.y[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p2({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look2.y[COORD_BITS+FRACT_BITS-1]}},
+            cam.look2.y[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p3({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look3.y[COORD_BITS+FRACT_BITS-1]}},
+            cam.look3.y[COORD_BITS+FRACT_BITS-1:0]
+          }),
           .x((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_col << FRACT_BITS)),
           .y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_row << FRACT_BITS)),
           .X((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(H_RESOLUTION << FRACT_BITS)),
@@ -133,10 +157,22 @@ module voxel_gpu #(
           .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
           .FBITS(FRACT_BITS)
       ) lerp2_z (
-          .p0({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look0.z[COORD_BITS+FRACT_BITS-1]}}, cam.look0.z[COORD_BITS+FRACT_BITS-1:0]}),
-          .p1({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look1.z[COORD_BITS+FRACT_BITS-1]}}, cam.look1.z[COORD_BITS+FRACT_BITS-1:0]}),
-          .p2({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look2.z[COORD_BITS+FRACT_BITS-1]}}, cam.look2.z[COORD_BITS+FRACT_BITS-1:0]}),
-          .p3({{(ROW_BITS+COL_BITS-COORD_BITS+1){cam.look3.z[COORD_BITS+FRACT_BITS-1]}}, cam.look3.z[COORD_BITS+FRACT_BITS-1:0]}),
+          .p0({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look0.z[COORD_BITS+FRACT_BITS-1]}},
+            cam.look0.z[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p1({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look1.z[COORD_BITS+FRACT_BITS-1]}},
+            cam.look1.z[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p2({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look2.z[COORD_BITS+FRACT_BITS-1]}},
+            cam.look2.z[COORD_BITS+FRACT_BITS-1:0]
+          }),
+          .p3({
+            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look3.z[COORD_BITS+FRACT_BITS-1]}},
+            cam.look3.z[COORD_BITS+FRACT_BITS-1:0]
+          }),
           .x((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_col << FRACT_BITS)),
           .y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_row << FRACT_BITS)),
           .X((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(H_RESOLUTION << FRACT_BITS)),
