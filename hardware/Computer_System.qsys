@@ -1466,8 +1466,11 @@
   <parameter name="vga_clk_en" value="true" />
   <parameter name="video_in_clk_en" value="false" />
  </module>
- <module name="gpu" kind="voxel_gpu" version="0.0" enabled="0">
+ <module name="gpu" kind="voxel_gpu" version="0.0" enabled="1">
+  <parameter name="COORD_BITS" value="10" />
+  <parameter name="FRACT_BITS" value="10" />
   <parameter name="H_RESOLUTION" value="320" />
+  <parameter name="NUM_SHADERS" value="320" />
   <parameter name="PIXEL_BITS" value="16" />
   <parameter name="V_RESOLUTION" value="240" />
  </module>
