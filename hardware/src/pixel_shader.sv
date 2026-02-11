@@ -74,7 +74,7 @@ module pixel_shader #(
       .dbz(div_error),
       .ovf(div_error),
       .a(AOx),
-      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1)),
+      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
       .val(tAx)
   );
   div #(
@@ -90,7 +90,7 @@ module pixel_shader #(
       .dbz(div_error),
       .ovf(div_error),
       .a(AOy),
-      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1)),
+      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
       .val(tAy)
   );
   div #(
@@ -106,7 +106,7 @@ module pixel_shader #(
       .dbz(div_error),
       .ovf(div_error),
       .a(AOz),
-      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1)),
+      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
       .val(tAz)
   );
   div #(
@@ -122,7 +122,7 @@ module pixel_shader #(
       .dbz(div_error),
       .ovf(div_error),
       .a(BOx),
-      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1)),
+      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
       .val(tBx)
   );
   div #(
@@ -138,7 +138,7 @@ module pixel_shader #(
       .dbz(div_error),
       .ovf(div_error),
       .a(BOy),
-      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1)),
+      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
       .val(tBy)
   );
   div #(
@@ -154,7 +154,7 @@ module pixel_shader #(
       .dbz(div_error),
       .ovf(div_error),
       .a(BOz),
-      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1)),
+      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
       .val(tBz)
   );
 
