@@ -22,7 +22,7 @@ module voxel_gpu #(
     output logic        m1_write,        //      .write
     input  logic        m1_waitrequest   //      .waitrequest
 );
-  localparam VOXEL_BITS = 32 - (COORD_BITS * 3),
+  localparam VOXEL_BITS = 32 - (COORD_BITS * 3);
   enum logic [3:0] {
     IDLE,
     COORDINATE,
