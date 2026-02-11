@@ -58,6 +58,7 @@ module voxel_gpu #(
   wire [PIXEL_BITS-1:0] pixel;
   logic raycast_start, coordinate_start, do_rasterize, do_shade;
   wand raycast_valid, coordinate_valid, rasterizing_done, shading_done;
+  wor position_error;
 
   genvar i;
   generate
@@ -75,8 +76,8 @@ module voxel_gpu #(
           .valid(coordinate_valid),
           .busy(),
           .done(coordinate_valid),
-          .dbz(),
-          .ovf(),
+          .dbz(position_error),
+          .ovf(position_error),
           .a((ROW_BITS + COL_BITS)'(i + start_pixel)),
           .b((ROW_BITS + COL_BITS)'(H_RESOLUTION)),
           .val(shader_row)
@@ -99,6 +100,7 @@ module voxel_gpu #(
           .val(cam_look_x),
           .start(raycast_start),
           .done(raycast_valid),
+          .error(position_error),
           .clock,
           .reset
       );
@@ -117,6 +119,7 @@ module voxel_gpu #(
           .val(cam_look_y),
           .start(raycast_start),
           .done(raycast_valid),
+          .error(position_error),
           .clock,
           .reset
       );
@@ -135,6 +138,7 @@ module voxel_gpu #(
           .val(cam_look_z),
           .start(raycast_start),
           .done(raycast_valid),
+          .error(position_error),
           .clock,
           .reset
       );
@@ -269,13 +273,16 @@ module voxel_gpu #(
           cycle_counter <= 0;
         end
         COORDINATE: begin
-          if (coordinate_valid) begin
+          if (position_error) begin
+            state <= ERROR;
+          end else if (coordinate_valid) begin
             state <= RAYCAST;
             cycle_counter <= 0;
           end
         end
         RAYCAST: begin
-          if (raycast_valid) state <= INTERRUPT;
+          if (position_error) state <= ERROR;
+          else if (raycast_valid) state <= INTERRUPT;
         end
         RASTERIZE: begin
           if (rasterizing_done) state <= INTERRUPT;
