@@ -202,7 +202,7 @@ module testbench #(
     end
   endtask
 
-  int row, col;
+  int row, col, i, j;
   initial begin
     // default values for inputs
     s1_address = '0;
@@ -233,7 +233,7 @@ module testbench #(
     write_s1(29, {8'(-1), 8'd0});  // cam.look3.y
     write_s1(30, {8'd5, 8'd0});  // cam.look3.z
 
-    for (int i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
+    for (i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
       // select chunk
       write_s1(3, i);
       clear_irq();
@@ -244,7 +244,7 @@ module testbench #(
       write_s1(1, {16'd11, 14'd0, 2'd1});
       clear_irq();
 
-      for (int j = i; j < DUT.NUM_SHADERS; ++j) begin
+      for (j = i; j < i + DUT.NUM_SHADERS; ++j) begin
         row = j / DUT.H_RESOLUTION;
         col = j % DUT.H_RESOLUTION;
         write_s1(2, OCRAM_BASE + {8'(row), 9'(col), 1'b0});
