@@ -162,7 +162,7 @@ add_interface m1 avalon start
 set_interface_property m1 addressUnits SYMBOLS
 set_interface_property m1 associatedClock clock
 set_interface_property m1 associatedReset reset
-set_interface_property m1 bitsPerSymbol 16
+set_interface_property m1 bitsPerSymbol 8
 set_interface_property m1 burstOnBurstBoundariesOnly false
 set_interface_property m1 burstcountUnits WORDS
 set_interface_property m1 doStreamReads false
