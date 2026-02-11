@@ -33,7 +33,7 @@ module lerp2 #(
       .done(_done),
       .dbz(),
       .ovf(),
-      .a((p1 - p0) * x),
+      .a(WIDTH'(((p1 - p0) * {{WIDTH{x[WIDTH-1]}}, x}) >> FBITS)),
       .b(X),
       .val(lerp_x)
   );
@@ -49,7 +49,7 @@ module lerp2 #(
       .done(_done),
       .dbz(),
       .ovf(),
-      .a((p2 - p0) * y),
+      .a(WIDTH'(((p2 - p0) * {{WIDTH{y[WIDTH-1]}}, y}) >> FBITS)),
       .b(Y),
       .val(lerp_y)
   );
@@ -65,8 +65,8 @@ module lerp2 #(
       .done(_done),
       .dbz(),
       .ovf(),
-      .a((p0 - p1 + p3 - p2) * x * y),
-      .b(X * Y),
+      .a(WIDTH'(((p0 - p1 + p3 - p2) * {{WIDTH{x[WIDTH-1]}}, x} * y) >> (2 * FBITS))),
+      .b(WIDTH'(({{WIDTH{X[WIDTH-1]}}, X} * Y) >> FBITS)),
       .val(lerp_xy)
   );
 
