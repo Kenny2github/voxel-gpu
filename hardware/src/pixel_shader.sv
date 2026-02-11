@@ -22,12 +22,14 @@ module pixel_shader #(
     input logic [INDEX_BITS-1:0] pixel_index,
     output logic rasterizing_done,
     output logic shading_done,
+    output logic error,
     output wire [PIXEL_BITS-1:0] pixel,
     input logic reset,
     input logic clock
 );
   enum logic [3:0] {
     IDLE,
+    ERROR,
     DIVIDE,
     MEASURE,
     STORE_VOXEL,
@@ -36,6 +38,7 @@ module pixel_shader #(
     DONE_SHADING
   }
       state, next_state;
+  assign error = (state == ERROR);
 
   logic [PIXEL_BITS-1:0] _pixel;
   assign pixel = (pixel_index == INDEX) ? _pixel : 'z;
@@ -56,6 +59,7 @@ module pixel_shader #(
 
   logic div_start;
   wand  div_valid;
+  wor   div_error;
 
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
@@ -67,8 +71,8 @@ module pixel_shader #(
       .valid(div_valid),
       .busy(),
       .done(div_valid),
-      .dbz(),
-      .ovf(),
+      .dbz(div_error),
+      .ovf(div_error),
       .a(AOx),
       .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tAx)
@@ -83,8 +87,8 @@ module pixel_shader #(
       .valid(div_valid),
       .busy(),
       .done(div_valid),
-      .dbz(),
-      .ovf(),
+      .dbz(div_error),
+      .ovf(div_error),
       .a(AOy),
       .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tAy)
@@ -99,8 +103,8 @@ module pixel_shader #(
       .valid(div_valid),
       .busy(),
       .done(div_valid),
-      .dbz(),
-      .ovf(),
+      .dbz(div_error),
+      .ovf(div_error),
       .a(AOz),
       .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tAz)
@@ -115,8 +119,8 @@ module pixel_shader #(
       .valid(div_valid),
       .busy(),
       .done(div_valid),
-      .dbz(),
-      .ovf(),
+      .dbz(div_error),
+      .ovf(div_error),
       .a(BOx),
       .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tBx)
@@ -131,8 +135,8 @@ module pixel_shader #(
       .valid(div_valid),
       .busy(),
       .done(div_valid),
-      .dbz(),
-      .ovf(),
+      .dbz(div_error),
+      .ovf(div_error),
       .a(BOy),
       .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tBy)
@@ -147,8 +151,8 @@ module pixel_shader #(
       .valid(div_valid),
       .busy(),
       .done(div_valid),
-      .dbz(),
-      .ovf(),
+      .dbz(div_error),
+      .ovf(div_error),
       .a(BOz),
       .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1)),
       .val(tBz)
@@ -169,8 +173,14 @@ module pixel_shader #(
         else if (do_shade) next_state = STORE_PIXEL;
         else next_state = IDLE;
       end
+      ERROR: begin
+        if (do_rasterize) next_state = DIVIDE;
+        else if (do_shade) next_state = STORE_PIXEL;
+        else next_state = ERROR;
+      end
       DIVIDE: begin
-        if (div_valid) next_state = MEASURE;
+        if (div_error) next_state = ERROR;
+        else if (div_valid) next_state = MEASURE;
         else next_state = DIVIDE;
       end
       MEASURE: begin
@@ -202,6 +212,11 @@ module pixel_shader #(
     end else begin
       case (state)
         IDLE: begin
+          t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
+          t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
+          cycle_counter <= '0;
+        end
+        ERROR: begin
           t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
           t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
           cycle_counter <= '0;

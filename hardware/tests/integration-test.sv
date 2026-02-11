@@ -170,7 +170,7 @@ module testbench #(
     clock <= 1'b0;
     forever begin
       #5 clock <= ~clock;
-      if (DUT.position_error) $stop;
+      if (DUT.error) $stop;
     end
   end
 
