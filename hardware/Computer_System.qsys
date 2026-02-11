@@ -1699,11 +1699,6 @@
   <parameter name="baseAddress" value="0x3030" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="avalon" version="21.1" start="gpu.m1" end="SDRAM.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
  <connection kind="avalon" version="21.1" start="gpu.m1" end="Onchip_SRAM.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x08000000" />
