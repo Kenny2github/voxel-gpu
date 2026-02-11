@@ -30,15 +30,16 @@ set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file gpu.sv SYSTEM_VERILOG PATH gpu.sv
 add_fileset_file voxel_gpu.sv SYSTEM_VERILOG PATH voxel_gpu.sv TOP_LEVEL_FILE
-add_fileset_file gpu_controller.sv SYSTEM_VERILOG PATH gpu_controller.sv
+add_fileset_file div.sv SYSTEM_VERILOG PATH div.sv
+add_fileset_file lerp2.sv SYSTEM_VERILOG PATH lerp2.sv
 add_fileset_file pixel_shader.sv SYSTEM_VERILOG PATH pixel_shader.sv
 
 
 #
 # parameters
 #
-add_parameter H_RESOLUTION INTEGER 256 ""
-set_parameter_property H_RESOLUTION DEFAULT_VALUE 256
+add_parameter H_RESOLUTION INTEGER 320 ""
+set_parameter_property H_RESOLUTION DEFAULT_VALUE 320
 set_parameter_property H_RESOLUTION DISPLAY_NAME "Horizontal Resolution"
 set_parameter_property H_RESOLUTION TYPE INTEGER
 set_parameter_property H_RESOLUTION UNITS None
@@ -46,8 +47,8 @@ set_parameter_property H_RESOLUTION DISPLAY_UNITS pixels
 set_parameter_property H_RESOLUTION ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property H_RESOLUTION DESCRIPTION ""
 set_parameter_property H_RESOLUTION HDL_PARAMETER true
-add_parameter V_RESOLUTION INTEGER 192 ""
-set_parameter_property V_RESOLUTION DEFAULT_VALUE 192
+add_parameter V_RESOLUTION INTEGER 240 ""
+set_parameter_property V_RESOLUTION DEFAULT_VALUE 240
 set_parameter_property V_RESOLUTION DISPLAY_NAME "Vertical Resolution"
 set_parameter_property V_RESOLUTION TYPE INTEGER
 set_parameter_property V_RESOLUTION UNITS None
@@ -55,6 +56,30 @@ set_parameter_property V_RESOLUTION DISPLAY_UNITS pixels
 set_parameter_property V_RESOLUTION ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property V_RESOLUTION DESCRIPTION ""
 set_parameter_property V_RESOLUTION HDL_PARAMETER true
+add_parameter NUM_SHADERS INTEGER 320 ""
+set_parameter_property NUM_SHADERS DEFAULT_VALUE 320
+set_parameter_property NUM_SHADERS DISPLAY_NAME "Total number of pixel shaders"
+set_parameter_property NUM_SHADERS TYPE INTEGER
+set_parameter_property NUM_SHADERS UNITS None
+set_parameter_property NUM_SHADERS ALLOWED_RANGES -2147483648:2147483647
+set_parameter_property NUM_SHADERS DESCRIPTION ""
+set_parameter_property NUM_SHADERS HDL_PARAMETER true
+add_parameter COORD_BITS INTEGER 10 ""
+set_parameter_property COORD_BITS DEFAULT_VALUE 10
+set_parameter_property COORD_BITS DISPLAY_NAME "Bits per x/y/z coordinate"
+set_parameter_property COORD_BITS TYPE INTEGER
+set_parameter_property COORD_BITS UNITS Bits
+set_parameter_property COORD_BITS ALLOWED_RANGES -2147483648:2147483647
+set_parameter_property COORD_BITS DESCRIPTION "Number of possible voxel types = 2 ** (32 - COORD_BITS * 3)"
+set_parameter_property COORD_BITS HDL_PARAMETER true
+add_parameter FRACT_BITS INTEGER 10 ""
+set_parameter_property FRACT_BITS DEFAULT_VALUE 10
+set_parameter_property FRACT_BITS DISPLAY_NAME "Bit precision of fractional component of fixed point arithmetic"
+set_parameter_property FRACT_BITS TYPE INTEGER
+set_parameter_property FRACT_BITS UNITS Bits
+set_parameter_property FRACT_BITS ALLOWED_RANGES -2147483648:2147483647
+set_parameter_property FRACT_BITS DESCRIPTION ""
+set_parameter_property FRACT_BITS HDL_PARAMETER true
 add_parameter PIXEL_BITS INTEGER 16 ""
 set_parameter_property PIXEL_BITS DEFAULT_VALUE 16
 set_parameter_property PIXEL_BITS DISPLAY_NAME "Bits per pixel"
