@@ -7,8 +7,8 @@
 #include "software/debug.h"
 #include "firmware/timing.h"
 
-#define H_RESOLUTION 256
-#define V_RESOLUTION 192
+#define H_RESOLUTION 320
+#define V_RESOLUTION 240
 
 static struct Camera camera;
 static float clip_plane_x, clip_plane_y;

@@ -215,8 +215,6 @@ module testbench #(
   assign m1_readdatavalid = is_sdram_address ? sdram_readdatavalid : (is_ocram_address ? 1'b1 : 1'b0);
   assign m1_readdata = is_sdram_address ? sdram_readdata[7:0] : (is_ocram_address ? ocram_readdata[7:0] : 'x);
 
-  bit done;
-
   voxel_gpu #() DUT (.*);
   mock_sdram #(
       .MEM_SIZE(SDRAM_SIZE)
@@ -269,7 +267,6 @@ module testbench #(
   endtask
 
   initial begin
-    done = 0;
     // default values for inputs
     s1_address = '0;
     s1_read = 1'b0;
@@ -312,6 +309,6 @@ module testbench #(
 
     $writememh("ocram.hex", ocram.mem);
     $system("./ocram_to_bmp.py");
-    done = 1;
+    $stop;
   end
 endmodule
