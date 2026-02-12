@@ -48,7 +48,11 @@ module pixel_shader #(
   logic [7:0] cycle_counter;
 
   logic signed [COORD_BITS+FRACT_BITS-1:0]
-      AOx, AOy, AOz, BOx, BOy, BOz, tAx, tAy, tAz, tBx, tBy, tBz, closest_t, t_min, t_max;
+      AOx, AOy, AOz, BOx, BOy, BOz, tAx, tAy, tAz, tBx, tBy, tBz, closest_t, t_min, t_max,
+      min_A_B_x, min_A_B_y, min_A_B_z, s;
+  logic A_lt_B_x, A_lt_B_y, A_lt_B_z;
+  // toggle sign bit when comparing (i.e. shift into unsigned range) by adding s
+  assign s   = (1 << (COORD_BITS + FRACT_BITS - 1));
 
   assign AOx = {voxel_x, FRACT_BITS'(0)} - cam_pos_x;
   assign AOy = {voxel_y, FRACT_BITS'(0)} - cam_pos_y;
@@ -56,6 +60,13 @@ module pixel_shader #(
   assign BOx = {voxel_x + 1'b1, FRACT_BITS'(0)} - cam_pos_x;
   assign BOy = {voxel_y + 1'b1, FRACT_BITS'(0)} - cam_pos_y;
   assign BOz = {voxel_z + 1'b1, FRACT_BITS'(0)} - cam_pos_z;
+
+  assign A_lt_B_x = (AOx + s) < (BOx + s);
+  assign A_lt_B_y = (AOy + s) < (BOy + s);
+  assign A_lt_B_z = (AOz + s) < (BOz + s);
+  assign min_A_B_x = A_lt_B_x ? tAx : tBx;
+  assign min_A_B_y = A_lt_B_y ? tAy : tBy;
+  assign min_A_B_z = A_lt_B_z ? tAz : tBz;
 
   logic div_start;
   wand  div_valid;
@@ -223,15 +234,15 @@ module pixel_shader #(
         end
         DIVIDE: begin
           cycle_counter <= cycle_counter + 8'd1;
-          t_min <= ((AOx < BOx) ? tAx : tBx) > ((AOy < BOy) ? tAy : tBy) ? ((AOx < BOx) ? tAx : tBx) : ((AOy < BOy) ? tAy : tBy);
-          t_max <= ((AOx < BOx) ? tAx : tBx) < ((AOy < BOy) ? tAy : tBy) ? ((AOx < BOx) ? tAx : tBx) : ((AOy < BOy) ? tAy : tBy);
+          t_min <= (min_A_B_x + s) > (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
+          t_max <= (min_A_B_x + s) < (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
         end
         MEASURE: begin
-          t_min <= t_min > ((AOz < BOz) ? tAz : tBz) ? t_min : ((AOz < BOz) ? tAz : tBz);
-          t_max <= t_max < ((AOz < BOz) ? tAz : tBz) ? t_max : ((AOz < BOz) ? tAz : tBz);
+          t_min <= (t_min + s) > (min_A_B_z + s) ? t_min : min_A_B_z;
+          t_max <= (t_max + s) < (min_A_B_z + s) ? t_max : min_A_B_z;
         end
         STORE_VOXEL: begin
-          if (t_min <= t_max && t_min < closest_t) begin  // intersection!
+          if ((t_min + s) <= (t_max + s) && (t_min + s) < (closest_t + s)) begin  // intersection!
             closest_t <= t_min;
             closest_voxel <= voxel_id;
           end
