@@ -217,29 +217,29 @@ module testbench #(
     reset = 1'b0;
 
     // set up camera at (4, 1, 1)
-    // render plane at (2, 3, 0), (2, 3, 6), (2, 0, 0), (2, 0, 6)
+    // render plane at (2, 30, 0), (2, 30, 60), (2, 0, 0), (2, 0, 60)
     write_s1(16, {10'd4, 10'b0});  // cam.pos.x
     write_s1(17, {10'd1, 10'b0});  // cam.pos.y
     write_s1(18, {10'd1, 10'b0});  // cam.pos.z
     write_s1(19, {10'(-2), 10'd0});  // cam.look0.x
-    write_s1(20, {10'd2, 10'd0});  // cam.look0.y
+    write_s1(20, {10'd29, 10'd0});  // cam.look0.y
     write_s1(21, {10'(-1), 10'd0});  // cam.look0.z
     write_s1(22, {10'(-2), 10'd0});  // cam.look1.x
-    write_s1(23, {10'd2, 10'd0});  // cam.look1.y
-    write_s1(24, {10'd5, 10'd0});  // cam.look1.z
+    write_s1(23, {10'd29, 10'd0});  // cam.look1.y
+    write_s1(24, {10'd59, 10'd0});  // cam.look1.z
     write_s1(25, {10'(-2), 10'd0});  // cam.look2.x
     write_s1(26, {10'(-1), 10'd0});  // cam.look2.y
     write_s1(27, {10'(-1), 10'd0});  // cam.look2.z
     write_s1(28, {10'(-2), 10'd0});  // cam.look3.x
     write_s1(29, {10'(-1), 10'd0});  // cam.look3.y
-    write_s1(30, {10'd5, 10'd0});  // cam.look3.z
+    write_s1(30, {10'd59, 10'd0});  // cam.look3.z
 
     for (i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
       // select chunk
       write_s1(3, i);
       clear_irq();
 
-      write_s1(0, {10'd0, 10'd0, 10'd0, 2'd1});
+      write_s1(0, {10'd0, 10'd1, 10'd3, 2'd1});
       clear_irq();
 
       write_s1(1, {16'h1111, 14'd0, 2'd1});
