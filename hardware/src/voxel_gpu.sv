@@ -3,7 +3,7 @@ import gpu::*;
 module voxel_gpu #(
     parameter H_RESOLUTION = 320,
     parameter V_RESOLUTION = 240,
-    parameter NUM_SHADERS  = H_RESOLUTION,
+    parameter NUM_SHADERS  = 200,
     parameter COORD_BITS   = 10,
     parameter FRACT_BITS   = COORD_BITS,
     parameter PIXEL_BITS   = 16
@@ -50,7 +50,7 @@ module voxel_gpu #(
   localparam COL_BITS = $clog2(H_RESOLUTION);
   logic signed [COORD_BITS-1:0] voxel_x, voxel_y, voxel_z;
   logic [(32-COORD_BITS*3)-1:0] voxel_id;
-  assign {voxel_x, voxel_y, voxel_z, voxel_id} = rasterize_voxel;
+  assign {voxel_x, voxel_y, voxel_z, voxel_id} = (state == SHADE ? shade_entry : rasterize_voxel);
   logic [PIXEL_BITS-1:0] palette_entry;
   assign palette_entry = shade_entry[31-:PIXEL_BITS];
   logic [ROW_BITS+COL_BITS-1:0] pixel_index;
