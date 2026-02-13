@@ -6,11 +6,11 @@
 #include "firmware/palette.h"
 #include "software/debug.h"
 #include "firmware/timing.h"
+#include "software/controls.h"
 
-#define H_RESOLUTION 320
-#define V_RESOLUTION 240
+#define H_RESOLUTION 256
+#define V_RESOLUTION 192
 
-static struct Camera camera;
 static float clip_plane_x, clip_plane_y;
 static float focal_length;
 unsigned char* pixel_buffer_software;
@@ -28,30 +28,6 @@ void wait_for_vsync_software() {
     pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
     ++frames;
 
-}
-
-void set_camera_default_software(struct Vector pos, struct Vector look, struct Vector up) {
-    camera = (struct Camera){
-        pos,
-        look,
-        up,
-        {0, 0, 1},
-        up
-    };
-
-    cross_product(&(camera.look), &(camera.up), &(camera.right));
-    normalize(&(camera.look));
-    normalize(&(camera.up));
-    normalize(&(camera.right));
-
-}
-
-void set_camera_software(struct Camera* cam) {
-    camera.look = cam->look;
-    camera.pos = cam->pos;
-    camera.up = cam->up;
-    camera.right = cam->right;
-    camera.true_up = cam->true_up;
 }
 
 void set_camera_settings_software(float _fov_degrees, float _focal_length) {
@@ -228,8 +204,10 @@ uint16_t get_pixel(int x, int y) {
     return *(uint16_t *)(pixel_buffer_software + (y << 10) + (x << 1));
 }
 
+
+Point stack[(H_RESOLUTION+1) * (V_RESOLUTION+1)];
+
 void flood_fill(int x, int y, uint16_t color) {
-    Point stack[H_RESOLUTION * V_RESOLUTION];
     int stack_size = 0;
     uint16_t target = get_pixel(x, y);
     stack[stack_size++] = (Point){x, y};
@@ -357,7 +335,6 @@ void render_software() {
         */
         // Rough instruction count: 300000 - 1500000 per voxel, based on distance to voxel (~90% reduction from ray-casting optimized)
         {
-            debug_start();
             struct Vector corners[8];
             corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
             corners[1] = (struct Vector){x+1,   y,     z+1};     // top-right-front
@@ -445,7 +422,7 @@ void render_software() {
                     continue;
 
        
-                uint16_t color = face_palette[i];
+                uint16_t color = palette_data[palette];
 
                 draw_line(x0, y0, x1, y1, color);
                 draw_line(x1, y1, x2, y2, color);
@@ -516,7 +493,6 @@ void render_software() {
             
             }
             voxel_pointer += 1;
-            debug_end();
         }
     
     }
