@@ -103,14 +103,14 @@ int main(void) {
 
             if(tempRotate.mouse_dx != 0) {
                 float angle_x = convert_mouse_val_to_rad(tempRotate.mouse_dx, SENSITIVITY_HORIZONTAL);
-                struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera.true_up);
-                camera.look = transform_vector(&(rotate_horizontal_transform), camera.look);
+                struct AffineTransform3D rotate_horiz_transform = rotate_transform(angle_x, camera.true_up);
+                camera.look = transform_vector(&(rotate_horiz_transform), camera.look);
 
             }
             if(tempRotate.mouse_dy != 0) {
                 float angle_y = convert_mouse_val_to_rad(tempRotate.mouse_dy, SENSITIVITY_VERTICAL);
-                struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera.right);
-                camera.look = transform_vector(&(rotate_horizontal_transform), camera.look);
+                struct AffineTransform3D rotate_vert_transform = rotate_transform(angle_y, camera.right);
+                camera.look = transform_vector(&(rotate_vert_transform), camera.look);
             }
 
             if(tempRotate.mouse_dx != 0 || tempRotate.mouse_dy != 0) {

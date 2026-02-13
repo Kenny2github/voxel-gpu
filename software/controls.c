@@ -87,28 +87,8 @@ void mouse_input_handler() {
     signedPos.x = ((int)(mousePackets[0] & 0b10000) << 4) | (mousePackets[1]);
     signedPos.y = (((int)(mousePackets[0] & 0b100000) << 3) | (mousePackets[2]));
 
-    float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);
-    float angle_y = convert_mouse_val_to_rad(signedPos.y, SENSITIVITY_VERTICAL);
-
-
-    // Rough instruction count: 10,000 per mouse movement
-    if(angle_x != 0.0f) {
-        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera.true_up);
-        camera.look = transform_vector(&(rotate_horizontal_transform), camera.look);
-    }
-    
-    if(angle_y != 0.0f) {
-        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera.right);
-        camera.look = transform_vector(&(rotate_horizontal_transform), camera.look);
-    }
-
-    if(angle_x != 0 || angle_y != 0) {
-        normalize(&(camera.look));
-        cross_product(&(camera.look), &(camera.true_up), &(camera.right));
-        normalize(&(camera.right));
-        cross_product(&(camera.right), &(camera.look), &(camera.up));
-        normalize(&(camera.up));
-    }
+    rotate.mouse_dx += signedPos.x;
+    rotate.mouse_dy += signedPos.y;
 }
 
 

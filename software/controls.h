@@ -78,8 +78,8 @@ struct __attribute__((__packed__, __aligned__(4))) MovementPacket {
 };
 
 struct RotatePacket {
-    int16_t mouse_dx;
-    int16_t mouse_dy; 
+    int mouse_dx;
+    int mouse_dy; 
 };
 
 extern struct Camera camera;
