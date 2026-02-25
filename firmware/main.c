@@ -34,12 +34,7 @@ void render() {
         while (render_wait);
 
         for (int voxel_id = 0; voxel_id < voxel_count; ++voxel_id) {
-            GPU->rasterize_voxel = (struct gpu_voxel){
-                .voxel_id = voxel_space[voxel_id] & 0x3,
-                .x = (voxel_space[voxel_id] >> 22) & 0x3FF,
-                .y = (voxel_space[voxel_id] >> 12) & 0x3FF,
-                .z = (voxel_space[voxel_id] >> 2) & 0x3FF
-            };
+            GPU->rasterize_voxel = voxel_space[voxel_id];
             while (render_wait);
         }
 

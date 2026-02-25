@@ -33,7 +33,7 @@ void wait_for_vsync();
 /* voxels */
 
 extern unsigned int voxel_count;
-extern uint32_t* voxel_space;
+extern struct gpu_voxel* voxel_space;
 extern unsigned int voxel_space_size;
 
 typedef struct v_pos {

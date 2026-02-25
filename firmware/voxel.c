@@ -5,15 +5,20 @@
 #define abs(x) ((x >= 0) ? (x) : (-x))
 
 unsigned int voxel_count;
-uint32_t* voxel_space;
+struct gpu_voxel* voxel_space;
 unsigned int voxel_space_size;
 
 void set_voxel(v_pos pos, uint8_t palette) {
     if (voxel_count == voxel_space_size) {
         voxel_space_size *= 2;
-        voxel_space = (uint32_t*)realloc(voxel_space, voxel_space_size * sizeof(uint32_t));
+        voxel_space = (struct gpu_voxel*)realloc(voxel_space, voxel_space_size * sizeof(struct gpu_voxel));
     }
-    voxel_space[voxel_count++] = ((pos.x & 0x3FF) << 22) | ((pos.y & 0x3FF) << 12) | ((pos.z & 0x3FF) << 2) | ((uint32_t)palette & 0x3);
+    voxel_space[voxel_count++] = (struct gpu_voxel){
+        .x = pos.x,
+        .y = pos.y,
+        .z = pos.z,
+        .voxel_id = palette
+    };
 }
 
 // void fill_voxel_range(v_pos corner0, v_pos corner1, uint8_t palette) {
