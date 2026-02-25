@@ -65,8 +65,8 @@ void render() {
 }
 
 static void enable_gpu_interrupt(void) {
-    /* clear render interrupt */
-    GPU->clear_error = 1;
+    /* do nothing */
+    ;
 }
 
 static void handle_gpu_interrupt(void) {
