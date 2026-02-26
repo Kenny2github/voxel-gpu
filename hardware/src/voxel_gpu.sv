@@ -195,6 +195,7 @@ module voxel_gpu #(
           .cam_pos_x(cam.pos.x[COORD_BITS+FRACT_BITS-1:0]),
           .cam_pos_y(cam.pos.y[COORD_BITS+FRACT_BITS-1:0]),
           .cam_pos_z(cam.pos.z[COORD_BITS+FRACT_BITS-1:0]),
+          .reset(reset || coordinate_start),
           .*
       );
     end
