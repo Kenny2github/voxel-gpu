@@ -46,7 +46,39 @@ int main(void) {
     // load_monkey();
     clear_screen_software();
     wait_for_vsync_software(); // wait_for_vsync();
+
+    // Voxel placement set up - For placing voxels when holding down right click
+    // int last_placed_x = -1;
+    // int last_placed_y = -1;
+    // int last_placed_z = -1;
+    // int hold_cooldown = 0;
+
+    // Voxel placement set up - For placing voxels with click and release
+    uint8_t handle_right_click = 0;
+
     while(1) {
+        
+        if (mouse_right_click_held)
+        {
+            if (!handle_right_click)
+            {
+                uint8_t target_x, target_y, target_z;
+
+                if (get_target_voxel(&target_x, &target_y, &target_z))
+                {
+                    v_pos new_voxel_pos = {target_x, target_y, target_z};
+                    set_voxel(new_voxel_pos, 1);
+                    printf("Voxel placed at: %d, %d, %d\n", target_x, target_y, target_z);
+                }
+
+                handle_right_click = 1;
+            }
+        }
+        else
+        {
+            handle_right_click = 0;
+        }
+
         clear_screen_software();
         render_software(); // render();
         wait_for_vsync_software(); // wait_for_vsync();
