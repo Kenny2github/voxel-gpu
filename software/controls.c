@@ -16,7 +16,7 @@ void config_inputs(void) {
 }
 
 void config_mouse(void) {
-    PS2_DUAL->re = 0x1;
+    PS2_DUAL->flags.re = 0x1;
 
     camera = malloc(sizeof(struct Camera));
     *camera = (struct Camera){
@@ -28,7 +28,7 @@ void config_mouse(void) {
 }
 
 void config_keyboard(void) {
-    PS2->re = 0x1;
+    PS2->flags.re = 0x1;
 }
 
 void set_camera_default(struct Vector pos, struct Vector look, struct Vector up) {

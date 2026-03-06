@@ -82,7 +82,7 @@ static void handle_gpu_interrupt(void) {
 void init_firmware() {
     voxel_count = 0;
 
-    fill_palette_buffer();
+    // fill_palette_buffer();
     palette_size = sizeof(palette_data) / sizeof(palette_data[0]);
     clear_grid();
 
