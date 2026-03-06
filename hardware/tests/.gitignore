@@ -1,3 +1,4 @@
 !*.hex
 ocram.*
 *.wlf
+wlf*
