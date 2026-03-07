@@ -1,0 +1,902 @@
+# Reading pref.tcl
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2021.2 win64 Apr 14 2021
+# //
+# //  Copyright 1991-2021 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+do testbench.tcl integration-test.sv
+# ** Warning: (vlib-34) Library already exists at "work".
+# Errors: 0, Warnings: 1
+# ** Error: no files matched glob pattern "../src/*.sv"
+# Error in macro ./testbench.tcl line 3
+# no files matched glob pattern "../src/*.sv"
+#     while executing
+# "glob ../src/*.sv"
+#     invoked from within
+# "vlog [glob ../src/*.sv] $1"
+ls ..
+# 
+# ..:
+# div.sv  gpu_controller.sv  tests         voxel_gpu_hw.tcl  
+# gpu.sv  pixel_shader.sv    voxel_gpu.sv                    
+ls
+# integration-test.sv
+# ocram_to_bmp.py
+# sdram.hex
+# shader-test.sv
+# testbench.tcl
+# transcript
+# work
+cd ..
+ls
+# div.sv
+# gpu.sv
+# gpu_controller.sv
+# pixel_shader.sv
+# tests
+# voxel_gpu.sv
+# voxel_gpu_hw.tcl
+do tests/testbench.tcl tests/integration-test.sv
+# Questa Intel Starter FPGA Edition-64 vlog 2021.2 Compiler 2021.04 Apr 14 2021
+# Start time: 22:43:13 on Feb 23,2026
+# vlog -reportprogress 300 ../src/div.sv ../src/gpu.sv ../src/gpu_controller.sv ../src/pixel_shader.sv ../src/voxel_gpu.sv tests/integration-test.sv 
+# ** Error: (vlog-7) Failed to open design unit file "../src/div.sv ../src/gpu.sv ../src/gpu_controller.sv ../src/pixel_shader.sv ../src/voxel_gpu.sv" in read mode.
+# No such file or directory. (errno = ENOENT)
+# End time: 22:43:13 on Feb 23,2026, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 0
+# ** Error: D:/intelFPGA_lite/21.1/questa_fse/win64/vlog failed.
+# Error in macro ./tests/testbench.tcl line 3
+# D:/intelFPGA_lite/21.1/questa_fse/win64/vlog failed.
+#     while executing
+# "vlog [glob ../src/*.sv] $1"
+do tests/testbench.tcl tests/integration-test.sv
+# ** Warning: (vlib-34) Library already exists at "work".
+# Errors: 0, Warnings: 1
+# Questa Intel Starter FPGA Edition-64 vlog 2021.2 Compiler 2021.04 Apr 14 2021
+# Start time: 22:46:34 on Feb 23,2026
+# vlog -reportprogress 300 ../src/div.sv ../src/gpu.sv ../src/gpu_controller.sv ../src/pixel_shader.sv ../src/voxel_gpu.sv tests/integration-test.sv 
+# -- Compiling module div
+# -- Compiling package gpu
+# ** Warning: ../src/gpu_controller.sv(15): (vlog-13314) Defaulting port 'cam' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+# -- Compiling package gpu_controller_sv_unit
+# -- Importing package gpu
+# -- Compiling module gpu_controller
+# ** Warning: ../src/gpu_controller.sv(15): (vlog-13314) Defaulting port 'cam' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+# -- Compiling module pixel_shader
+# -- Compiling package voxel_gpu_sv_unit
+# -- Compiling module voxel_gpu
+# -- Compiling package integration2dtest_sv_unit
+# -- Compiling module mock_sdram
+# -- Compiling module mock_ocram
+# -- Compiling module testbench
+# 
+# Top level modules:
+# 	testbench
+# End time: 22:46:34 on Feb 23,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 2
+# Questa Intel Starter FPGA Edition-64 vopt 2021.2 Compiler 2021.04 Apr 14 2021
+# Start time: 22:46:34 on Feb 23,2026
+# vopt -reportprogress 300 "+acc" testbench -o tb 
+# 
+# Top level modules:
+# 	testbench
+# 
+# Analyzing design...
+# -- Loading module testbench
+# -- Loading module voxel_gpu
+# -- Loading module gpu_controller
+# -- Loading module mock_sdram
+# -- Loading module mock_ocram
+# -- Loading module pixel_shader
+# -- Loading module div
+# Optimizing 266 design-units (inlining 0/1797 module instances):
+# -- Optimizing module pixel_shader(fast__128)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__128)".
+# -- Optimizing module pixel_shader(fast__255)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__255)".
+# -- Optimizing module pixel_shader(fast__254)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__254)".
+# -- Optimizing module pixel_shader(fast__253)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__253)".
+# -- Optimizing module pixel_shader(fast)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast)".
+# -- Optimizing module pixel_shader(fast__1)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__1)".
+# -- Optimizing module pixel_shader(fast__2)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__2)".
+# -- Optimizing module pixel_shader(fast__3)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__3)".
+# -- Optimizing module pixel_shader(fast__4)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__4)".
+# -- Optimizing module pixel_shader(fast__5)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__5)".
+# -- Optimizing module pixel_shader(fast__6)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__6)".
+# -- Optimizing module pixel_shader(fast__7)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__7)".
+# -- Optimizing module pixel_shader(fast__8)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__8)".
+# -- Optimizing module pixel_shader(fast__9)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__9)".
+# -- Optimizing module pixel_shader(fast__10)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__10)".
+# -- Optimizing module pixel_shader(fast__11)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__11)".
+# -- Optimizing module pixel_shader(fast__12)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__12)".
+# -- Optimizing module pixel_shader(fast__13)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__13)".
+# -- Optimizing module pixel_shader(fast__14)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__14)".
+# -- Optimizing module pixel_shader(fast__15)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__15)".
+# -- Optimizing module pixel_shader(fast__16)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__16)".
+# -- Optimizing module pixel_shader(fast__17)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__17)".
+# -- Optimizing module pixel_shader(fast__18)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__18)".
+# -- Optimizing module pixel_shader(fast__19)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__19)".
+# -- Optimizing module pixel_shader(fast__20)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__20)".
+# -- Optimizing module pixel_shader(fast__21)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__21)".
+# -- Optimizing module pixel_shader(fast__22)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__22)".
+# -- Optimizing module pixel_shader(fast__23)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__23)".
+# -- Optimizing module pixel_shader(fast__24)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__24)".
+# -- Optimizing module pixel_shader(fast__25)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__25)".
+# -- Optimizing module pixel_shader(fast__26)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__26)".
+# -- Optimizing module pixel_shader(fast__27)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__27)".
+# -- Optimizing module pixel_shader(fast__28)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__28)".
+# -- Optimizing module pixel_shader(fast__29)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__29)".
+# -- Optimizing module pixel_shader(fast__30)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__30)".
+# -- Optimizing module pixel_shader(fast__31)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__31)".
+# -- Optimizing module pixel_shader(fast__32)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__32)".
+# -- Optimizing module pixel_shader(fast__33)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__33)".
+# -- Optimizing module pixel_shader(fast__34)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__34)".
+# -- Optimizing module pixel_shader(fast__35)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__35)".
+# -- Optimizing module pixel_shader(fast__36)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__36)".
+# -- Optimizing module pixel_shader(fast__37)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__37)".
+# -- Optimizing module pixel_shader(fast__38)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__38)".
+# -- Optimizing module pixel_shader(fast__39)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__39)".
+# -- Optimizing module pixel_shader(fast__40)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__40)".
+# -- Optimizing module pixel_shader(fast__41)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__41)".
+# -- Optimizing module pixel_shader(fast__42)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__42)".
+# -- Optimizing module pixel_shader(fast__43)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__43)".
+# -- Optimizing module pixel_shader(fast__44)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__44)".
+# -- Optimizing module pixel_shader(fast__45)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__45)".
+# -- Optimizing module pixel_shader(fast__46)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__46)".
+# -- Optimizing module pixel_shader(fast__47)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__47)".
+# -- Optimizing module mock_sdram(fast)
+# -- Optimizing module gpu_controller(fast)
+# ** Warning: ../src/gpu_controller.sv(15): (vopt-13314) Defaulting port 'cam' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+# ** Note: (vopt-143) Recognized 1 FSM in module "gpu_controller(fast)".
+# -- Optimizing package integration2dtest_sv_unit(fast)
+# -- Optimizing module pixel_shader(fast__48)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__48)".
+# -- Optimizing module pixel_shader(fast__49)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__49)".
+# -- Optimizing module pixel_shader(fast__50)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__50)".
+# -- Optimizing module pixel_shader(fast__51)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__51)".
+# -- Optimizing module pixel_shader(fast__52)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__52)".
+# -- Optimizing module pixel_shader(fast__53)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__53)".
+# -- Optimizing module pixel_shader(fast__54)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__54)".
+# -- Optimizing module pixel_shader(fast__55)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__55)".
+# -- Optimizing module pixel_shader(fast__56)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__56)".
+# -- Optimizing module pixel_shader(fast__57)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__57)".
+# -- Optimizing module pixel_shader(fast__58)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__58)".
+# -- Optimizing module pixel_shader(fast__59)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__59)".
+# -- Optimizing module pixel_shader(fast__60)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__60)".
+# -- Optimizing module pixel_shader(fast__61)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__61)".
+# -- Optimizing module pixel_shader(fast__62)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__62)".
+# -- Optimizing module pixel_shader(fast__63)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__63)".
+# -- Optimizing module pixel_shader(fast__64)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__64)".
+# -- Optimizing module pixel_shader(fast__65)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__65)".
+# -- Optimizing module pixel_shader(fast__66)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__66)".
+# -- Optimizing module pixel_shader(fast__67)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__67)".
+# -- Optimizing module pixel_shader(fast__68)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__68)".
+# -- Optimizing module pixel_shader(fast__69)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__69)".
+# -- Optimizing module pixel_shader(fast__70)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__70)".
+# -- Optimizing module pixel_shader(fast__71)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__71)".
+# -- Optimizing module pixel_shader(fast__72)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__72)".
+# -- Optimizing module pixel_shader(fast__73)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__73)".
+# -- Optimizing module pixel_shader(fast__74)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__74)".
+# -- Optimizing module pixel_shader(fast__75)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__75)".
+# -- Optimizing module pixel_shader(fast__76)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__76)".
+# -- Optimizing module pixel_shader(fast__77)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__77)".
+# -- Optimizing module pixel_shader(fast__78)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__78)".
+# -- Optimizing module pixel_shader(fast__79)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__79)".
+# -- Optimizing module pixel_shader(fast__80)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__80)".
+# -- Optimizing module pixel_shader(fast__81)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__81)".
+# -- Optimizing module pixel_shader(fast__82)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__82)".
+# -- Optimizing module pixel_shader(fast__83)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__83)".
+# -- Optimizing module pixel_shader(fast__84)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__84)".
+# -- Optimizing module pixel_shader(fast__85)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__85)".
+# -- Optimizing module pixel_shader(fast__86)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__86)".
+# -- Optimizing module pixel_shader(fast__87)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__87)".
+# -- Optimizing module pixel_shader(fast__88)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__88)".
+# -- Optimizing module pixel_shader(fast__89)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__89)".
+# -- Optimizing module pixel_shader(fast__90)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__90)".
+# -- Optimizing module pixel_shader(fast__91)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__91)".
+# -- Optimizing module pixel_shader(fast__92)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__92)".
+# -- Optimizing module pixel_shader(fast__93)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__93)".
+# -- Optimizing module pixel_shader(fast__94)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__94)".
+# -- Optimizing module pixel_shader(fast__95)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__95)".
+# -- Optimizing module pixel_shader(fast__96)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__96)".
+# -- Optimizing module pixel_shader(fast__97)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__97)".
+# -- Optimizing module pixel_shader(fast__98)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__98)".
+# -- Optimizing module pixel_shader(fast__99)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__99)".
+# -- Optimizing package gpu(fast)
+# -- Optimizing module pixel_shader(fast__152)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__152)".
+# -- Optimizing module pixel_shader(fast__153)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__153)".
+# -- Optimizing module pixel_shader(fast__154)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__154)".
+# -- Optimizing module pixel_shader(fast__155)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__155)".
+# -- Optimizing module pixel_shader(fast__156)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__156)".
+# -- Optimizing module pixel_shader(fast__157)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__157)".
+# -- Optimizing module pixel_shader(fast__158)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__158)".
+# -- Optimizing module pixel_shader(fast__159)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__159)".
+# -- Optimizing module pixel_shader(fast__160)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__160)".
+# -- Optimizing module pixel_shader(fast__161)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__161)".
+# -- Optimizing module pixel_shader(fast__162)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__162)".
+# -- Optimizing module pixel_shader(fast__163)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__163)".
+# -- Optimizing module pixel_shader(fast__164)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__164)".
+# -- Optimizing module pixel_shader(fast__165)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__165)".
+# -- Optimizing module pixel_shader(fast__166)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__166)".
+# -- Optimizing module pixel_shader(fast__167)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__167)".
+# -- Optimizing module pixel_shader(fast__168)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__168)".
+# -- Optimizing module pixel_shader(fast__169)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__169)".
+# -- Optimizing module pixel_shader(fast__170)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__170)".
+# -- Optimizing module pixel_shader(fast__171)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__171)".
+# -- Optimizing module pixel_shader(fast__172)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__172)".
+# -- Optimizing module pixel_shader(fast__173)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__173)".
+# -- Optimizing module pixel_shader(fast__174)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__174)".
+# -- Optimizing module pixel_shader(fast__175)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__175)".
+# -- Optimizing module pixel_shader(fast__176)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__176)".
+# -- Optimizing module pixel_shader(fast__177)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__177)".
+# -- Optimizing module pixel_shader(fast__178)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__178)".
+# -- Optimizing module pixel_shader(fast__179)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__179)".
+# -- Optimizing module pixel_shader(fast__180)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__180)".
+# -- Optimizing module pixel_shader(fast__181)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__181)".
+# -- Optimizing module pixel_shader(fast__182)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__182)".
+# -- Optimizing module pixel_shader(fast__183)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__183)".
+# -- Optimizing module pixel_shader(fast__184)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__184)".
+# -- Optimizing module pixel_shader(fast__185)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__185)".
+# -- Optimizing module pixel_shader(fast__186)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__186)".
+# -- Optimizing module pixel_shader(fast__187)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__187)".
+# -- Optimizing module pixel_shader(fast__188)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__188)".
+# -- Optimizing module pixel_shader(fast__189)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__189)".
+# -- Optimizing module pixel_shader(fast__190)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__190)".
+# -- Optimizing module pixel_shader(fast__191)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__191)".
+# -- Optimizing module pixel_shader(fast__192)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__192)".
+# -- Optimizing module pixel_shader(fast__193)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__193)".
+# -- Optimizing module pixel_shader(fast__194)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__194)".
+# -- Optimizing module pixel_shader(fast__195)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__195)".
+# -- Optimizing module pixel_shader(fast__196)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__196)".
+# -- Optimizing module pixel_shader(fast__197)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__197)".
+# -- Optimizing module pixel_shader(fast__198)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__198)".
+# -- Optimizing module pixel_shader(fast__199)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__199)".
+# -- Optimizing module pixel_shader(fast__200)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__200)".
+# -- Optimizing module pixel_shader(fast__201)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__201)".
+# -- Optimizing module pixel_shader(fast__202)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__202)".
+# -- Optimizing module pixel_shader(fast__203)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__203)".
+# -- Optimizing package gpu_controller_sv_unit(fast)
+# -- Optimizing module pixel_shader(fast__204)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__204)".
+# -- Optimizing module pixel_shader(fast__205)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__205)".
+# -- Optimizing module pixel_shader(fast__206)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__206)".
+# -- Optimizing module pixel_shader(fast__207)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__207)".
+# -- Optimizing module pixel_shader(fast__208)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__208)".
+# -- Optimizing module pixel_shader(fast__209)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__209)".
+# -- Optimizing module pixel_shader(fast__210)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__210)".
+# -- Optimizing module pixel_shader(fast__211)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__211)".
+# -- Optimizing module pixel_shader(fast__212)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__212)".
+# -- Optimizing module pixel_shader(fast__213)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__213)".
+# -- Optimizing module pixel_shader(fast__214)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__214)".
+# -- Optimizing module pixel_shader(fast__215)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__215)".
+# -- Optimizing module pixel_shader(fast__216)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__216)".
+# -- Optimizing module pixel_shader(fast__217)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__217)".
+# -- Optimizing module pixel_shader(fast__218)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__218)".
+# -- Optimizing module pixel_shader(fast__219)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__219)".
+# -- Optimizing module pixel_shader(fast__220)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__220)".
+# -- Optimizing module pixel_shader(fast__221)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__221)".
+# -- Optimizing module pixel_shader(fast__222)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__222)".
+# -- Optimizing module pixel_shader(fast__223)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__223)".
+# -- Optimizing module pixel_shader(fast__224)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__224)".
+# -- Optimizing module pixel_shader(fast__225)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__225)".
+# -- Optimizing module pixel_shader(fast__226)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__226)".
+# -- Optimizing module pixel_shader(fast__227)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__227)".
+# -- Optimizing module pixel_shader(fast__228)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__228)".
+# -- Optimizing module pixel_shader(fast__229)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__229)".
+# -- Optimizing module pixel_shader(fast__230)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__230)".
+# -- Optimizing module pixel_shader(fast__231)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__231)".
+# -- Optimizing module pixel_shader(fast__232)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__232)".
+# -- Optimizing module pixel_shader(fast__233)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__233)".
+# -- Optimizing module pixel_shader(fast__234)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__234)".
+# -- Optimizing module pixel_shader(fast__235)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__235)".
+# -- Optimizing module pixel_shader(fast__236)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__236)".
+# -- Optimizing module pixel_shader(fast__237)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__237)".
+# -- Optimizing module pixel_shader(fast__238)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__238)".
+# -- Optimizing module pixel_shader(fast__239)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__239)".
+# -- Optimizing module pixel_shader(fast__240)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__240)".
+# -- Optimizing module pixel_shader(fast__241)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__241)".
+# -- Optimizing module pixel_shader(fast__242)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__242)".
+# -- Optimizing module pixel_shader(fast__243)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__243)".
+# -- Optimizing module pixel_shader(fast__244)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__244)".
+# -- Optimizing module pixel_shader(fast__245)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__245)".
+# -- Optimizing module pixel_shader(fast__246)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__246)".
+# -- Optimizing module pixel_shader(fast__247)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__247)".
+# -- Optimizing module pixel_shader(fast__248)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__248)".
+# -- Optimizing module pixel_shader(fast__249)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__249)".
+# -- Optimizing module pixel_shader(fast__250)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__250)".
+# -- Optimizing module pixel_shader(fast__252)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__252)".
+# -- Optimizing module testbench(fast)
+# -- Optimizing module voxel_gpu(fast)
+# -- Optimizing module div(fast)
+# ** Note: (vopt-143) Recognized 1 FSM in module "div(fast)".
+# -- Optimizing module mock_ocram(fast)
+# -- Optimizing package voxel_gpu_sv_unit(fast)
+# -- Optimizing module pixel_shader(fast__100)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__100)".
+# -- Optimizing module pixel_shader(fast__101)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__101)".
+# -- Optimizing module pixel_shader(fast__102)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__102)".
+# -- Optimizing module pixel_shader(fast__103)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__103)".
+# -- Optimizing module pixel_shader(fast__104)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__104)".
+# -- Optimizing module pixel_shader(fast__105)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__105)".
+# -- Optimizing module pixel_shader(fast__106)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__106)".
+# -- Optimizing module pixel_shader(fast__107)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__107)".
+# -- Optimizing module pixel_shader(fast__108)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__108)".
+# -- Optimizing module pixel_shader(fast__109)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__109)".
+# -- Optimizing module pixel_shader(fast__110)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__110)".
+# -- Optimizing module pixel_shader(fast__111)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__111)".
+# -- Optimizing module pixel_shader(fast__112)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__112)".
+# -- Optimizing module pixel_shader(fast__113)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__113)".
+# -- Optimizing module pixel_shader(fast__114)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__114)".
+# -- Optimizing module pixel_shader(fast__115)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__115)".
+# -- Optimizing module pixel_shader(fast__116)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__116)".
+# -- Optimizing module pixel_shader(fast__117)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__117)".
+# -- Optimizing module pixel_shader(fast__118)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__118)".
+# -- Optimizing module pixel_shader(fast__119)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__119)".
+# -- Optimizing module pixel_shader(fast__120)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__120)".
+# -- Optimizing module pixel_shader(fast__121)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__121)".
+# -- Optimizing module pixel_shader(fast__122)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__122)".
+# -- Optimizing module pixel_shader(fast__123)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__123)".
+# -- Optimizing module pixel_shader(fast__124)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__124)".
+# -- Optimizing module pixel_shader(fast__125)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__125)".
+# -- Optimizing module pixel_shader(fast__126)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__126)".
+# -- Optimizing module pixel_shader(fast__127)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__127)".
+# -- Optimizing module pixel_shader(fast__251)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__251)".
+# -- Optimizing module pixel_shader(fast__129)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__129)".
+# -- Optimizing module pixel_shader(fast__130)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__130)".
+# -- Optimizing module pixel_shader(fast__131)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__131)".
+# -- Optimizing module pixel_shader(fast__132)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__132)".
+# -- Optimizing module pixel_shader(fast__133)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__133)".
+# -- Optimizing module pixel_shader(fast__134)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__134)".
+# -- Optimizing module pixel_shader(fast__135)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__135)".
+# -- Optimizing module pixel_shader(fast__136)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__136)".
+# -- Optimizing module pixel_shader(fast__137)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__137)".
+# -- Optimizing module pixel_shader(fast__138)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__138)".
+# -- Optimizing module pixel_shader(fast__139)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__139)".
+# -- Optimizing module pixel_shader(fast__140)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__140)".
+# -- Optimizing module pixel_shader(fast__141)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__141)".
+# -- Optimizing module pixel_shader(fast__142)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__142)".
+# -- Optimizing module pixel_shader(fast__143)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__143)".
+# -- Optimizing module pixel_shader(fast__144)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__144)".
+# -- Optimizing module pixel_shader(fast__145)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__145)".
+# -- Optimizing module pixel_shader(fast__146)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__146)".
+# -- Optimizing module pixel_shader(fast__147)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__147)".
+# -- Optimizing module pixel_shader(fast__148)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__148)".
+# -- Optimizing module pixel_shader(fast__149)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__149)".
+# -- Optimizing module pixel_shader(fast__150)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__150)".
+# -- Optimizing module pixel_shader(fast__151)
+# ** Note: (vopt-143) Recognized 1 FSM in module "pixel_shader(fast__151)".
+# Optimized design name is tb
+# End time: 22:46:36 on Feb 23,2026, Elapsed time: 0:00:02
+# Errors: 0, Warnings: 1
+# vsim tb 
+# Start time: 22:46:36 on Feb 23,2026
+# Loading sv_std.std
+# Loading work.gpu(fast)
+# Loading work.integration2dtest_sv_unit(fast)
+# Loading work.testbench(fast)
+# Loading work.voxel_gpu_sv_unit(fast)
+# Loading work.voxel_gpu(fast)
+# Loading work.gpu_controller_sv_unit(fast)
+# Loading work.gpu_controller(fast)
+# Loading work.pixel_shader(fast)
+# Loading work.div(fast)
+# Loading work.pixel_shader(fast__1)
+# Loading work.pixel_shader(fast__2)
+# Loading work.pixel_shader(fast__3)
+# Loading work.pixel_shader(fast__4)
+# Loading work.pixel_shader(fast__5)
+# Loading work.pixel_shader(fast__6)
+# Loading work.pixel_shader(fast__7)
+# Loading work.pixel_shader(fast__8)
+# Loading work.pixel_shader(fast__9)
+# Loading work.pixel_shader(fast__10)
+# Loading work.pixel_shader(fast__11)
+# Loading work.pixel_shader(fast__12)
+# Loading work.pixel_shader(fast__13)
+# Loading work.pixel_shader(fast__14)
+# Loading work.pixel_shader(fast__15)
+# Loading work.pixel_shader(fast__16)
+# Loading work.pixel_shader(fast__17)
+# Loading work.pixel_shader(fast__18)
+# Loading work.pixel_shader(fast__19)
+# Loading work.pixel_shader(fast__20)
+# Loading work.pixel_shader(fast__21)
+# Loading work.pixel_shader(fast__22)
+# Loading work.pixel_shader(fast__23)
+# Loading work.pixel_shader(fast__24)
+# Loading work.pixel_shader(fast__25)
+# Loading work.pixel_shader(fast__26)
+# Loading work.pixel_shader(fast__27)
+# Loading work.pixel_shader(fast__28)
+# Loading work.pixel_shader(fast__29)
+# Loading work.pixel_shader(fast__30)
+# Loading work.pixel_shader(fast__31)
+# Loading work.pixel_shader(fast__32)
+# Loading work.pixel_shader(fast__33)
+# Loading work.pixel_shader(fast__34)
+# Loading work.pixel_shader(fast__35)
+# Loading work.pixel_shader(fast__36)
+# Loading work.pixel_shader(fast__37)
+# Loading work.pixel_shader(fast__38)
+# Loading work.pixel_shader(fast__39)
+# Loading work.pixel_shader(fast__40)
+# Loading work.pixel_shader(fast__41)
+# Loading work.pixel_shader(fast__42)
+# Loading work.pixel_shader(fast__43)
+# Loading work.pixel_shader(fast__44)
+# Loading work.pixel_shader(fast__45)
+# Loading work.pixel_shader(fast__46)
+# Loading work.pixel_shader(fast__47)
+# Loading work.pixel_shader(fast__48)
+# Loading work.pixel_shader(fast__49)
+# Loading work.pixel_shader(fast__50)
+# Loading work.pixel_shader(fast__51)
+# Loading work.pixel_shader(fast__52)
+# Loading work.pixel_shader(fast__53)
+# Loading work.pixel_shader(fast__54)
+# Loading work.pixel_shader(fast__55)
+# Loading work.pixel_shader(fast__56)
+# Loading work.pixel_shader(fast__57)
+# Loading work.pixel_shader(fast__58)
+# Loading work.pixel_shader(fast__59)
+# Loading work.pixel_shader(fast__60)
+# Loading work.pixel_shader(fast__61)
+# Loading work.pixel_shader(fast__62)
+# Loading work.pixel_shader(fast__63)
+# Loading work.pixel_shader(fast__64)
+# Loading work.pixel_shader(fast__65)
+# Loading work.pixel_shader(fast__66)
+# Loading work.pixel_shader(fast__67)
+# Loading work.pixel_shader(fast__68)
+# Loading work.pixel_shader(fast__69)
+# Loading work.pixel_shader(fast__70)
+# Loading work.pixel_shader(fast__71)
+# Loading work.pixel_shader(fast__72)
+# Loading work.pixel_shader(fast__73)
+# Loading work.pixel_shader(fast__74)
+# Loading work.pixel_shader(fast__75)
+# Loading work.pixel_shader(fast__76)
+# Loading work.pixel_shader(fast__77)
+# Loading work.pixel_shader(fast__78)
+# Loading work.pixel_shader(fast__79)
+# Loading work.pixel_shader(fast__80)
+# Loading work.pixel_shader(fast__81)
+# Loading work.pixel_shader(fast__82)
+# Loading work.pixel_shader(fast__83)
+# Loading work.pixel_shader(fast__84)
+# Loading work.pixel_shader(fast__85)
+# Loading work.pixel_shader(fast__86)
+# Loading work.pixel_shader(fast__87)
+# Loading work.pixel_shader(fast__88)
+# Loading work.pixel_shader(fast__89)
+# Loading work.pixel_shader(fast__90)
+# Loading work.pixel_shader(fast__91)
+# Loading work.pixel_shader(fast__92)
+# Loading work.pixel_shader(fast__93)
+# Loading work.pixel_shader(fast__94)
+# Loading work.pixel_shader(fast__95)
+# Loading work.pixel_shader(fast__96)
+# Loading work.pixel_shader(fast__97)
+# Loading work.pixel_shader(fast__98)
+# Loading work.pixel_shader(fast__99)
+# Loading work.pixel_shader(fast__100)
+# Loading work.pixel_shader(fast__101)
+# Loading work.pixel_shader(fast__102)
+# Loading work.pixel_shader(fast__103)
+# Loading work.pixel_shader(fast__104)
+# Loading work.pixel_shader(fast__105)
+# Loading work.pixel_shader(fast__106)
+# Loading work.pixel_shader(fast__107)
+# Loading work.pixel_shader(fast__108)
+# Loading work.pixel_shader(fast__109)
+# Loading work.pixel_shader(fast__110)
+# Loading work.pixel_shader(fast__111)
+# Loading work.pixel_shader(fast__112)
+# Loading work.pixel_shader(fast__113)
+# Loading work.pixel_shader(fast__114)
+# Loading work.pixel_shader(fast__115)
+# Loading work.pixel_shader(fast__116)
+# Loading work.pixel_shader(fast__117)
+# Loading work.pixel_shader(fast__118)
+# Loading work.pixel_shader(fast__119)
+# Loading work.pixel_shader(fast__120)
+# Loading work.pixel_shader(fast__121)
+# Loading work.pixel_shader(fast__122)
+# Loading work.pixel_shader(fast__123)
+# Loading work.pixel_shader(fast__124)
+# Loading work.pixel_shader(fast__125)
+# Loading work.pixel_shader(fast__126)
+# Loading work.pixel_shader(fast__127)
+# Loading work.pixel_shader(fast__128)
+# Loading work.pixel_shader(fast__129)
+# Loading work.pixel_shader(fast__130)
+# Loading work.pixel_shader(fast__131)
+# Loading work.pixel_shader(fast__132)
+# Loading work.pixel_shader(fast__133)
+# Loading work.pixel_shader(fast__134)
+# Loading work.pixel_shader(fast__135)
+# Loading work.pixel_shader(fast__136)
+# Loading work.pixel_shader(fast__137)
+# Loading work.pixel_shader(fast__138)
+# Loading work.pixel_shader(fast__139)
+# Loading work.pixel_shader(fast__140)
+# Loading work.pixel_shader(fast__141)
+# Loading work.pixel_shader(fast__142)
+# Loading work.pixel_shader(fast__143)
+# Loading work.pixel_shader(fast__144)
+# Loading work.pixel_shader(fast__145)
+# Loading work.pixel_shader(fast__146)
+# Loading work.pixel_shader(fast__147)
+# Loading work.pixel_shader(fast__148)
+# Loading work.pixel_shader(fast__149)
+# Loading work.pixel_shader(fast__150)
+# Loading work.pixel_shader(fast__151)
+# Loading work.pixel_shader(fast__152)
+# Loading work.pixel_shader(fast__153)
+# Loading work.pixel_shader(fast__154)
+# Loading work.pixel_shader(fast__155)
+# Loading work.pixel_shader(fast__156)
+# Loading work.pixel_shader(fast__157)
+# Loading work.pixel_shader(fast__158)
+# Loading work.pixel_shader(fast__159)
+# Loading work.pixel_shader(fast__160)
+# Loading work.pixel_shader(fast__161)
+# Loading work.pixel_shader(fast__162)
+# Loading work.pixel_shader(fast__163)
+# Loading work.pixel_shader(fast__164)
+# Loading work.pixel_shader(fast__165)
+# Loading work.pixel_shader(fast__166)
+# Loading work.pixel_shader(fast__167)
+# Loading work.pixel_shader(fast__168)
+# Loading work.pixel_shader(fast__169)
+# Loading work.pixel_shader(fast__170)
+# Loading work.pixel_shader(fast__171)
+# Loading work.pixel_shader(fast__172)
+# Loading work.pixel_shader(fast__173)
+# Loading work.pixel_shader(fast__174)
+# Loading work.pixel_shader(fast__175)
+# Loading work.pixel_shader(fast__176)
+# Loading work.pixel_shader(fast__177)
+# Loading work.pixel_shader(fast__178)
+# Loading work.pixel_shader(fast__179)
+# Loading work.pixel_shader(fast__180)
+# Loading work.pixel_shader(fast__181)
+# Loading work.pixel_shader(fast__182)
+# Loading work.pixel_shader(fast__183)
+# Loading work.pixel_shader(fast__184)
+# Loading work.pixel_shader(fast__185)
+# Loading work.pixel_shader(fast__186)
+# Loading work.pixel_shader(fast__187)
+# Loading work.pixel_shader(fast__188)
+# Loading work.pixel_shader(fast__189)
+# Loading work.pixel_shader(fast__190)
+# Loading work.pixel_shader(fast__191)
+# Loading work.pixel_shader(fast__192)
+# Loading work.pixel_shader(fast__193)
+# Loading work.pixel_shader(fast__194)
+# Loading work.pixel_shader(fast__195)
+# Loading work.pixel_shader(fast__196)
+# Loading work.pixel_shader(fast__197)
+# Loading work.pixel_shader(fast__198)
+# Loading work.pixel_shader(fast__199)
+# Loading work.pixel_shader(fast__200)
+# Loading work.pixel_shader(fast__201)
+# Loading work.pixel_shader(fast__202)
+# Loading work.pixel_shader(fast__203)
+# Loading work.pixel_shader(fast__204)
+# Loading work.pixel_shader(fast__205)
+# Loading work.pixel_shader(fast__206)
+# Loading work.pixel_shader(fast__207)
+# Loading work.pixel_shader(fast__208)
+# Loading work.pixel_shader(fast__209)
+# Loading work.pixel_shader(fast__210)
+# Loading work.pixel_shader(fast__211)
+# Loading work.pixel_shader(fast__212)
+# Loading work.pixel_shader(fast__213)
+# Loading work.pixel_shader(fast__214)
+# Loading work.pixel_shader(fast__215)
+# Loading work.pixel_shader(fast__216)
+# Loading work.pixel_shader(fast__217)
+# Loading work.pixel_shader(fast__218)
+# Loading work.pixel_shader(fast__219)
+# Loading work.pixel_shader(fast__220)
+# Loading work.pixel_shader(fast__221)
+# Loading work.pixel_shader(fast__222)
+# Loading work.pixel_shader(fast__223)
+# Loading work.pixel_shader(fast__224)
+# Loading work.pixel_shader(fast__225)
+# Loading work.pixel_shader(fast__226)
+# Loading work.pixel_shader(fast__227)
+# Loading work.pixel_shader(fast__228)
+# Loading work.pixel_shader(fast__229)
+# Loading work.pixel_shader(fast__230)
+# Loading work.pixel_shader(fast__231)
+# Loading work.pixel_shader(fast__232)
+# Loading work.pixel_shader(fast__233)
+# Loading work.pixel_shader(fast__234)
+# Loading work.pixel_shader(fast__235)
+# Loading work.pixel_shader(fast__236)
+# Loading work.pixel_shader(fast__237)
+# Loading work.pixel_shader(fast__238)
+# Loading work.pixel_shader(fast__239)
+# Loading work.pixel_shader(fast__240)
+# Loading work.pixel_shader(fast__241)
+# Loading work.pixel_shader(fast__242)
+# Loading work.pixel_shader(fast__243)
+# Loading work.pixel_shader(fast__244)
+# Loading work.pixel_shader(fast__245)
+# Loading work.pixel_shader(fast__246)
+# Loading work.pixel_shader(fast__247)
+# Loading work.pixel_shader(fast__248)
+# Loading work.pixel_shader(fast__249)
+# Loading work.pixel_shader(fast__250)
+# Loading work.pixel_shader(fast__251)
+# Loading work.pixel_shader(fast__252)
+# Loading work.pixel_shader(fast__253)
+# Loading work.pixel_shader(fast__254)
+# Loading work.pixel_shader(fast__255)
+# Loading work.mock_sdram(fast)
+# Loading work.mock_ocram(fast)
+# ** Warning: (vsim-7) Failed to open readmem file "sdram.hex" in read mode.
+# No such file or directory. (errno = ENOENT)    : tests/integration-test.sv(24)
+#    Time: 0 ps  Iteration: 1  Instance: /testbench/sdram
+# Causality operation skipped due to absence of debug database file
