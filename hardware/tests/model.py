@@ -128,7 +128,7 @@ class voxel_gpu:
         pixel_index = (addr >> (COL_BITS + 1)) * self.H_RESOLUTION \
             + ((addr & ((1 << (COL_BITS + 1)) - 1)) >> 1) \
             - self.start_pixel
-        self.mem[addr:addr+2] = self.shaders[pixel_index].pixel.to_bytes(2, 'big')
+        self.mem[addr:addr+2] = self.shaders[pixel_index].pixel.to_bytes(2, 'little')
 
 if __name__ == '__main__':
     DUT = voxel_gpu(cam3(
@@ -146,7 +146,7 @@ if __name__ == '__main__':
         DUT.rasterize_voxel(((-1, -2, 2), 1))
         DUT.rasterize_voxel(((-1, 2, -2), 1))
         DUT.rasterize_voxel(((-1, -2, -2), 1))
-        DUT.shade_entry((0xFFFF, 1))
+        DUT.shade_entry((0x001F, 1))
         for j in range(i, i + DUT.NUM_SHADERS):
             row, col = divmod(j, DUT.H_RESOLUTION)
             DUT.write_pixel((row << 10) | (col << 1))
