@@ -17,16 +17,12 @@ def hex_to_bytes(filename: str) -> bytearray:
 def vga_to_rgb(data: bytearray) -> bytearray:
     pixels = bytearray()
     for row in range(HEIGHT):
-        for col in range(0, WIDTH, 2):
+        for col in range(WIDTH):
             coord = (row << 10) | (col << 1)
-            word = int.from_bytes(data[coord:coord+4], 'little')
+            word = int.from_bytes(data[coord:coord+2], 'little')
             r = ((word & 0xf100) >> (6 + 5)) * 0xff // 0x1f
             g = ((word & 0x07e0) >> 5) * 0xff // 0x3f
             b = (word & 0x001f) * 0xff // 0x1f
-            pixels.extend((r, g, b))
-            r = ((word & 0xf1000000) >> (6 + 5 + 16)) * 0xff // 0x1f
-            g = ((word & 0x07e00000) >> (5 + 16)) * 0xff // 0x3f
-            b = ((word & 0x001f0000) >> 16) * 0xff // 0x1f
             pixels.extend((r, g, b))
     return pixels
 
