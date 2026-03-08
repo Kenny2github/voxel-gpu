@@ -59,6 +59,7 @@ module voxel_gpu #(
   logic raycast_start, coordinate_start, do_rasterize, do_shade;
   wand raycast_valid, coordinate_valid, rasterizing_done, shading_done;
   wor error;
+  assign error = (state == ERROR);
 
   genvar i;
   generate
