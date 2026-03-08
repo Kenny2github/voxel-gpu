@@ -34,9 +34,8 @@ def fdiv(a: float, b: float) -> float:
         return a / b
     except ZeroDivisionError:
         if a:
-            return math.copysign(math.inf, a)
+            return math.copysign(a*math.inf, a*b)
         return math.nan
-    
 
 @dataclass
 class pixel_shader:
@@ -56,7 +55,7 @@ class pixel_shader:
         tlx = fdiv((lx-self.cam.pos.x), self.cam.look.x)
         tly = fdiv((ly-self.cam.pos.y), self.cam.look.y)
         tlz = fdiv((lz-self.cam.pos.z), self.cam.look.z)
-        
+
         thx = fdiv((hx-self.cam.pos.x), self.cam.look.x)
         thy = fdiv((hy-self.cam.pos.y), self.cam.look.y)
         thz = fdiv((hz-self.cam.pos.z), self.cam.look.z)
@@ -68,7 +67,7 @@ class pixel_shader:
         max_A_B_x = max(tlx, thx)
         max_A_B_y = max(tly, thy)
         max_A_B_z = max(tlz, thz)
-        
+
         t_min = max(min_A_B_x, min_A_B_y, min_A_B_z)
         t_max = min(max_A_B_x, max_A_B_y, max_A_B_z)
 
@@ -133,7 +132,7 @@ class voxel_gpu:
 
 if __name__ == '__main__':
     DUT = voxel_gpu(cam3(
-        vec3(4, 0, 0),
+        vec3(4.5, 0.5, 0.5),
         vec3(-2.0, 2, 1.5),
         vec3(-2.0, -2, 1.5),
         vec3(-2.0, 2, -1.5),
@@ -142,11 +141,11 @@ if __name__ == '__main__':
 
     for i in range(0, DUT.H_RESOLUTION * DUT.V_RESOLUTION, DUT.NUM_SHADERS):
         DUT.coordinate(i)
-        DUT.rasterize_voxel(((-0.5, -0.5, -0.5), 1))
-        DUT.rasterize_voxel(((-1, 1.5, 1.5), 1))
-        DUT.rasterize_voxel(((-1, -2.5, 1.5), 1))
-        DUT.rasterize_voxel(((-1, 1.5, -2.5), 1))
-        DUT.rasterize_voxel(((-1, -2.5, -2.5), 1))
+        DUT.rasterize_voxel(((0, 0, 0), 1))
+        DUT.rasterize_voxel(((-1, 2, 2), 1))
+        DUT.rasterize_voxel(((-1, -2, 2), 1))
+        DUT.rasterize_voxel(((-1, 2, -2), 1))
+        DUT.rasterize_voxel(((-1, -2, -2), 1))
         DUT.shade_entry((0xFFFF, 1))
         for j in range(i, i + DUT.NUM_SHADERS):
             row, col = divmod(j, DUT.H_RESOLUTION)
