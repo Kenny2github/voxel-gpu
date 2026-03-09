@@ -48,125 +48,135 @@ module pixel_shader #(
   logic [7:0] cycle_counter;
 
   logic signed [COORD_BITS+FRACT_BITS-1:0]
-      AOx, AOy, AOz, BOx, BOy, BOz, tAx, tAy, tAz, tBx, tBy, tBz, closest_t, t_min, t_max,
-      min_A_B_x, min_A_B_y, min_A_B_z, s;
-  logic A_lt_B_x, A_lt_B_y, A_lt_B_z;
+      lx, ly, lz, hx, hy, hz, tlx, tly, tlz, thx, thy, thz, closest_t, t_min, t_max,
+      min_A_B_x, min_A_B_y, min_A_B_z, max_A_B_x, max_A_B_y, max_A_B_z, t, s;
   // toggle sign bit when comparing (i.e. shift into unsigned range) by adding s
-  assign s   = (1 << (COORD_BITS + FRACT_BITS - 1));
+  assign s = (1 << (COORD_BITS + FRACT_BITS - 1));
 
-  assign AOx = {voxel_x, FRACT_BITS'(0)} - cam_pos_x;
-  assign AOy = {voxel_y, FRACT_BITS'(0)} - cam_pos_y;
-  assign AOz = {voxel_z, FRACT_BITS'(0)} - cam_pos_z;
-  assign BOx = {voxel_x + 1'b1, FRACT_BITS'(0)} - cam_pos_x;
-  assign BOy = {voxel_y + 1'b1, FRACT_BITS'(0)} - cam_pos_y;
-  assign BOz = {voxel_z + 1'b1, FRACT_BITS'(0)} - cam_pos_z;
+  assign lx = {voxel_x, FRACT_BITS'(0)} - cam_pos_x;
+  assign ly = {voxel_y, FRACT_BITS'(0)} - cam_pos_y;
+  assign lz = {voxel_z, FRACT_BITS'(0)} - cam_pos_z;
+  assign hx = {voxel_x + 1'b1, FRACT_BITS'(0)} - cam_pos_x;
+  assign hy = {voxel_y + 1'b1, FRACT_BITS'(0)} - cam_pos_y;
+  assign hz = {voxel_z + 1'b1, FRACT_BITS'(0)} - cam_pos_z;
 
-  assign A_lt_B_x = (AOx + s) < (BOx + s);
-  assign A_lt_B_y = (AOy + s) < (BOy + s);
-  assign A_lt_B_z = (AOz + s) < (BOz + s);
-  assign min_A_B_x = A_lt_B_x ? tAx : tBx;
-  assign min_A_B_y = A_lt_B_y ? tAy : tBy;
-  assign min_A_B_z = A_lt_B_z ? tAz : tBz;
+  assign min_A_B_x = (tlx + s) < (thx + s) ? tlx : thx;
+  assign min_A_B_y = (tly + s) < (thy + s) ? tly : thy;
+  assign min_A_B_z = (tlz + s) < (thz + s) ? tlz : thz;
+  assign max_A_B_x = (tlx + s) > (thx + s) ? tlx : thx;
+  assign max_A_B_y = (tly + s) > (thy + s) ? tly : thy;
+  assign max_A_B_z = (tlz + s) > (thz + s) ? tlz : thz;
+
+  assign t = (t_min + s) > s ? t_min : t_max;
 
   logic div_start;
   wand  div_valid;
   wor   div_error;
+  logic done[0:5];
+  logic valid[0:5];
+  logic dbz[0:5];
+  assign div_valid = dbz[0] || (valid[0] && done[0]);
+  assign div_valid = dbz[1] || (valid[1] && done[1]);
+  assign div_valid = dbz[2] || (valid[2] && done[2]);
+  assign div_valid = dbz[3] || (valid[3] && done[3]);
+  assign div_valid = dbz[4] || (valid[4] && done[4]);
+  assign div_valid = dbz[5] || (valid[5] && done[5]);
 
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divAx (
+  ) divlx (
       .clk(clock),
       .rst(reset),
       .start(div_start),
-      .valid(div_valid),
+      .valid(valid[0]),
       .busy(),
-      .done(div_valid),
-      .dbz(div_error),
+      .done(done[0]),
+      .dbz(dbz[0]),
       .ovf(div_error),
-      .a(AOx),
-      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
-      .val(tAx)
+      .a(lx),
+      .b(cam_look_x),
+      .val(tlx)
   );
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divAy (
+  ) divly (
       .clk(clock),
       .rst(reset),
       .start(div_start),
-      .valid(div_valid),
+      .valid(valid[1]),
       .busy(),
-      .done(div_valid),
-      .dbz(div_error),
+      .done(done[1]),
+      .dbz(dbz[1]),
       .ovf(div_error),
-      .a(AOy),
-      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
-      .val(tAy)
+      .a(ly),
+      .b(cam_look_y),
+      .val(tly)
   );
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divAz (
+  ) divlz (
       .clk(clock),
       .rst(reset),
       .start(div_start),
-      .valid(div_valid),
+      .valid(valid[2]),
       .busy(),
-      .done(div_valid),
-      .dbz(div_error),
+      .done(done[2]),
+      .dbz(dbz[2]),
       .ovf(div_error),
-      .a(AOz),
-      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
-      .val(tAz)
+      .a(lz),
+      .b(cam_look_z),
+      .val(tlz)
   );
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divBx (
+  ) divhx (
       .clk(clock),
       .rst(reset),
       .start(div_start),
-      .valid(div_valid),
+      .valid(valid[3]),
       .busy(),
-      .done(div_valid),
-      .dbz(div_error),
+      .done(done[3]),
+      .dbz(dbz[3]),
       .ovf(div_error),
-      .a(BOx),
-      .b(cam_look_x ? cam_look_x : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
-      .val(tBx)
+      .a(hx),
+      .b(cam_look_x),
+      .val(thx)
   );
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divBy (
+  ) divhy (
       .clk(clock),
       .rst(reset),
       .start(div_start),
-      .valid(div_valid),
+      .valid(valid[4]),
       .busy(),
-      .done(div_valid),
-      .dbz(div_error),
+      .done(done[4]),
+      .dbz(dbz[4]),
       .ovf(div_error),
-      .a(BOy),
-      .b(cam_look_y ? cam_look_y : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
-      .val(tBy)
+      .a(hy),
+      .b(cam_look_y),
+      .val(thy)
   );
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divBz (
+  ) divhz (
       .clk(clock),
       .rst(reset),
       .start(div_start),
-      .valid(div_valid),
+      .valid(valid[5]),
       .busy(),
-      .done(div_valid),
-      .dbz(div_error),
+      .done(done[5]),
+      .dbz(dbz[5]),
       .ovf(div_error),
-      .a(BOz),
-      .b(cam_look_z ? cam_look_z : (COORD_BITS + FRACT_BITS)'(1 << FRACT_BITS)),
-      .val(tBz)
+      .a(hz),
+      .b(cam_look_z),
+      .val(thz)
   );
 
   always_ff @(posedge clock, posedge reset) begin
@@ -212,38 +222,78 @@ module pixel_shader #(
     endcase
   end
 
+  localparam PINF = (COORD_BITS + FRACT_BITS - 1)'('1); // 0111...
+  localparam MINF = ~PINF; // 1000...
+
   always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
       cycle_counter <= '0;
       _pixel <= '0;
       closest_voxel <= '0;
-      closest_t <= (COORD_BITS + FRACT_BITS - 1)'('1);
-      t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
-      t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
+      closest_t <= PINF;
+      t_min <= PINF;
+      t_max <= MINF;
     end else begin
       case (state)
         IDLE: begin
-          t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
-          t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
+          t_min <= PINF;
+          t_max <= MINF;
           cycle_counter <= '0;
         end
         ERROR: begin
-          t_min <= (COORD_BITS + FRACT_BITS - 1)'('1);
-          t_max <= ~(COORD_BITS + FRACT_BITS - 1)'('1);
+          t_min <= PINF;
+          t_max <= MINF;
           cycle_counter <= '0;
         end
         DIVIDE: begin
           cycle_counter <= cycle_counter + 8'd1;
-          t_min <= (min_A_B_x + s) > (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
-          t_max <= (min_A_B_x + s) < (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
+          if (dbz[0] | dbz[3]) begin
+            if ((lx + s) < s) begin  // max(min_A_B_x=-inf, min_A_B_y) = min_A_B_y
+              if (dbz[1] | dbz[4]) begin
+                t_min <= (ly + s) < s ? MINF : PINF;
+              end else begin
+                t_min <= min_A_B_y;
+              end
+            end else begin // max(min_A_B_x=+inf, min_A_B_y) = +inf
+              t_min <= PINF;
+            end
+            if ((hx + s) < s) begin // min(max_A_B_x=-inf, max_A_B_y) = -inf
+              t_max <= MINF;
+            end else begin // min(max_A_B_x=+inf, max_A_B_y) = max_A_B_y
+              if (dbz[1] | dbz[4]) begin
+                t_max <= (hy + s) < s ? MINF : PINF;
+              end else begin
+                t_max <= max_A_B_y;
+              end
+            end
+          end else if (dbz[1] | dbz[4]) begin
+            // max(min_A_B_x!=inf, min_A_B_y=-inf) = min_A_B_x
+            // max(min_A_B_x!=inf, min_A_B_y=+inf) = +inf
+            t_min <= (ly + s) < s ? min_A_B_x : PINF;
+            // min(max_A_B_x!=inf, max_A_B_y=-inf) = -inf
+            // min(max_A_B_x!=inf, max_A_B_y=+inf) = max_A_B_x
+            t_max <= (hy + s) < s ? MINF : max_A_B_x;
+          end else begin
+            t_min <= (min_A_B_x + s) > (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
+            t_max <= (max_A_B_x + s) < (max_A_B_y + s) ? max_A_B_x : max_A_B_y;
+          end
         end
         MEASURE: begin
-          t_min <= (t_min + s) > (min_A_B_z + s) ? t_min : min_A_B_z;
-          t_max <= (t_max + s) < (min_A_B_z + s) ? t_max : min_A_B_z;
+          if (dbz[2] | dbz[5]) begin
+            // max(t_min, min_A_B_z=-inf) = t_min
+            // max(t_min, min_A_B_z=+inf) = +inf
+            t_min <= (lz + s) < s ? t_min : PINF;
+            // min(t_max, max_A_B_z=-inf) = -inf
+            // min(t_max, max_A_B_z=+inf) = t_max
+            t_max <= (hz + s) < s ? MINF : t_max;
+          end else begin
+            t_min <= (t_min + s) > (min_A_B_z + s) ? t_min : min_A_B_z;
+            t_max <= (t_max + s) < (max_A_B_z + s) ? t_max : max_A_B_z;
+          end
         end
         STORE_VOXEL: begin
-          if ((t_min + s) <= (t_max + s) && (t_min + s) < (closest_t + s)) begin  // intersection!
-            closest_t <= t_min;
+          if ((t + s) > s && (t_min + s) <= (t_max + s) && (t + s) < (closest_t + s)) begin  // intersection!
+            closest_t <= t;
             closest_voxel <= voxel_id;
           end
         end
