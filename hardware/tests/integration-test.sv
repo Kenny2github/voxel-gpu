@@ -160,7 +160,7 @@ module testbench #(
       .write(m1_write),
       .chipselect(is_ocram_address && m1_write),
       .address(m1_address[17:2] - OCRAM_BASE[17:2]),
-      .byteenable({m1_address[0], m1_address[0], !m1_address[0], !m1_address[0]}),
+      .byteenable({m1_address[1], m1_address[1], !m1_address[1], !m1_address[1]}),
       .readdata(ocram_readdata),
       .writedata({16'b0, m1_writedata})
   );
