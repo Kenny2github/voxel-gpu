@@ -8,9 +8,9 @@ module pixel_shader #(
 ) (
     input logic do_rasterize,
     input logic do_shade,
-    input logic [COORD_BITS-1:0] voxel_x,
-    input logic [COORD_BITS-1:0] voxel_y,
-    input logic [COORD_BITS-1:0] voxel_z,
+    input logic signed [COORD_BITS-1:0] voxel_x,
+    input logic signed [COORD_BITS-1:0] voxel_y,
+    input logic signed [COORD_BITS-1:0] voxel_z,
     input logic [PALETTE_BITS-1:0] voxel_id,
     input logic [PIXEL_BITS-1:0] palette_entry,
     input logic signed [COORD_BITS+FRACT_BITS-1:0] cam_pos_x,
@@ -70,17 +70,12 @@ module pixel_shader #(
   assign t = (t_min + s) > s ? t_min : t_max;
 
   logic div_start;
-  wand  div_valid;
-  wor   div_error;
-  logic done[0:5];
-  logic valid[0:5];
-  logic dbz[0:5];
-  assign div_valid = dbz[0] || (valid[0] && done[0]);
-  assign div_valid = dbz[1] || (valid[1] && done[1]);
-  assign div_valid = dbz[2] || (valid[2] && done[2]);
-  assign div_valid = dbz[3] || (valid[3] && done[3]);
-  assign div_valid = dbz[4] || (valid[4] && done[4]);
-  assign div_valid = dbz[5] || (valid[5] && done[5]);
+  logic [0:5] div_valid;
+  logic [0:5] div_error;
+  logic [0:5] done;
+  logic [0:5] valid;
+  logic [0:5] dbz;
+  assign div_valid = dbz | (valid & done);
 
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
@@ -93,7 +88,7 @@ module pixel_shader #(
       .busy(),
       .done(done[0]),
       .dbz(dbz[0]),
-      .ovf(div_error),
+      .ovf(div_error[0]),
       .a(lx),
       .b(cam_look_x),
       .val(tlx)
@@ -109,7 +104,7 @@ module pixel_shader #(
       .busy(),
       .done(done[1]),
       .dbz(dbz[1]),
-      .ovf(div_error),
+      .ovf(div_error[1]),
       .a(ly),
       .b(cam_look_y),
       .val(tly)
@@ -125,7 +120,7 @@ module pixel_shader #(
       .busy(),
       .done(done[2]),
       .dbz(dbz[2]),
-      .ovf(div_error),
+      .ovf(div_error[2]),
       .a(lz),
       .b(cam_look_z),
       .val(tlz)
@@ -141,7 +136,7 @@ module pixel_shader #(
       .busy(),
       .done(done[3]),
       .dbz(dbz[3]),
-      .ovf(div_error),
+      .ovf(div_error[3]),
       .a(hx),
       .b(cam_look_x),
       .val(thx)
@@ -157,7 +152,7 @@ module pixel_shader #(
       .busy(),
       .done(done[4]),
       .dbz(dbz[4]),
-      .ovf(div_error),
+      .ovf(div_error[4]),
       .a(hy),
       .b(cam_look_y),
       .val(thy)
@@ -173,7 +168,7 @@ module pixel_shader #(
       .busy(),
       .done(done[5]),
       .dbz(dbz[5]),
-      .ovf(div_error),
+      .ovf(div_error[5]),
       .a(hz),
       .b(cam_look_z),
       .val(thz)
@@ -201,7 +196,7 @@ module pixel_shader #(
       end
       DIVIDE: begin
         if (div_error) next_state = ERROR;
-        else if (div_valid) next_state = MEASURE;
+        else if (&div_valid) next_state = MEASURE;
         else next_state = DIVIDE;
       end
       MEASURE: begin
