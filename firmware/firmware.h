@@ -11,6 +11,10 @@
 
 #define SIDE_LEN 64
 #define ASPECT_RATIO (4.0f/3.0f)
+#define H_RESOLUTION 320
+#define V_RESOLUTION 240
+#define SCREEN_CHAR_W 80
+#define SCREEN_CHAR_H 60
 
 /* main */
 

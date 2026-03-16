@@ -12,6 +12,10 @@ void set_voxel(v_pos pos, uint8_t palette) {
     if (voxel_count == voxel_space_size) {
         voxel_space_size *= 2;
         voxel_space = (struct gpu_voxel*)realloc(voxel_space, voxel_space_size * sizeof(struct gpu_voxel));
+        if (voxel_space == NULL) {
+            printf("Failed to allocate memory for voxel space\n");
+            while (1);
+        }
     }
     voxel_space[voxel_count++] = (struct gpu_voxel){
         .x = pos.x,
