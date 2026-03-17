@@ -8,6 +8,8 @@
 
 static struct Camera *camera = NULL;
 
+volatile uint8_t enter_key_held = 0;
+
 void config_inputs(void) {
 
     // NOTE: May need to swap the IRQ IDs (and the related buffers) if needed, or simply swap the ports
@@ -16,7 +18,7 @@ void config_inputs(void) {
 }
 
 void config_mouse(void) {
-    PS2_DUAL->re = 0x1;
+    PS2_DUAL->flags.re = 0x1;
 
     camera = malloc(sizeof(struct Camera));
     *camera = (struct Camera){
@@ -28,7 +30,7 @@ void config_mouse(void) {
 }
 
 void config_keyboard(void) {
-    PS2->re = 0x1;
+    PS2->flags.re = 0x1;
 }
 
 void set_camera_default(struct Vector pos, struct Vector look, struct Vector up) {
@@ -138,8 +140,12 @@ void keyboard_input_handler() {
 
     struct Vector applicable_vector = {0};
 
-    if(data[0] == 0xF0 || data[1] == 0xF0) // If there is a break code detecting key releases
+    if(data[0] == 0xF0 || data[1] == 0xF0) { // If there is a break code detecting key releases
+        if (data[2] == ENTER_KEY){
+            enter_key_held = 0;
+        }
         return;
+    }
 
     /*** Movement of Camera Position */
     switch(data[2]) {
@@ -151,6 +157,9 @@ void keyboard_input_handler() {
             applicable_vector = camera->up;
             negative_vector(&applicable_vector);
             //printf("Shift was pressed\n");
+            break;
+        case ENTER_KEY:
+            enter_key_held = 1;
             break;
         case A_KEY:
             applicable_vector = camera->right;
@@ -226,4 +235,25 @@ float convert_mouse_val_to_rad(const int x, const float ratio) {
 void update_camera() {
     set_camera(camera);
     set_camera_software(camera);
+}
+
+uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z) {
+    // Currently, just place 2 voxels ahead of where camera looking
+    struct Vector offset = multiply_vector(camera->look, 3.0f);
+    struct Vector target_pos = add_vector(camera->pos, offset);
+
+    int cx = (int)target_pos.x;
+    int cy = (int)target_pos.y;
+    int cz = (int)target_pos.z;
+
+    if (cx >= 0 && cx < SIDE_LEN &&
+        cy >= 0 && cy < SIDE_LEN &&
+        cz >= 0 && cz < SIDE_LEN) 
+    {       
+        *x = (uint8_t)cx;
+        *y = (uint8_t)cy;
+        *z = (uint8_t)cz;
+        return 1;
+    }
+    return 0;
 }
