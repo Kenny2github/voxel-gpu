@@ -1470,7 +1470,7 @@
   <parameter name="COORD_BITS" value="10" />
   <parameter name="FRACT_BITS" value="10" />
   <parameter name="H_RESOLUTION" value="320" />
-  <parameter name="NUM_SHADERS" value="1" />
+  <parameter name="NUM_SHADERS" value="6" />
   <parameter name="PIXEL_BITS" value="16" />
   <parameter name="V_RESOLUTION" value="240" />
  </module>
