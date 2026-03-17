@@ -217,21 +217,44 @@ module testbench #(
     reset = 1'b0;
 
     // set up camera to match model.py
+    // write_s1(16, {10'd5, 10'b0});  // cam.pos.x
+    // write_s1(17, {11'd1, 9'b0});  // cam.pos.y
+    // write_s1(18, {11'd1, 9'b0});  // cam.pos.z
+    // write_s1(19, {10'(-1), 10'd0});  // cam.look0.x
+    // write_s1(20, {11'(-3), 9'd0});  // cam.look0.y
+    // write_s1(21, {10'd2, 10'd0});  // cam.look0.z
+    // write_s1(22, {10'(-1), 10'd0});  // cam.look1.x
+    // write_s1(23, {11'(-3), 9'd0});  // cam.look1.y
+    // write_s1(24, {10'(-2), 10'd0});  // cam.look1.z
+    // write_s1(25, {10'(-1), 10'd0});  // cam.look2.x
+    // write_s1(26, {11'd3, 9'd0});  // cam.look2.y
+    // write_s1(27, {10'd2, 10'd0});  // cam.look2.z
+    // write_s1(28, {10'(-1), 10'd0});  // cam.look3.x
+    // write_s1(29, {11'd3, 9'd0});  // cam.look3.y
+    // write_s1(30, {10'(-2), 10'd0});  // cam.look3.z
+
     write_s1(16, {10'd5, 10'b0});  // cam.pos.x
     write_s1(17, {11'd1, 9'b0});  // cam.pos.y
-    write_s1(18, {11'd1, 9'b0});  // cam.pos.z
-    write_s1(19, {10'(-2), 10'd0});  // cam.look0.x
-    write_s1(20, {10'(-3), 10'd0});  // cam.look0.y
-    write_s1(21, {10'd4, 10'd0});  // cam.look0.z
-    write_s1(22, {10'(-2), 10'd0});  // cam.look1.x
-    write_s1(23, {10'(-3), 10'd0});  // cam.look1.y
-    write_s1(24, {10'(-4), 10'd0});  // cam.look1.z
-    write_s1(25, {10'(-2), 10'd0});  // cam.look2.x
-    write_s1(26, {10'd3, 10'd0});  // cam.look2.y
-    write_s1(27, {10'd4, 10'd0});  // cam.look2.z
-    write_s1(28, {10'(-2), 10'd0});  // cam.look3.x
-    write_s1(29, {10'd3, 10'd0});  // cam.look3.y
-    write_s1(30, {10'(-4), 10'd0});  // cam.look3.z
+    write_s1(18, {10'd5, 10'b0});  // cam.pos.z
+    // vec3(-4.2426, -3, 1.4142)
+    write_s1(19, {10'(-5), 10'd776});   // x
+    write_s1(20, {10'(-3), 10'd0});     // y
+    write_s1(21, {10'd1, 10'd424});     // z
+
+    // vec3(1.4142, -3, -4.2426)
+    write_s1(22, {10'd1, 10'd424});     // x
+    write_s1(23, {10'(-3), 10'd0});     // y
+    write_s1(24, {10'(-5), 10'd776});   // z
+
+    // vec3(-4.2426, 3, 1.4142)
+    write_s1(25, {10'(-5), 10'd776});   // x
+    write_s1(26, {10'd3, 10'd0});       // y
+    write_s1(27, {10'd1, 10'd424});     // z
+
+    // vec3(1.4142, 3, -4.2426)
+    write_s1(28, {10'd1, 10'd424});     // x
+    write_s1(29, {10'd3, 10'd0});       // y
+    write_s1(30, {10'(-5), 10'd776});   // z
 
     for (i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
       // select chunk

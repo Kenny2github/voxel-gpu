@@ -71,7 +71,7 @@ module voxel_gpu #(
       logic [0:1] _coordinate_valid;
       assign coordinate_valid[i] = &_coordinate_valid;
       // compute row and column of shader
-      logic [ROW_BITS+COL_BITS:0] div_i_val;
+      logic [ROW_BITS+COL_BITS+FRACT_BITS:0] div_i_val;
       logic [ROW_BITS-1:0] shader_row;
       logic [COL_BITS-1:0] shader_col;
       div #(

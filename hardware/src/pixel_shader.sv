@@ -72,11 +72,11 @@ module pixel_shader #(
 
   logic div_start;
   logic [0:5] div_valid;
-  logic [0:5] div_error;
+  logic [0:5] ovf;
   logic [0:5] done;
   logic [0:5] valid;
   logic [0:5] dbz;
-  assign div_valid = dbz | (valid & done);
+  assign div_valid = ovf | dbz | (valid & done);
 
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
@@ -89,7 +89,7 @@ module pixel_shader #(
       .busy(),
       .done(done[0]),
       .dbz(dbz[0]),
-      .ovf(div_error[0]),
+      .ovf(ovf[0]),
       .a(lx),
       .b(cam_look_x),
       .val(tlx)
@@ -105,7 +105,7 @@ module pixel_shader #(
       .busy(),
       .done(done[1]),
       .dbz(dbz[1]),
-      .ovf(div_error[1]),
+      .ovf(ovf[1]),
       .a(ly),
       .b(cam_look_y),
       .val(tly)
@@ -121,7 +121,7 @@ module pixel_shader #(
       .busy(),
       .done(done[2]),
       .dbz(dbz[2]),
-      .ovf(div_error[2]),
+      .ovf(ovf[2]),
       .a(lz),
       .b(cam_look_z),
       .val(tlz)
@@ -137,7 +137,7 @@ module pixel_shader #(
       .busy(),
       .done(done[3]),
       .dbz(dbz[3]),
-      .ovf(div_error[3]),
+      .ovf(ovf[3]),
       .a(hx),
       .b(cam_look_x),
       .val(thx)
@@ -153,7 +153,7 @@ module pixel_shader #(
       .busy(),
       .done(done[4]),
       .dbz(dbz[4]),
-      .ovf(div_error[4]),
+      .ovf(ovf[4]),
       .a(hy),
       .b(cam_look_y),
       .val(thy)
@@ -169,7 +169,7 @@ module pixel_shader #(
       .busy(),
       .done(done[5]),
       .dbz(dbz[5]),
-      .ovf(div_error[5]),
+      .ovf(ovf[5]),
       .a(hz),
       .b(cam_look_z),
       .val(thz)
@@ -196,8 +196,7 @@ module pixel_shader #(
         else next_state = ERROR;
       end
       DIVIDE: begin
-        if (div_error) next_state = ERROR;
-        else if (&div_valid) next_state = MEASURE;
+        if (&div_valid) next_state = MEASURE;
         else next_state = DIVIDE;
       end
       MEASURE: begin
@@ -243,9 +242,9 @@ module pixel_shader #(
         end
         DIVIDE: begin
           cycle_counter <= cycle_counter + 8'd1;
-          if (dbz[0] | dbz[3]) begin
+          if ((dbz[0] | ovf[0]) | (dbz[3] | ovf[3])) begin
             if ((lx + s) < s) begin  // max(min_A_B_x=-inf, min_A_B_y) = min_A_B_y
-              if (dbz[1] | dbz[4]) begin
+              if ((dbz[1] | ovf[1]) | (dbz[4] | ovf[4])) begin
                 t_min <= (ly + s) < s ? MINF : PINF;
               end else begin
                 t_min <= min_A_B_y;
@@ -256,13 +255,13 @@ module pixel_shader #(
             if ((hx + s) < s) begin // min(max_A_B_x=-inf, max_A_B_y) = -inf
               t_max <= MINF;
             end else begin // min(max_A_B_x=+inf, max_A_B_y) = max_A_B_y
-              if (dbz[1] | dbz[4]) begin
+              if ((dbz[1] | ovf[1]) | (dbz[4] | ovf[4])) begin
                 t_max <= (hy + s) < s ? MINF : PINF;
               end else begin
                 t_max <= max_A_B_y;
               end
             end
-          end else if (dbz[1] | dbz[4]) begin
+          end else if ((dbz[1] | ovf[1]) | (dbz[4] | ovf[4])) begin
             // max(min_A_B_x!=inf, min_A_B_y=-inf) = min_A_B_x
             // max(min_A_B_x!=inf, min_A_B_y=+inf) = +inf
             t_min <= (ly + s) < s ? min_A_B_x : PINF;
@@ -275,7 +274,7 @@ module pixel_shader #(
           end
         end
         MEASURE: begin
-          if (dbz[2] | dbz[5]) begin
+          if ((dbz[2] | ovf[2]) | (dbz[5] | ovf[5])) begin
             // max(t_min, min_A_B_z=-inf) = t_min
             // max(t_min, min_A_B_z=+inf) = +inf
             t_min <= (lz + s) < s ? t_min : PINF;
