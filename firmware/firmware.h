@@ -9,15 +9,12 @@
 // #define PALETTE_START 0xC2FFFF00 // enough for 128 colors (1B palette -> 2B color)
 // #define GRID_START 0xC3000000
 
-#define SIDE_LEN 1024
-#define VOXEL_SPACE_SIZE 0x300000
+#define SIDE_LEN 64
 #define ASPECT_RATIO (4.0f/3.0f)
 #define H_RESOLUTION 320
 #define V_RESOLUTION 240
 #define SCREEN_CHAR_W 80
 #define SCREEN_CHAR_H 60
-
-extern int voxel_count;
 
 /* main */
 
@@ -32,7 +29,7 @@ void init_firmware();
 void render();
 
 /**
- * call every time we want to swap buffers (after a render)
+ * call every time we
  */
 void wait_for_vsync();
 
@@ -44,9 +41,9 @@ extern struct gpu_voxel* voxel_space;
 extern unsigned int voxel_space_size;
 
 typedef struct v_pos {
-    uint16_t x;
-    uint16_t y;
-    uint16_t z;
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
 } v_pos;
 
 /**

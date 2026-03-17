@@ -14,6 +14,8 @@ struct Ray_fixed {
 
 void setup_pixel_buffer_software();
 
+void set_camera_software(struct Camera* cam);
+
 void set_camera_default_software(struct Vector pos, struct Vector look, struct Vector up);
 
 void set_camera_settings_software(float _fov_degrees, float _focal_length);

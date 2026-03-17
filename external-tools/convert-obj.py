@@ -188,7 +188,7 @@ void load_{output_path[:-2]}() {{
                             if voxel_data[z * WN * WN + y * WN + x]:
                                 # y and z are swapped
                                 f.write(f'''\
-    set_voxel((v_pos){{ .x = {x}, .y = {z}, .z = {y}}}, 0);
+    set_voxel((v_pos){{ .x = {x}, .y = {z}, .z = {y}}}, 1);
 ''')
                 f.write('}')
                 f.write("\n\n#endif")

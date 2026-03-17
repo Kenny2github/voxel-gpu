@@ -83,12 +83,12 @@ struct AffineTransform3D identity_transform() {
 struct AffineTransform3D rotate_transform(float angle, struct Vector axis) {
 
     // Normalize axis
-    float mag = Q_rsqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
-    if(mag > 1000.0f)
+    float mag = sqrtf(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
+    if(mag == 0.0f)
         return identity_transform();
-    float x = axis.x * mag;
-    float y = axis.y * mag;
-    float z = axis.z * mag;
+    float x = axis.x / mag;
+    float y = axis.y / mag;
+    float z = axis.z / mag;
 
     float c = cosf(angle);
     float s = sinf(angle);
