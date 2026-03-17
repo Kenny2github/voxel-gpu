@@ -17,6 +17,7 @@
 #define S_KEY 0x1B
 #define SPACE_KEY 0x29
 #define SHIFT_KEY 0x12
+#define ENTER_KEY 0x5A
 #define ARROW_KEY 0xE0
 #define ARROW_LEFT 0x6B
 #define ARROW_RIGHT 0x74
@@ -58,6 +59,9 @@ struct Camera_formatted {
     struct Vector_16fixed right;
 };
 
+// Variables to check if button is held
+extern volatile uint8_t enter_key_held;
+
 void config_inputs();
 void config_mouse();
 void config_keyboard();
@@ -70,5 +74,7 @@ void keyboard_input_handler();
 float convert_mouse_val_to_rad(const int x, const float ratio); // Ratio is in (pixels / degrees)
 
 void update_camera();
+
+uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z);
 
 #endif
