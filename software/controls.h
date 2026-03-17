@@ -15,6 +15,12 @@
 #define A_KEY 0x1C
 #define D_KEY 0x23
 #define S_KEY 0x1B
+
+#define I_KEY 0x43
+#define K_KEY 0x42
+#define J_KEY 0x3B
+#define L_KEY 0x4B
+
 #define SPACE_KEY 0x29
 #define SHIFT_KEY 0x12
 #define ARROW_KEY 0xE0
@@ -22,6 +28,8 @@
 #define ARROW_RIGHT 0x74
 #define ARROW_UP 0x75
 #define ARROW_DOWN 0x72
+
+#define BREAK_CODE 0xF0
 
 #define MOVEMENT_SPEED 1.0
 
@@ -49,6 +57,7 @@ struct Camera {
     struct Vector look;
     struct Vector up;
     struct Vector right;
+    struct Vector true_up;
 };
 
 struct Camera_formatted {
@@ -57,6 +66,25 @@ struct Camera_formatted {
     struct Vector_16fixed up;
     struct Vector_16fixed right;
 };
+
+struct __attribute__((__packed__, __aligned__(4))) MovementPacket {
+    uint8_t forward: 1;
+    uint8_t backward: 1;
+    uint8_t right: 1;
+    uint8_t left: 1;
+    uint8_t up: 1;
+    uint8_t down: 1;
+    uint8_t : 2;
+};
+
+struct RotatePacket {
+    int mouse_dx;
+    int mouse_dy; 
+};
+
+extern struct Camera camera;
+extern struct MovementPacket movement;
+extern struct RotatePacket rotate;
 
 void config_inputs();
 void config_mouse();
