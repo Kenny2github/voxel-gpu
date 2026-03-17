@@ -137,7 +137,7 @@ class voxel_gpu:
 
 if __name__ == '__main__':
     DUT = voxel_gpu(cam3(
-        vec3(5, 0, 0),
+        vec3(5, 0.5, 0.5),
         vec3(-2.0, -3, 4),
         vec3(-2.0, -3, -4),
         vec3(-2.0, 3, 4),
@@ -164,7 +164,7 @@ if __name__ == '__main__':
 
     for i in range(0, DUT.H_RESOLUTION * DUT.V_RESOLUTION, DUT.NUM_SHADERS):
         DUT.coordinate(i)
-        DUT.rasterize_voxel(((0, -3, -1), 1))
+        DUT.rasterize_voxel(((1, 0, 0), 1))
         DUT.rasterize_voxel(((1, 2, 2), 1))
         DUT.rasterize_voxel(((1, 2, -2), 1))
         DUT.rasterize_voxel(((1, -2, 2), 1))
