@@ -71,4 +71,8 @@ float convert_mouse_val_to_rad(const int x, const float ratio); // Ratio is in (
 
 void update_camera();
 
+extern volatile uint8_t mouse_right_click_held;
+
+uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z);
+
 #endif

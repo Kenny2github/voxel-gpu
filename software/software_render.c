@@ -381,155 +381,304 @@ void render_software() {
     const float V_RESOLUTION_HALF = (V_RESOLUTION >> 1);
     const float H_RESOLUTION_HALF = (H_RESOLUTION >> 1);
 
-    for(uint8_t x = 0; x < SIDE_LEN; x++) {
-        for(uint8_t z = 0; z < SIDE_LEN; z++) {
-            for(uint8_t y = 0; y < SIDE_LEN; y++) {
+    for(unsigned int v = 0; v < voxel_count; v++)
+    {
+        uint8_t x = voxel_space[v].x;
+        uint8_t y = voxel_space[v].y;
+        uint8_t z = voxel_space[v].z;
+        
+        uint8_t palette = voxel_space[v].voxel_id;
+        if (palette == 0 ) continue;
 
-                uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
-                if (palette == 0) continue;
-                
-                // Rough instruction count: 403917 per voxel
-                debug_start();
+        // Rough instruction count: 403917 per voxel
+        debug_start();
 
-                struct Vector corners[8];
-                corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
-                corners[1] = (struct Vector){x+1,   y,     z+1};     // top-right-front
-                corners[2] = (struct Vector){x,     y+1,   z+1};     // bottom-left-front
-                corners[3] = (struct Vector){x+1,   y+1,   z+1};     // bottom-right-front
-                corners[4] = (struct Vector){x,     y,     z};   // top-left-back
-                corners[5] = (struct Vector){x+1,   y,     z};   // top-right-back
-                corners[6] = (struct Vector){x,     y+1,   z};   // bottom-left-back
-                corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
-                
-                // Somehow optimize by projecting only one vertex, as a voxel's size is known
-                float screen_x[8], screen_y[8];
-                for (int i = 0; i < 8; i++) {
-                    struct Vector diff;
-                    diff.x = corners[i].x - camera.pos.x;
-                    diff.y = corners[i].y - camera.pos.y;
-                    diff.z = corners[i].z - camera.pos.z;
+        struct Vector corners[8];
+        corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
+        corners[1] = (struct Vector){x+1,   y,     z+1};     // top-right-front
+        corners[2] = (struct Vector){x,     y+1,   z+1};     // bottom-left-front
+        corners[3] = (struct Vector){x+1,   y+1,   z+1};     // bottom-right-front
+        corners[4] = (struct Vector){x,     y,     z};   // top-left-back
+        corners[5] = (struct Vector){x+1,   y,     z};   // top-right-back
+        corners[6] = (struct Vector){x,     y+1,   z};   // bottom-left-back
+        corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
+        
+        // Somehow optimize by projecting only one vertex, as a voxel's size is known
+        float screen_x[8], screen_y[8];
+        for (int i = 0; i < 8; i++) {
+            struct Vector diff;
+            diff.x = corners[i].x - camera.pos.x;
+            diff.y = corners[i].y - camera.pos.y;
+            diff.z = corners[i].z - camera.pos.z;
 
-                    float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
-                    float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
-                    float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
+            float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
+            float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
+            float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
 
-                    float cam_z_inv = 1 / cam_z;
-                    float x_frac = (cam_x * frac_x_const) * cam_z_inv;
-                    float y_frac = -(cam_y * frac_y_const) * cam_z_inv;
+            float cam_z_inv = 1 / cam_z;
+            float x_frac = (cam_x * frac_x_const) * cam_z_inv;
+            float y_frac = -(cam_y * frac_y_const) * cam_z_inv;
 
-                    screen_x[i] = (x_frac + 1.0f) * H_RESOLUTION_HALF;
-                    screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
-                }
+            screen_x[i] = (x_frac + 1.0f) * H_RESOLUTION_HALF;
+            screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
+        }
 
-                uint8_t face_enable = 0;
-                // uint16_t face_palette[6] = {0};
+        uint8_t face_enable = 0;
+        // uint16_t face_palette[6] = {0};
 
-                for(int i = 0; i < 6; i++) {
-                    struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
+        for(int i = 0; i < 6; i++) {
+            struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
 
-                    diff.x += normal[i].x == 1;
-                    diff.y += normal[i].y == 1;
-                    diff.z += normal[i].z == 1;
+            diff.x += normal[i].x == 1;
+            diff.y += normal[i].y == 1;
+            diff.z += normal[i].z == 1;
 
-                    // normalize(&diff);
+            // normalize(&diff);
 
-                    float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
-                    face_enable |= (dot < 0) << i;
+            float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
+            face_enable |= (dot < 0) << i;
 
-                    // if((face_enable >> i) & 0b1)) {
-                    //     uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
-                    //     uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
-                    //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
-                    //     face_palette[i] = blue | (green << 5) | (red << 11);
-                    // }
-                    
-                }
-                
-                // Currently able to draw outside the resolution screen, need to fix
-                for(int i = 0; i < 6; i++) {
-                    if(!((face_enable >> i) & 0b1))
-                        continue;
+            // if((face_enable >> i) & 0b1)) {
+            //     uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
+            //     uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
+            //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
+            //     face_palette[i] = blue | (green << 5) | (red << 11);
+            // }
+            
+        }
+        
+        // Currently able to draw outside the resolution screen, need to fix
+        for(int i = 0; i < 6; i++) {
+            if(!((face_enable >> i) & 0b1))
+                continue;
 
-                    int i0 = faces[i][0], i1 = faces[i][1], i2 = faces[i][2], i3 = faces[i][3];
+            int i0 = faces[i][0], i1 = faces[i][1], i2 = faces[i][2], i3 = faces[i][3];
 
-                    int x0 = (int)screen_x[i0], y0 = (int)screen_y[i0];
-                    int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
-                    int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
-                    int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
-                    uint16_t color = palette_data[palette];
+            int x0 = (int)screen_x[i0], y0 = (int)screen_y[i0];
+            int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
+            int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
+            int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
+            uint16_t color = palette_data[palette];
 
-                    draw_line(x0, y0, x1, y1, color);
-                    draw_line(x1, y1, x2, y2, color);
-                    draw_line(x2, y2, x3, y3, color);
-                    draw_line(x3, y3, x0, y0, color);
-                    
-                    int cx = (x0 + x1 + x2 + x3) >> 2;
-                    int cy = (y0 + y1 + y2 + y3) >> 2;
+            draw_line(x0, y0, x1, y1, color);
+            draw_line(x1, y1, x2, y2, color);
+            draw_line(x2, y2, x3, y3, color);
+            draw_line(x3, y3, x0, y0, color);
+            
+            int cx = (x0 + x1 + x2 + x3) >> 2;
+            int cy = (y0 + y1 + y2 + y3) >> 2;
 
-                    // If centroid is off-screen, scan bounding box for a valid pixel inside the quad
-                    // Rough Instruction count: 938
-                    if(cx >= H_RESOLUTION || cy >= V_RESOLUTION || cx < 0 || cy < 0) {
-                        int min_x = x0, max_x = x0;
-                        int min_y = y0, max_y = y0;
-                        min_x = (x1 < min_x) ? x1 : min_x;
-                        min_x = (x2 < min_x) ? x2 : min_x;
-                        min_x = (x3 < min_x) ? x3 : min_x;
-                        max_x = (x1 > max_x) ? x1 : max_x;
-                        max_x = (x2 > max_x) ? x2 : max_x;
-                        max_x = (x3 > max_x) ? x3 : max_x;
-                        min_y = (y1 < min_y) ? y1 : min_y;
-                        min_y = (y2 < min_y) ? y2 : min_y;
-                        min_y = (y3 < min_y) ? y3 : min_y;
-                        max_y = (y1 > max_y) ? y1 : max_y;
-                        max_y = (y2 > max_y) ? y2 : max_y;
-                        max_y = (y3 > max_y) ? y3 : max_y;
+            // If centroid is off-screen, scan bounding box for a valid pixel inside the quad
+            // Rough Instruction count: 938
+            if(cx >= H_RESOLUTION || cy >= V_RESOLUTION || cx < 0 || cy < 0) {
+                int min_x = x0, max_x = x0;
+                int min_y = y0, max_y = y0;
+                min_x = (x1 < min_x) ? x1 : min_x;
+                min_x = (x2 < min_x) ? x2 : min_x;
+                min_x = (x3 < min_x) ? x3 : min_x;
+                max_x = (x1 > max_x) ? x1 : max_x;
+                max_x = (x2 > max_x) ? x2 : max_x;
+                max_x = (x3 > max_x) ? x3 : max_x;
+                min_y = (y1 < min_y) ? y1 : min_y;
+                min_y = (y2 < min_y) ? y2 : min_y;
+                min_y = (y3 < min_y) ? y3 : min_y;
+                max_y = (y1 > max_y) ? y1 : max_y;
+                max_y = (y2 > max_y) ? y2 : max_y;
+                max_y = (y3 > max_y) ? y3 : max_y;
 
-                        // Clamp to screen bounds
-                        if(min_x < 0) min_x = 0;
-                        if(max_x >= H_RESOLUTION) max_x = H_RESOLUTION - 1;
-                        if(min_y < 0) min_y = 0;
-                        if(max_y >= V_RESOLUTION) max_y = V_RESOLUTION - 1;
+                // Clamp to screen bounds
+                if(min_x < 0) min_x = 0;
+                if(max_x >= H_RESOLUTION) max_x = H_RESOLUTION - 1;
+                if(min_y < 0) min_y = 0;
+                if(max_y >= V_RESOLUTION) max_y = V_RESOLUTION - 1;
 
-                        // Point-in-quad test using cross product sign
-                        int found = 0;
-                        int quad_x[4] = {x0, x1, x2, x3};
-                        int quad_y[4] = {y0, y1, y2, y3};
-                        for(int sx = min_x; sx <= max_x && !found; sx++) {
-                            for(int sy = min_y; sy <= max_y && !found; sy++) {
-                                int sign = 0;
-                                for(int q = 0; q < 4; q++) {
-                                    int dx1 = quad_x[(q+1)%4] - quad_x[q];
-                                    int dy1 = quad_y[(q+1)%4] - quad_y[q];
-                                    int dx2 = sx - quad_x[q];
-                                    int dy2 = sy - quad_y[q];
-                                    int cross = dx1 * dy2 - dy1 * dx2;
+                // Point-in-quad test using cross product sign
+                int found = 0;
+                int quad_x[4] = {x0, x1, x2, x3};
+                int quad_y[4] = {y0, y1, y2, y3};
+                for(int sx = min_x; sx <= max_x && !found; sx++) {
+                    for(int sy = min_y; sy <= max_y && !found; sy++) {
+                        int sign = 0;
+                        for(int q = 0; q < 4; q++) {
+                            int dx1 = quad_x[(q+1)%4] - quad_x[q];
+                            int dy1 = quad_y[(q+1)%4] - quad_y[q];
+                            int dx2 = sx - quad_x[q];
+                            int dy2 = sy - quad_y[q];
+                            int cross = dx1 * dy2 - dy1 * dx2;
 
-                                    if(cross == 0) { sign = 0; break; }
-                                    if(get_pixel(sx, sy) != 0) { sign = 0; break; }
-                                    if(sign == 0) sign = (cross > 0) ? 1 : -1;
-                                    else if((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
-                                        sign = 0;
-                                        break;
-                                    }
-                                }
-                                if(sign != 0) {
-                                    cx = sx;
-                                    cy = sy;
-                                    found = 1;
-                                }
+                            if(cross == 0) { sign = 0; break; }
+                            if(get_pixel(sx, sy) != 0) { sign = 0; break; }
+                            if(sign == 0) sign = (cross > 0) ? 1 : -1;
+                            else if((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
+                                sign = 0;
+                                break;
                             }
                         }
-                
+                        if(sign != 0) {
+                            cx = sx;
+                            cy = sy;
+                            found = 1;
+                        }
                     }
-
-                    flood_fill(cx, cy, color);
-                
                 }
-                debug_end();
-            
+        
             }
+
+            flood_fill(cx, cy, color);
+        
         }
+        debug_end();
     }
+
+    // for(uint8_t x = 0; x < SIDE_LEN; x++) {
+    //     for(uint8_t z = 0; z < SIDE_LEN; z++) {
+    //         for(uint8_t y = 0; y < SIDE_LEN; y++) {
+
+    //             uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
+    //             if (palette == 0) continue;
+                
+    //             // Rough instruction count: 403917 per voxel
+    //             debug_start();
+
+    //             struct Vector corners[8];
+    //             corners[0] = (struct Vector){x,     y,     z+1};     // top-left-front
+    //             corners[1] = (struct Vector){x+1,   y,     z+1};     // top-right-front
+    //             corners[2] = (struct Vector){x,     y+1,   z+1};     // bottom-left-front
+    //             corners[3] = (struct Vector){x+1,   y+1,   z+1};     // bottom-right-front
+    //             corners[4] = (struct Vector){x,     y,     z};   // top-left-back
+    //             corners[5] = (struct Vector){x+1,   y,     z};   // top-right-back
+    //             corners[6] = (struct Vector){x,     y+1,   z};   // bottom-left-back
+    //             corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
+                
+    //             // Somehow optimize by projecting only one vertex, as a voxel's size is known
+    //             float screen_x[8], screen_y[8];
+    //             for (int i = 0; i < 8; i++) {
+    //                 struct Vector diff;
+    //                 diff.x = corners[i].x - camera.pos.x;
+    //                 diff.y = corners[i].y - camera.pos.y;
+    //                 diff.z = corners[i].z - camera.pos.z;
+
+    //                 float cam_z = diff.x * camera.look.x + diff.y * camera.look.y + diff.z * camera.look.z;
+    //                 float cam_x = diff.x * camera.right.x + diff.y * camera.right.y + diff.z * camera.right.z;
+    //                 float cam_y = diff.x * camera.up.x + diff.y * camera.up.y + diff.z * camera.up.z;
+
+    //                 float cam_z_inv = 1 / cam_z;
+    //                 float x_frac = (cam_x * frac_x_const) * cam_z_inv;
+    //                 float y_frac = -(cam_y * frac_y_const) * cam_z_inv;
+
+    //                 screen_x[i] = (x_frac + 1.0f) * H_RESOLUTION_HALF;
+    //                 screen_y[i] = (y_frac + 1.0f) * V_RESOLUTION_HALF;
+    //             }
+
+    //             uint8_t face_enable = 0;
+    //             // uint16_t face_palette[6] = {0};
+
+    //             for(int i = 0; i < 6; i++) {
+    //                 struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
+
+    //                 diff.x += normal[i].x == 1;
+    //                 diff.y += normal[i].y == 1;
+    //                 diff.z += normal[i].z == 1;
+
+    //                 // normalize(&diff);
+
+    //                 float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
+    //                 face_enable |= (dot < 0) << i;
+
+    //                 // if((face_enable >> i) & 0b1)) {
+    //                 //     uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
+    //                 //     uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
+    //                 //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
+    //                 //     face_palette[i] = blue | (green << 5) | (red << 11);
+    //                 // }
+                    
+    //             }
+                
+    //             // Currently able to draw outside the resolution screen, need to fix
+    //             for(int i = 0; i < 6; i++) {
+    //                 if(!((face_enable >> i) & 0b1))
+    //                     continue;
+
+    //                 int i0 = faces[i][0], i1 = faces[i][1], i2 = faces[i][2], i3 = faces[i][3];
+
+    //                 int x0 = (int)screen_x[i0], y0 = (int)screen_y[i0];
+    //                 int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
+    //                 int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
+    //                 int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
+    //                 uint16_t color = palette_data[palette];
+
+    //                 draw_line(x0, y0, x1, y1, color);
+    //                 draw_line(x1, y1, x2, y2, color);
+    //                 draw_line(x2, y2, x3, y3, color);
+    //                 draw_line(x3, y3, x0, y0, color);
+                    
+    //                 int cx = (x0 + x1 + x2 + x3) >> 2;
+    //                 int cy = (y0 + y1 + y2 + y3) >> 2;
+
+    //                 // If centroid is off-screen, scan bounding box for a valid pixel inside the quad
+    //                 // Rough Instruction count: 938
+    //                 if(cx >= H_RESOLUTION || cy >= V_RESOLUTION || cx < 0 || cy < 0) {
+    //                     int min_x = x0, max_x = x0;
+    //                     int min_y = y0, max_y = y0;
+    //                     min_x = (x1 < min_x) ? x1 : min_x;
+    //                     min_x = (x2 < min_x) ? x2 : min_x;
+    //                     min_x = (x3 < min_x) ? x3 : min_x;
+    //                     max_x = (x1 > max_x) ? x1 : max_x;
+    //                     max_x = (x2 > max_x) ? x2 : max_x;
+    //                     max_x = (x3 > max_x) ? x3 : max_x;
+    //                     min_y = (y1 < min_y) ? y1 : min_y;
+    //                     min_y = (y2 < min_y) ? y2 : min_y;
+    //                     min_y = (y3 < min_y) ? y3 : min_y;
+    //                     max_y = (y1 > max_y) ? y1 : max_y;
+    //                     max_y = (y2 > max_y) ? y2 : max_y;
+    //                     max_y = (y3 > max_y) ? y3 : max_y;
+
+    //                     // Clamp to screen bounds
+    //                     if(min_x < 0) min_x = 0;
+    //                     if(max_x >= H_RESOLUTION) max_x = H_RESOLUTION - 1;
+    //                     if(min_y < 0) min_y = 0;
+    //                     if(max_y >= V_RESOLUTION) max_y = V_RESOLUTION - 1;
+
+    //                     // Point-in-quad test using cross product sign
+    //                     int found = 0;
+    //                     int quad_x[4] = {x0, x1, x2, x3};
+    //                     int quad_y[4] = {y0, y1, y2, y3};
+    //                     for(int sx = min_x; sx <= max_x && !found; sx++) {
+    //                         for(int sy = min_y; sy <= max_y && !found; sy++) {
+    //                             int sign = 0;
+    //                             for(int q = 0; q < 4; q++) {
+    //                                 int dx1 = quad_x[(q+1)%4] - quad_x[q];
+    //                                 int dy1 = quad_y[(q+1)%4] - quad_y[q];
+    //                                 int dx2 = sx - quad_x[q];
+    //                                 int dy2 = sy - quad_y[q];
+    //                                 int cross = dx1 * dy2 - dy1 * dx2;
+
+    //                                 if(cross == 0) { sign = 0; break; }
+    //                                 if(get_pixel(sx, sy) != 0) { sign = 0; break; }
+    //                                 if(sign == 0) sign = (cross > 0) ? 1 : -1;
+    //                                 else if((cross > 0 && sign < 0) || (cross < 0 && sign > 0)) {
+    //                                     sign = 0;
+    //                                     break;
+    //                                 }
+    //                             }
+    //                             if(sign != 0) {
+    //                                 cx = sx;
+    //                                 cy = sy;
+    //                                 found = 1;
+    //                             }
+    //                         }
+    //                     }
+                
+    //                 }
+
+    //                 flood_fill(cx, cy, color);
+                
+    //             }
+    //             debug_end();
+            
+    //         }
+    //     }
+    // }
 
  
 }

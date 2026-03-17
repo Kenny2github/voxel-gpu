@@ -8,6 +8,8 @@
 
 static struct Camera *camera = NULL;
 
+volatile uint8_t mouse_right_click_held = 0;
+
 void config_inputs(void) {
 
     // NOTE: May need to swap the IRQ IDs (and the related buffers) if needed, or simply swap the ports
@@ -16,7 +18,7 @@ void config_inputs(void) {
 }
 
 void config_mouse(void) {
-    PS2_DUAL->re = 0x1;
+    PS2_DUAL->flags.re = 0x1;
 
     camera = malloc(sizeof(struct Camera));
     *camera = (struct Camera){
@@ -28,7 +30,7 @@ void config_mouse(void) {
 }
 
 void config_keyboard(void) {
-    PS2->re = 0x1;
+    PS2->flags.re = 0x1;
 }
 
 void set_camera_default(struct Vector pos, struct Vector look, struct Vector up) {
@@ -111,6 +113,9 @@ void mouse_input_handler() {
         cross_product(&(camera->right), &(camera->look), &(camera->up));
         normalize(&(camera->up));
     }
+
+    uint8_t buttonPressedCheck = mousePackets[0] & 0x07;
+    mouse_right_click_held = (buttonPressedCheck & 0x02) != 0;
 }
 
 void keyboard_input_handler() {
@@ -226,4 +231,25 @@ float convert_mouse_val_to_rad(const int x, const float ratio) {
 void update_camera() {
     set_camera(camera);
     set_camera_software(camera);
+}
+
+uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z) {
+    // Currently, just place 2 voxels ahead of where camera looking
+    struct Vector offset = multiply_vector(camera->look, 3.0f);
+    struct Vector target_pos = add_vector(camera->pos, offset);
+
+    int cx = (int)target_pos.x;
+    int cy = (int)target_pos.y;
+    int cz = (int)target_pos.z;
+
+    if (cx >= 0 && cx < SIDE_LEN &&
+        cy >= 0 && cy < SIDE_LEN &&
+        cz >= 0 && cz < SIDE_LEN) 
+    {       
+        *x = (uint8_t)cx;
+        *y = (uint8_t)cy;
+        *z = (uint8_t)cz;
+        return 1;
+    }
+    return 0;
 }
