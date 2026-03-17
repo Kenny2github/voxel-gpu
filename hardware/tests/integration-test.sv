@@ -217,37 +217,47 @@ module testbench #(
     reset = 1'b0;
 
     // set up camera to match model.py
-    write_s1(16, {11'd9, 9'b0});  // cam.pos.x
-    write_s1(17, {11'd1, 9'b0});  // cam.pos.y
-    write_s1(18, {11'd1, 9'b0});  // cam.pos.z
+    write_s1(16, {10'd5, 10'b0});  // cam.pos.x
+    write_s1(17, {10'd0, 10'b0});  // cam.pos.y
+    write_s1(18, {10'd0, 10'b0});  // cam.pos.z
     write_s1(19, {10'(-2), 10'd0});  // cam.look0.x
-    write_s1(20, {10'd2, 10'd0});  // cam.look0.y
-    write_s1(21, {11'd3, 9'd0});  // cam.look0.z
+    write_s1(20, {10'(-3), 10'd0});  // cam.look0.y
+    write_s1(21, {10'd4, 10'd0});  // cam.look0.z
     write_s1(22, {10'(-2), 10'd0});  // cam.look1.x
-    write_s1(23, {10'(-2), 10'd0});  // cam.look1.y
-    write_s1(24, {11'd3, 9'd0});  // cam.look1.z
+    write_s1(23, {10'(-3), 10'd0});  // cam.look1.y
+    write_s1(24, {10'(-4), 10'd0});  // cam.look1.z
     write_s1(25, {10'(-2), 10'd0});  // cam.look2.x
-    write_s1(26, {10'd2, 10'd0});  // cam.look2.y
-    write_s1(27, {11'(-3), 9'd0});  // cam.look2.z
+    write_s1(26, {10'd3, 10'd0});  // cam.look2.y
+    write_s1(27, {10'd4, 10'd0});  // cam.look2.z
     write_s1(28, {10'(-2), 10'd0});  // cam.look3.x
-    write_s1(29, {10'(-2), 10'd0});  // cam.look3.y
-    write_s1(30, {11'(-3), 9'd0});  // cam.look3.z
+    write_s1(29, {10'd3, 10'd0});  // cam.look3.y
+    write_s1(30, {10'(-4), 10'd0});  // cam.look3.z
 
     for (i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
       // select chunk
       write_s1(3, i);
       clear_irq();
 
-      write_s1(0, {10'd0, 10'd0, 10'd0, 2'd1});
+      write_s1(0, {10'd0, 10'(-3), 10'(-1), 2'd1});
       clear_irq();
       write_s1(0, {10'(-1), 10'd2, 10'd2, 2'd1});
       clear_irq();
-      write_s1(0, {10'(-1), 10'(-2), 10'd2, 2'd1});
-      clear_irq();
       write_s1(0, {10'(-1), 10'd2, 10'(-2), 2'd1});
+      clear_irq();
+      write_s1(0, {10'(-1), 10'(-2), 10'd2, 2'd1});
       clear_irq();
       write_s1(0, {10'(-1), 10'(-2), 10'(-2), 2'd1});
       clear_irq();
+
+      write_s1(0, {10'd1, 10'd2, 10'd2, 2'd1});
+      clear_irq();
+      write_s1(0, {10'd1, 10'd2, 10'(-2), 2'd1});
+      clear_irq();
+      write_s1(0, {10'd1, 10'(-2), 10'd2, 2'd1});
+      clear_irq();
+      write_s1(0, {10'd1, 10'(-2), 10'(-2), 2'd1});
+      clear_irq();
+
 
       write_s1(1, {16'h001F, 14'd0, 2'd1});
       clear_irq();

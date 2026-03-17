@@ -1,9 +1,9 @@
 module pixel_shader #(
     parameter INDEX = 0,
     parameter INDEX_BITS = 32,
-    parameter COORD_BITS = 8,
+    parameter COORD_BITS = 10,
     parameter PALETTE_BITS = 32 - (COORD_BITS * 3),
-    parameter FRACT_BITS = 8,
+    parameter FRACT_BITS = 10,
     parameter PIXEL_BITS = 8
 ) (
     input logic do_rasterize,
@@ -51,8 +51,9 @@ module pixel_shader #(
       lx, ly, lz, hx, hy, hz, tlx, tly, tlz, thx, thy, thz, closest_t, t_min, t_max,
       min_A_B_x, min_A_B_y, min_A_B_z, max_A_B_x, max_A_B_y, max_A_B_z, t, s;
   // toggle sign bit when comparing (i.e. shift into unsigned range) by adding s
-  assign s = (1 << (COORD_BITS + FRACT_BITS - 1));
-
+  // assign s = (1 << (COORD_BITS + FRACT_BITS - 1));
+  assign s = 0;
+  
   assign lx = {voxel_x, FRACT_BITS'(0)} - cam_pos_x;
   assign ly = {voxel_y, FRACT_BITS'(0)} - cam_pos_y;
   assign lz = {voxel_z, FRACT_BITS'(0)} - cam_pos_z;

@@ -17,7 +17,7 @@ module lerp2 #(
     input logic clock,
     input logic reset
 );
-  logic [WIDTH-1:0] lerp_x, lerp_y, lerp_xy;
+  logic signed [WIDTH-1:0] lerp_x, lerp_y, lerp_xy;
   assign val = p0 + lerp_x + lerp_y + lerp_xy;
   logic [0:2] valid, _done, dbz, ovf;
   assign done = (&valid) && (&_done);

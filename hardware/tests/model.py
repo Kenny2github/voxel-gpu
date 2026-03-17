@@ -83,6 +83,11 @@ class pixel_shader:
 
 def lerp2(p0: float, p1: float, p2: float, p3: float,
           x: float, y: float, X: float, Y: float) -> float:
+   
+    #    p0 = vec3(-2, -3, 4)
+    # p1 = vec3(-2, -3, -4)
+    # p2 = (-2, 3, 4)
+    # p3 = (-2, 3, -4)
     lerp_x = (p1 - p0) * x / X
     lerp_y = (p2 - p0) * y / Y
     lerp_xy = (p0 - p1 + p3 - p2) * x * y / (X * Y)
@@ -132,19 +137,42 @@ class voxel_gpu:
 
 if __name__ == '__main__':
     DUT = voxel_gpu(cam3(
-        vec3(4.5, 0.5, 0.5),
-        vec3(-2.0, 2, 1.5),
-        vec3(-2.0, -2, 1.5),
-        vec3(-2.0, 2, -1.5),
-        vec3(-2.0, -2, -1.5)
+        vec3(5, 0, 0),
+        vec3(-2.0, -3, 4),
+        vec3(-2.0, -3, -4),
+        vec3(-2.0, 3, 4),
+        vec3(-2.0, 3, -4)
+
+        # vec3(5, -3, 0),
+        # vec3(-2.0, 4, 3),
+        # vec3(-2.0, -4, 3),
+        # vec3(-2.0, 4, -3),
+        # vec3(-2.0, -4, -3)
     ), NUM_SHADERS=200)
+
+    # For debugging Pixel (x=189, y=61). In HEX, starting pixel is 0x56E0 at shader[29]
+    p0 = vec3(-2, -3, 4)
+    p1 = vec3(-2, -3, -4)
+    p2 = (-2, 3, 4)
+    p3 = (-2, 3, -4)
+    shader_col = 189
+    shader_row = 69
+    cam_look_x = lerp2_x_val = lerp2(p0.x, p1.x, p2[0], p3[0], shader_col, shader_row, DUT.H_RESOLUTION-1, DUT.V_RESOLUTION-1)
+    cam_look_y = lerp2_y_val = lerp2(p0.y, p1.y, p2[1], p3[1], shader_col, shader_row, DUT.H_RESOLUTION-1, DUT.V_RESOLUTION-1)
+    cam_look_z = lerp2_z_val = lerp2(p0.z, p1.z, p2[2], p3[2], shader_col, shader_row, DUT.H_RESOLUTION-1, DUT.V_RESOLUTION-1)
+    print(cam_look_x, cam_look_y, cam_look_z)
 
     for i in range(0, DUT.H_RESOLUTION * DUT.V_RESOLUTION, DUT.NUM_SHADERS):
         DUT.coordinate(i)
-        DUT.rasterize_voxel(((0, 0, 0), 1))
+        DUT.rasterize_voxel(((0, -3, -1), 1))
+        DUT.rasterize_voxel(((1, 2, 2), 1))
+        DUT.rasterize_voxel(((1, 2, -2), 1))
+        DUT.rasterize_voxel(((1, -2, 2), 1))
+        DUT.rasterize_voxel(((1, -2, -2), 1))
+        
         DUT.rasterize_voxel(((-1, 2, 2), 1))
-        DUT.rasterize_voxel(((-1, -2, 2), 1))
         DUT.rasterize_voxel(((-1, 2, -2), 1))
+        DUT.rasterize_voxel(((-1, -2, 2), 1))
         DUT.rasterize_voxel(((-1, -2, -2), 1))
         DUT.shade_entry((0x001F, 1))
         for j in range(i, i + DUT.NUM_SHADERS):
