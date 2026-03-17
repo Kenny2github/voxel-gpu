@@ -92,7 +92,10 @@ module voxel_gpu #(
           .val(div_i_val)
       );
       assign shader_row = div_i_val[ROW_BITS-1:0];
-      assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
+      assign shader_col =
+        ((i + start_pixel) < (shader_row * H_RESOLUTION)) ?
+        ((i + start_pixel) - ((shader_row - 1) * H_RESOLUTION)) :
+        ((i + start_pixel) - (shader_row * H_RESOLUTION));
       // compute camera look direction
       logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x, cam_look_y, cam_look_z;
       logic signed [ROW_BITS+COL_BITS+FRACT_BITS:0] lerp2_x_val, lerp2_y_val, lerp2_z_val;
