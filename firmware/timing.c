@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "interrupts.h"
+#include "firmware/firmware.h"
 #include "hardware/hardware.h"
 
 int frames;
@@ -19,6 +20,25 @@ static const uint8_t num_to_hex[10] = {
 	0x6F  // 9
 };
 
+static inline void draw_character(int x, int y, char c) {
+	*(uint8_t *)(CHAR_BUF_CTRL + (y << 7) + x) = c;
+}
+
+static void write_gpu_latency() {
+	// clear previous characters
+	for (int i = 0; i < SCREEN_CHAR_W; ++i) {
+		draw_character(i, 0, 0);
+	}
+
+	char buffer[SCREEN_CHAR_W];
+	int len = sprintf(buffer, sizeof(buffer), "GPU latency: %e ms", gpu_latency * 1000);
+	int curr_x = 0, curr_y = 0;
+
+	for (int i = 0; i < len; ++i) {
+		draw_character(curr_x++, curr_y, buffer[i]);
+	}
+}
+
 void enable_timer_interrupt(void) {
 	volatile int* timer_ptr = (int*)MPCORE_PRIV_TIMER;
 	// timer is 200MHz
@@ -36,7 +56,7 @@ static void handle_timer_interrupt(void) {
 	frames_display |= num_to_hex[(frames / 100) % 10] << 16;
 	frames_display |= num_to_hex[(frames / 1000) % 10] << 24;
 	memset(HEX3_HEX0, frames_display, 4);
-	printf("GPU latency: %e sec\n", gpu_latency);
+	write_gpu_latency();
 	frames = 0;
 	++fw_time;
 }

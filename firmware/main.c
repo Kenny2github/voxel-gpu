@@ -4,21 +4,25 @@
 #include "firmware/timing.h"
 #include "firmware/palette.h"
 
-#define H_RESOLUTION 320
-#define V_RESOLUTION 240
 #define NUM_SHADERS 200
 
 static volatile int render_wait = 0;
 unsigned char* pixel_buffer;
+unsigned char* char_buffer;
 unsigned int palette_size;
 
 void wait_for_vsync() {
     
     PIXEL_BUF_CTRL->buffer = 0x1;
-    while (PIXEL_BUF_CTRL->status.s);
+    CHAR_BUF_CTRL->buffer = 0x1;
+    /* Wait for both buffers to finish swapping */
+    while (PIXEL_BUF_CTRL->status.s || CHAR_BUF_CTRL->status.s);
     ++frames;
 
+    /* After swap, back_buffer points to the new draw buffer */
     pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
+    char_buffer = CHAR_BUF_CTRL->back_buffer;
+
 }
 
 void render() {
@@ -90,9 +94,13 @@ void init_firmware() {
     voxel_space_size = 256;
     voxel_space = (uint32_t*)calloc(voxel_space_size, sizeof(uint32_t));
 
+    /* Initialize double-buffering pointers for pixel + character buffers */
     PIXEL_BUF_CTRL->back_buffer = SDRAM_BASE;
+    CHAR_BUF_CTRL->back_buffer = FPGA_CHAR_BASE;
 
-    pixel_buffer = SDRAM_BASE;
+    /* Use the controller-provided back buffer address for rendering */
+    pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
+    char_buffer = CHAR_BUF_CTRL->back_buffer;
 
     config_interrupt(GPU_IRQ, enable_gpu_interrupt, handle_gpu_interrupt);
     enable_timer();
