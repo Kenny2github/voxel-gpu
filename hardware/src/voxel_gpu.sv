@@ -76,8 +76,8 @@ module voxel_gpu #(
       logic [COL_BITS-1:0] shader_col;
       div #(
           // + 1 sign bit
-          .WIDTH(ROW_BITS + COL_BITS + 1),
-          .FBITS(0)
+          .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
+          .FBITS(FRACT_BITS)
       ) div_i (
           .clk(clock),
           .rst(reset),
@@ -87,15 +87,12 @@ module voxel_gpu #(
           .done(_coordinate_valid[1]),
           .dbz(_error[0]),
           .ovf(_error[1]),
-          .a((ROW_BITS + COL_BITS + 1)'(i + start_pixel)),
-          .b((ROW_BITS + COL_BITS + 1)'(H_RESOLUTION)),
+          .a((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((i + start_pixel) << FRACT_BITS)),
+          .b((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(H_RESOLUTION << FRACT_BITS)),
           .val(div_i_val)
       );
-      assign shader_row = div_i_val[ROW_BITS-1:0];
-      assign shader_col =
-        ((i + start_pixel) < (shader_row * H_RESOLUTION)) ?
-        ((i + start_pixel) - ((shader_row - 1) * H_RESOLUTION)) :
-        ((i + start_pixel) - (shader_row * H_RESOLUTION));
+      assign shader_row = div_i_val[FRACT_BITS +: ROW_BITS];
+      assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
       // compute camera look direction
       logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x, cam_look_y, cam_look_z;
       logic signed [ROW_BITS+COL_BITS+FRACT_BITS:0] lerp2_x_val, lerp2_y_val, lerp2_z_val;

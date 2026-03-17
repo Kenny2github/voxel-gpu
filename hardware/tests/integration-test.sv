@@ -218,8 +218,8 @@ module testbench #(
 
     // set up camera to match model.py
     write_s1(16, {10'd5, 10'b0});  // cam.pos.x
-    write_s1(17, {10'd0, 10'b0});  // cam.pos.y
-    write_s1(18, {10'd0, 10'b0});  // cam.pos.z
+    write_s1(17, {11'd1, 9'b0});  // cam.pos.y
+    write_s1(18, {11'd1, 9'b0});  // cam.pos.z
     write_s1(19, {10'(-2), 10'd0});  // cam.look0.x
     write_s1(20, {10'(-3), 10'd0});  // cam.look0.y
     write_s1(21, {10'd4, 10'd0});  // cam.look0.z
@@ -238,7 +238,7 @@ module testbench #(
       write_s1(3, i);
       clear_irq();
 
-      write_s1(0, {10'd0, 10'(-3), 10'(-1), 2'd1});
+      write_s1(0, {10'd0, 10'd0, 10'd0, 2'd1});
       clear_irq();
       write_s1(0, {10'(-1), 10'd2, 10'd2, 2'd1});
       clear_irq();
