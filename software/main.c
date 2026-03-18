@@ -45,29 +45,20 @@ int main(void) {
     // clear_screen_software();
     // wait_for_vsync_software(); // wait_for_vsync();
 
-    uint8_t handle_enter_key = 0;
-
     while(1) {
 
-        if (enter_key_held)
+        if (enter_key_pressed)
         {
-            if (!handle_enter_key)
+            uint8_t target_x, target_y, target_z;
+
+            if (get_target_voxel(&target_x, &target_y, &target_z))
             {
-                uint8_t target_x, target_y, target_z;
-
-                if (get_target_voxel(&target_x, &target_y, &target_z))
-                {
-                    v_pos new_voxel_pos = {target_x, target_y, target_z};
-                    set_voxel(new_voxel_pos, 1);
-                    // printf("Voxel placed at: %d, %d, %d\n", target_x, target_y, target_z); // Comment out later
-                }
-
-                handle_enter_key = 1;
+                v_pos new_voxel_pos = {target_x, target_y, target_z};
+                set_voxel(new_voxel_pos, 1);
+                // printf("Voxel placed at: %d, %d, %d\n", target_x, target_y, target_z); // Comment out later
             }
-        }
-        else
-        {
-            handle_enter_key = 0;
+
+            enter_key_pressed = 0;
         }
 
         // clear_screen_software();
