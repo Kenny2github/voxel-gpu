@@ -56,6 +56,7 @@ static void handle_gpu_interrupt(void) {
     static int state = 0;
     static int id = 0;
     if (!GPU->render_status) {
+        int pixel_id, row, col;
         switch (state) {
             case 0: // RASTERIZE
                 GPU->rasterize_voxel = voxel_space[id++];
@@ -77,9 +78,9 @@ static void handle_gpu_interrupt(void) {
                 break;
 
             case 2: // WRITE_PIXEL
-                int pixel_id = cur_start_pixel + id;
-                int row = pixel_id / H_RESOLUTION;
-                int col = pixel_id % H_RESOLUTION;
+                pixel_id = cur_start_pixel + id;
+                row = pixel_id / H_RESOLUTION;
+                col = pixel_id % H_RESOLUTION;
                 GPU->write_pixel = pixel_buffer + (row << 10 | col << 1);
                 if (++id == NUM_SHADERS) {
                     id = 0;
