@@ -21,7 +21,7 @@ static const uint8_t num_to_hex[10] = {
 };
 
 static inline void draw_character(int x, int y, char c) {
-	*(uint8_t *)(CHAR_BUF_CTRL + (y << 7) + x) = c;
+	*(uint8_t *)(CHAR_BUF_CTRL->back_buffer + (y << 7) + x) = c;
 }
 
 static void write_gpu_latency() {
