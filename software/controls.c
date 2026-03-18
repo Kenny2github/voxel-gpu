@@ -166,12 +166,12 @@ void keyboard_input_handler() {
 
     switch(data[2]) {
         case SPACE_KEY:
-            applicable_vector = camera->fixed_up;
+            applicable_vector = camera->up;
             //printf("Space was pressed\n");
             len =  sprintf(buffer, "Space was pressed");
             break;
         case SHIFT_KEY:
-            applicable_vector = camera->fixed_up;
+            applicable_vector = camera->up;
             negative_vector(&applicable_vector);
             //printf("Shift was pressed\n");
             len =  sprintf(buffer, "Shift was pressed");
@@ -261,10 +261,10 @@ void keyboard_input_handler() {
     draw_string(buffer, len, 1);
 
     if(angle_x != 0.0f) {
-        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->fixed_up);
+        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
         normalize(&(camera->look));
-        cross_product(&(camera->look), &(camera->fixed_up), &(camera->right));
+        cross_product(&(camera->look), &(camera->up), &(camera->right));
         normalize(&(camera->right));
     }
 
