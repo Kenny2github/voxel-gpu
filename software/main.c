@@ -7,33 +7,23 @@
 #include "software/software_render.h"
 #include "model-headers/monkey.h"
 int main(void) {
-    // printf(
-    //     "%p: pixel_buffer1 = %p\n", &((*GPU).pixel_buffer1), GPU->pixel_buffer1
-    // );
-    // printf(
-    //     "%p: pixel_buffer2 = %p\n", &((*GPU).pixel_buffer2), GPU->pixel_buffer2
-    // );
-    // GPU->pixel_buffer2 = (unsigned char *)SDRAM_BASE;
-    // printf(
-    //     "%p: pixel_buffer2 = %p\n", &((*GPU).pixel_buffer2), GPU->pixel_buffer2
-    // );
     reset_hex();
 
     // Setting up interrupts
     config_inputs();
     init_firmware();
-    setup_pixel_buffer_software();
+    // setup_pixel_buffer_software();
     config_interrupts();
 
     set_camera_settings(90.0, 1);
-    set_camera_settings_software(90.0, 1);
+    // set_camera_settings_software(90.0, 1);
 
     // Setting up camera
     struct Vector camPos = {5, 0.5, 0.5};
     struct Vector camLook = {-1, 0, 0};
     struct Vector camUp = {0, 1, 0};
     set_camera_default(camPos, camLook, camUp);
-    set_camera_default_software(camPos, camLook, camUp);
+    // set_camera_default_software(camPos, camLook, camUp);
 
     // Setting up voxels
     // v_pos startPos = {32, 32, 32};
