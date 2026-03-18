@@ -19,7 +19,7 @@ int main(void) {
     // set_camera_settings_software(90.0, 1);
 
     // Setting up camera
-    struct Vector camPos = {20, 0.5, 0.5};
+    struct Vector camPos = {32, 10.5, 10.5};
     struct Vector camLook = {-1, 0, 0};
     struct Vector camUp = {0, 1, 0};
     set_camera_default(camPos, camLook, camUp);
@@ -31,15 +31,15 @@ int main(void) {
     // v_pos endPos = {SIDE_LEN-1, SIDE_LEN-1, SIDE_LEN-1};
     // fill_voxel_range(firstPos, endPos, 0x0);
 
+    set_voxel((v_pos){3,2,2}, 1);
+    set_voxel((v_pos){3,4,4}, 1);
+    set_voxel((v_pos){3,4,0}, 1);
+    set_voxel((v_pos){3,0,4}, 1);
+    set_voxel((v_pos){3,0,0}, 1);
+    set_voxel((v_pos){1,4,4}, 1);
+    set_voxel((v_pos){1,4,0}, 1);
+    set_voxel((v_pos){1,0,4}, 1);
     set_voxel((v_pos){1,0,0}, 1);
-    set_voxel((v_pos){1,2,2}, 1);
-    set_voxel((v_pos){1,2,-2}, 1);
-    set_voxel((v_pos){1,-2,2}, 1);
-    set_voxel((v_pos){1,-2,-2}, 1);
-    set_voxel((v_pos){-1,2,2}, 1);
-    set_voxel((v_pos){-1,2,-2}, 1);
-    set_voxel((v_pos){-1,-2,2}, 1);
-    set_voxel((v_pos){-1,-2,-2}, 1);
     // set_voxel((v_pos){34, 32, 32}, 1);
     // load_monkey();
     // clear_screen_software();
