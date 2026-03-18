@@ -39,6 +39,7 @@ void set_camera_default_software(struct Vector pos, struct Vector look, struct V
         pos,
         look,
         up,
+        up,
         {0, 0, 1}
     };
 
@@ -430,7 +431,7 @@ void render_software() {
         }
 
         uint8_t face_enable = 0;
-        // uint16_t face_palette[6] = {0};
+        uint16_t face_palette[6] = {0};
 
         for(int i = 0; i < 6; i++) {
             struct Vector diff = {x - camera.pos.x, y - camera.pos.y, z - camera.pos.z};
@@ -439,17 +440,17 @@ void render_software() {
             diff.y += normal[i].y == 1;
             diff.z += normal[i].z == 1;
 
-            // normalize(&diff);
+            normalize(&diff);
 
             float dot = diff.x*normal[i].x + diff.y*normal[i].y + diff.z*normal[i].z;
             face_enable |= (dot < 0) << i;
 
-            // if((face_enable >> i) & 0b1)) {
-            //     uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
-            //     uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
-            //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
-            //     face_palette[i] = blue | (green << 5) | (red << 11);
-            // }
+            if((face_enable >> i) & 0b1) {
+                uint16_t blue = (palette_data[palette] & 0b11111) * (-dot);
+                uint16_t green = ((palette_data[palette] & 0b11111100000) >> 5) * (-dot);
+                uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
+                face_palette[i] = blue | (green << 5) | (red << 11);
+            }
             
         }
         
@@ -464,7 +465,7 @@ void render_software() {
             int x1 = (int)screen_x[i1], y1 = (int)screen_y[i1];
             int x2 = (int)screen_x[i2], y2 = (int)screen_y[i2];
             int x3 = (int)screen_x[i3], y3 = (int)screen_y[i3];
-            uint16_t color = palette_data[palette];
+            uint16_t color = face_palette[i];
 
             draw_line(x0, y0, x1, y1, color);
             draw_line(x1, y1, x2, y2, color);

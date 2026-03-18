@@ -43,6 +43,7 @@ void set_camera_default(struct Vector pos, struct Vector look, struct Vector up)
         pos,
         look,
         up,
+        up,
         {0, 0, 1}
     };
 
@@ -130,7 +131,7 @@ void keyboard_input_handler() {
     int presses = 0;
     while(!done) {
         PS2_data = PS2->data;
-        // if (!PS2_data.rvalid) break;
+        if (!PS2_data.rvalid && data[2] != 0xF0 && data[2] != 0xE0 && data[1] != 0xF0) break;
         data[0] = data[1];
         data[1] = data[2];
         data[2] = PS2_data.data;
@@ -165,12 +166,12 @@ void keyboard_input_handler() {
 
     switch(data[2]) {
         case SPACE_KEY:
-            applicable_vector = camera->up;
+            applicable_vector = camera->fixed_up;
             //printf("Space was pressed\n");
             len =  sprintf(buffer, "Space was pressed");
             break;
         case SHIFT_KEY:
-            applicable_vector = camera->up;
+            applicable_vector = camera->fixed_up;
             negative_vector(&applicable_vector);
             //printf("Shift was pressed\n");
             len =  sprintf(buffer, "Shift was pressed");
@@ -260,10 +261,10 @@ void keyboard_input_handler() {
     draw_string(buffer, len, 1);
 
     if(angle_x != 0.0f) {
-        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
+        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->fixed_up);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
         normalize(&(camera->look));
-        cross_product(&(camera->look), &(camera->up), &(camera->right));
+        cross_product(&(camera->look), &(camera->fixed_up), &(camera->right));
         normalize(&(camera->right));
     }
 

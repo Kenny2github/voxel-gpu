@@ -56,6 +56,7 @@ struct Camera {
     struct Vector pos; // 8 bits integer coordinate, 8 bits fraction precision
     struct Vector look;
     struct Vector up;
+    struct Vector fixed_up;
     struct Vector right;
 };
 
