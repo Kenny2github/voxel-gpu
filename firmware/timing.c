@@ -21,7 +21,7 @@ static const uint8_t num_to_hex[10] = {
 };
 
 static inline void draw_character(int x, int y, char c) {
-	*(uint8_t *)(CHAR_BUF_CTRL + (y << 7) + x) = c;
+	*(uint8_t *)(CHAR_BUF_CTRL->back_buffer + (y << 7) + x) = c;
 }
 
 static void write_gpu_latency() {
@@ -31,7 +31,7 @@ static void write_gpu_latency() {
 	}
 
 	char buffer[SCREEN_CHAR_W];
-	int len = sprintf(buffer, sizeof(buffer), "GPU latency: %e ms", gpu_latency * 1000);
+	int len = sprintf(buffer, "GPU latency: %e ms", gpu_latency * 1000);
 	int curr_x = 0, curr_y = 0;
 
 	for (int i = 0; i < len; ++i) {
