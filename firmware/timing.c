@@ -31,7 +31,7 @@ static void write_gpu_latency() {
 	}
 
 	char buffer[SCREEN_CHAR_W];
-	int len = sprintf(buffer, sizeof(buffer), "GPU latency: %e ms", gpu_latency * 1000);
+	int len = sprintf(buffer, "GPU latency: %e ms", gpu_latency * 1000);
 	int curr_x = 0, curr_y = 0;
 
 	for (int i = 0; i < len; ++i) {
