@@ -3,12 +3,17 @@
 #include "firmware/interrupts.h"
 #include "firmware/firmware.h"
 #include "software/software_render.h"
+#include "firmware/character_print.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 static struct Camera *camera = NULL;
 
 volatile uint8_t enter_key_held = 0;
+
+void draw_character(int x, int y, char c) {
+	*(uint8_t *)(CHAR_BUF_CTRL + (y << 7) + x) = c;
+}
 
 void config_inputs(void) {
 
@@ -119,44 +124,56 @@ void keyboard_input_handler() {
     struct ps2_data PS2_data;
 
     uint8_t done = 0;
-    unsigned char data[3];
+    unsigned char data[3] = {0, 0, 0};
 
     /*** Reading key press data */
+    int presses = 0;
     while(!done) {
         PS2_data = PS2->data;
-        if (!PS2_data.rvalid) break;
+        // if (!PS2_data.rvalid) break;
         data[0] = data[1];
         data[1] = data[2];
         data[2] = PS2_data.data;
 
-        if(keyboard_status == REPORTING && data[2] != 0xE0 && data[2] != 0xF0)
-            done = 1;
+        if(keyboard_status == REPORTING && data[2] != 0xE0 && data[2] != 0xF0) {
+            done = 1; presses++;
+        }
 
         if(keyboard_status == DEFAULT && data[2] == 0xAA) {
             keyboard_status = REPORTING;
-            continue;
+            return;
         }
     }
 
     struct Vector applicable_vector = {0};
+    
+    char hex[10];
+    sprintf(hex, "%02X %02X %02X %d", data[0], data[1], data[2], presses);
+    draw_string(hex, 10, 30);
 
     if(data[0] == 0xF0 || data[1] == 0xF0) { // If there is a break code detecting key releases
-        if (data[2] == ENTER_KEY){
+        if (data[1] == ENTER_KEY || data[2] == ENTER_KEY){
             enter_key_held = 0;
         }
         return;
     }
 
     /*** Movement of Camera Position */
+
+	int len = 0;
+    char buffer[SCREEN_CHAR_W];
+
     switch(data[2]) {
         case SPACE_KEY:
             applicable_vector = camera->up;
             //printf("Space was pressed\n");
+            len =  sprintf(buffer, "Space was pressed");
             break;
         case SHIFT_KEY:
             applicable_vector = camera->up;
             negative_vector(&applicable_vector);
             //printf("Shift was pressed\n");
+            len =  sprintf(buffer, "Shift was pressed");
             break;
         case ENTER_KEY:
             enter_key_held = 1;
@@ -165,66 +182,97 @@ void keyboard_input_handler() {
             applicable_vector = camera->right;
             negative_vector(&applicable_vector);
             //printf("A was pressed\n");
+            len =  sprintf(buffer, "A was pressed");
             break;
         case D_KEY:
             applicable_vector = camera->right;
             //printf("D was pressed\n");
+            len =  sprintf(buffer, "D was pressed");
             break;
         case W_KEY:
             applicable_vector = camera->look;
             //printf("W was pressed\n");
+            len =  sprintf(buffer, "W was pressed");
             break;
         case S_KEY:
             applicable_vector = camera->look;
             negative_vector(&applicable_vector);
             //printf("S was pressed\n");
+            len =  sprintf(buffer, "S was pressed");
         default:
             break;
     }
 
-    if(applicable_vector.x == 0 && applicable_vector.y == 0 && applicable_vector.z == 0) // No movement
-        return;
 
-    applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
-    camera->pos = add_vector(camera->pos, applicable_vector);
+    if(applicable_vector.x || applicable_vector.y || applicable_vector.z) { // No movement
+        applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
+        camera->pos = add_vector(camera->pos, applicable_vector);
+    }
 
     /** Movement of Camera View */
     float angle_x = 0;
     float angle_y = 0;
+
     if(data[1] == ARROW_KEY) {
         switch(data[2]) {
             case ARROW_LEFT:
-                angle_y = M_PI / 6.0;
+                angle_x = -M_PI / 6.0f;
+            len =  sprintf(buffer, "Left was pressed");
                 break;
             case ARROW_RIGHT:
-                angle_y = -M_PI / 6.0;
+                angle_x = M_PI / 6.0f;
+            len =  sprintf(buffer, "Right was pressed");
                 break;
             case ARROW_UP:
-                angle_x = M_PI / 6.0;
+                angle_y = -M_PI / 6.0f;
+            len =  sprintf(buffer, "Up was pressed");
                 break;
             case ARROW_DOWN:
-                angle_x = -M_PI / 6.0;;
+                angle_y = M_PI / 6.0f;
+            len =  sprintf(buffer, "Down was pressed");
                 break;
             default:
                 break;
         }
-
-        if(angle_x != 0.0f) {
-            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
-            camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
-            normalize(&(camera->look));
-            cross_product(&(camera->look), &(camera->up), &(camera->right));
-            normalize(&(camera->right));
+    } else {
+        switch(data[2]) {
+            case J_KEY:
+                angle_x = -M_PI / 6.0f;
+            len =  sprintf(buffer, "J was pressed");
+                break;
+            case L_KEY:
+                angle_x = M_PI / 6.0f;
+            len =  sprintf(buffer, "L was pressed");
+                break;
+            case I_KEY:
+                angle_y = -M_PI / 6.0f;
+            len =  sprintf(buffer, "I was pressed");
+                break;
+            case K_KEY:
+                angle_y = M_PI / 6.0f;
+            len =  sprintf(buffer, "K was pressed");
+                break;
+            default:
+                break;
         }
+    }
 
-        if(angle_y != 0.0f) {
-            struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
-            camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
-            normalize(&(camera->look));
-            cross_product(&(camera->right), &(camera->look), &(camera->up));
-            normalize(&(camera->up));
-        }
+    draw_string(buffer, len, 1);
 
+    if(angle_x != 0.0f) {
+        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
+        camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+        normalize(&(camera->look));
+        cross_product(&(camera->look), &(camera->up), &(camera->right));
+        normalize(&(camera->right));
+    }
+
+    if(angle_y != 0.0f) {
+        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_y, camera->right);
+        camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
+        normalize(&(camera->look));
+        cross_product(&(camera->right), &(camera->look), &(camera->up));
+        normalize(&(camera->up));
     }
 }
 
