@@ -17,8 +17,15 @@
 #define S_KEY 0x1B
 #define SPACE_KEY 0x29
 #define SHIFT_KEY 0x12
+
+#define I_KEY 0x43 
+#define J_KEY 0x3B
+#define K_KEY 0x42
+#define L_KEY 0x4B
+
 #define ENTER_KEY 0x5A
 #define ARROW_KEY 0xE0
+
 #define ARROW_LEFT 0x6B
 #define ARROW_RIGHT 0x74
 #define ARROW_UP 0x75

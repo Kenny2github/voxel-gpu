@@ -13,18 +13,24 @@ static struct Camera camera;
 static float clip_plane_x, clip_plane_y;
 static float focal_length;
 unsigned char* pixel_buffer_software;
+unsigned char* char_buffer_software;
 
 typedef struct { int x, y; } Point;
 
 void setup_pixel_buffer_software() {
     pixel_buffer_software = PIXEL_BUF_CTRL->buffer;
+    char_buffer_software = CHAR_BUF_CTRL->buffer;
 }
 
 void wait_for_vsync_software() {
     PIXEL_BUF_CTRL->buffer = 0x1;
-    while (PIXEL_BUF_CTRL->status.s);
+    CHAR_BUF_CTRL->buffer = 0x1;
+    while (PIXEL_BUF_CTRL->status.s || CHAR_BUF_CTRL->status.s);
 
     pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
+    char_buffer_software = CHAR_BUF_CTRL->back_buffer;
+
+
 
 }
 
