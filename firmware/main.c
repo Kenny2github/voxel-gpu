@@ -4,7 +4,7 @@
 #include "firmware/timing.h"
 #include "firmware/palette.h"
 
-#define NUM_SHADERS 200
+#define NUM_SHADERS 6
 
 static volatile int render_wait = 0;
 unsigned char* pixel_buffer;
@@ -12,7 +12,7 @@ unsigned char* char_buffer;
 unsigned int palette_size;
 
 void wait_for_vsync() {
-    
+
     PIXEL_BUF_CTRL->buffer = 0x1;
     CHAR_BUF_CTRL->buffer = 0x1;
     /* Wait for both buffers to finish swapping */
@@ -36,10 +36,12 @@ void render() {
     for (int i = 0; i < H_RESOLUTION * V_RESOLUTION; i += NUM_SHADERS) {
         GPU->start_pixel = pixel_buffer + i;
         while (render_wait);
+        render_wait = 1;
 
         for (int voxel_id = 0; voxel_id < voxel_count; ++voxel_id) {
             GPU->rasterize_voxel = voxel_space[voxel_id];
             while (render_wait);
+            render_wait = 1;
         }
 
         for (int palette_id = 0; palette_id < palette_size; ++palette_id) {
@@ -48,6 +50,7 @@ void render() {
                 .color = palette_data[palette_id]
             };
             while (render_wait);
+            render_wait = 1;
         }
 
         for (int j = i; j < i + NUM_SHADERS; ++j) {
@@ -55,6 +58,7 @@ void render() {
             int col = j % H_RESOLUTION;
             GPU->write_pixel = pixel_buffer + (row << 10 | col << 1);
             while (render_wait);
+            render_wait = 1;
         }
     }
     gpu_latency = cur_time() / 200E6 + fw_time - start;
