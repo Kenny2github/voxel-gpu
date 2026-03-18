@@ -9,7 +9,7 @@
 
 static struct Camera *camera = NULL;
 
-volatile uint8_t enter_key_held = 0;
+volatile uint8_t enter_key_pressed = 0;
 
 void draw_character(int x, int y, char c) {
 	*(uint8_t *)(CHAR_BUF_CTRL + (y << 7) + x) = c;
@@ -154,7 +154,7 @@ void keyboard_input_handler() {
 
     if(data[0] == 0xF0 || data[1] == 0xF0) { // If there is a break code detecting key releases
         if (data[1] == ENTER_KEY || data[2] == ENTER_KEY){
-            enter_key_held = 0;
+            enter_key_pressed = 1;
         }
         return;
     }
@@ -175,9 +175,6 @@ void keyboard_input_handler() {
             negative_vector(&applicable_vector);
             //printf("Shift was pressed\n");
             len =  sprintf(buffer, "Shift was pressed");
-            break;
-        case ENTER_KEY:
-            enter_key_held = 1;
             break;
         case A_KEY:
             applicable_vector = camera->right;

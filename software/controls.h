@@ -68,7 +68,7 @@ struct Camera_formatted {
 };
 
 // Variables to check if button is held
-extern volatile uint8_t enter_key_held;
+extern volatile uint8_t enter_key_pressed;
 
 void config_inputs();
 void config_mouse();
