@@ -315,8 +315,6 @@ module voxel_gpu #(
             // reading from status register clears interrupt
             if (state == INTERRUPT) begin
               state <= IDLE;
-            end else begin
-              state <= ERROR;
             end
           end
         endcase

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
 #include "firmware/interrupts.h"
@@ -14,8 +15,8 @@ int cur_start_pixel;
 
 void wait_for_vsync() {
 
-    PIXEL_BUF_CTRL->buffer = 0x1;
-    CHAR_BUF_CTRL->buffer = 0x1;
+    PIXEL_BUF_CTRL->swap = 0x1;
+    CHAR_BUF_CTRL->swap = 0x1;
     /* Wait for both buffers to finish swapping */
     while (PIXEL_BUF_CTRL->status.s || CHAR_BUF_CTRL->status.s);
     ++frames;
@@ -113,7 +114,7 @@ void init_firmware() {
 
     voxel_count = 0;
     voxel_space_size = 256;
-    voxel_space = (uint32_t*)calloc(voxel_space_size, sizeof(uint32_t));
+    voxel_space = calloc(voxel_space_size, sizeof(uint32_t));
 
     /* Initialize double-buffering pointers for pixel + character buffers */
     PIXEL_BUF_CTRL->back_buffer = SDRAM_BASE;

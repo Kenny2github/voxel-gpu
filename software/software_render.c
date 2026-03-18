@@ -1,5 +1,5 @@
-
-
+#include <math.h>
+#include <stdlib.h>
 #include "software/software_render.h"
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
@@ -23,8 +23,8 @@ void setup_pixel_buffer_software() {
 }
 
 void wait_for_vsync_software() {
-    PIXEL_BUF_CTRL->buffer = 0x1;
-    CHAR_BUF_CTRL->buffer = 0x1;
+    PIXEL_BUF_CTRL->swap = 0x1;
+    CHAR_BUF_CTRL->swap = 0x1;
     while (PIXEL_BUF_CTRL->status.s || CHAR_BUF_CTRL->status.s);
 
     pixel_buffer_software = PIXEL_BUF_CTRL->back_buffer;
@@ -82,7 +82,7 @@ void plot_pixel(int x, int y, short int line_color) {
 
 void clear_screen_software() {
     for(int x = 0; x < H_RESOLUTION; x++)
-        for(int y = 0; y < V_RESOLUTION; y++) 
+        for(int y = 0; y < V_RESOLUTION; y++)
             plot_pixel(x, y, 0x0);
 }
 
@@ -153,7 +153,7 @@ static int partition_and_fill(
     int q_start = 0, q_end = 0;
     int found = 0;
     int cx = 0, cy = 0;
-    
+
     Partition* queue = (Partition*)malloc(H_RESOLUTION * V_RESOLUTION * sizeof(Partition));
     queue[q_end++] = (Partition){x0, y0, x1, y1};
     while (!found && q_start < q_end) {
@@ -236,7 +236,7 @@ void flood_fill(int x, int y, uint16_t color) {
     stack[stack_size++] = (Point){x, y};
     while (stack_size > 0) {
         Point p = stack[--stack_size];
-        
+
         if (p.x < 0 || p.x >= H_RESOLUTION || p.y < 0 || p.y >= V_RESOLUTION) continue;
         if (get_pixel(p.x, p.y) != 0) continue;
 
@@ -275,13 +275,13 @@ void render_software() {
     int x_factor = 0x1 << res_offset;
     int y_factor = 0x1 << res_offset;
 
-    // Ray-marching based implementation 
+    // Ray-marching based implementation
     /*
     for(int x = 0; x < H_RESOLUTION; x++) {
         for(int y = 0; y < V_RESOLUTION; y++) {
             struct Ray camera_ray;
             viewing_ray(x, y, &camera_ray);
-            
+
             struct Vector add_vec = divide_vector(camera_ray.direction, my_fmaxf(max_vec(camera_ray.direction), fabsf(min_vec(camera_ray.direction))));
 
             struct Vector curr_pos = add_vector(camera_ray.origin, camera_ray.direction);
@@ -299,7 +299,7 @@ void render_software() {
                 *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0x0;
 
             }
-            
+
         }
     }
     */
@@ -308,9 +308,9 @@ void render_software() {
     /*
     uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
     struct Ray ray_tracker[H_RESOLUTION*V_RESOLUTION];
-    
+
     // TODO: Create a ray for four corners, and during the loop, compute the ray
-    for(int x = 0; x < H_RESOLUTION; x++) 
+    for(int x = 0; x < H_RESOLUTION; x++)
         for(int y = 0; y < V_RESOLUTION; y++) {
             viewing_ray(x, y, &(ray_tracker[x*V_RESOLUTION + y]));
             *(uint16_t*)((uint32_t)(pixel_buffer_software) + (y << 10) + (x << 1)) = 0;
@@ -322,7 +322,7 @@ void render_software() {
                 uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
                 if(palette == 0)
                     continue;
-                
+
                 for(int xs = 0; xs < H_RESOLUTION; xs++) {
                     for(int ys = 0; ys < V_RESOLUTION; ys++) {
                         float t = check_box_intersection(x, y, z, &(ray_tracker[xs*V_RESOLUTION + ys]));
@@ -335,8 +335,8 @@ void render_software() {
                         t_tracker[xs*V_RESOLUTION + ys] = t;
 
                         *(uint16_t*)((uint32_t)(pixel_buffer_software) + (ys << 10) + (xs << 1)) = palette_data[palette];
-                        
-                        
+
+
                     }
                 }
             }
@@ -344,11 +344,11 @@ void render_software() {
     }
     */
 
-    // Ray-casting based implementation, optimization with 3-corner-camera-ray interpolation and partition-and-floodfill method 
+    // Ray-casting based implementation, optimization with 3-corner-camera-ray interpolation and partition-and-floodfill method
     // uint8_t t_tracker[H_RESOLUTION*V_RESOLUTION] = {0};
     // struct Ray cameraRay;
     // cameraRay.origin = camera.pos;
-    
+
     // struct Vector topLeft, bottomLeft, topRight;
     // viewing_ray(0, 0, &topLeft);
     // viewing_ray(H_RESOLUTION - 1, 0, &topRight);
@@ -363,7 +363,7 @@ void render_software() {
     //             uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
     //             if(palette == 0)
     //                 continue;
-                    
+
     //             partition_and_fill(
     //                 0, 0, H_RESOLUTION-1, V_RESOLUTION-1,
     //                 x, y, z, palette,
@@ -373,14 +373,14 @@ void render_software() {
     //         }
     //     }
     // }
-    
+
     /*
     Rasterization method:
     - Project the 8 corners of the cube into the clip plane
     - Take the min and max of the screen's X and Y
     - Iterate through a pixels between min and max of X and Y
     - Check if pixel is inside the projected faces (Simply brute force and consider all 6 faces. Can optimize based on normal of face and camera look vector)
-    - If in pixel, color. 
+    - If in pixel, color.
     */
     const float frac_x_const = focal_length / clip_plane_x;
     const float frac_y_const = focal_length / clip_plane_y;
@@ -393,7 +393,7 @@ void render_software() {
         uint8_t x = voxel_space[v].x;
         uint8_t y = voxel_space[v].y;
         uint8_t z = voxel_space[v].z;
-        
+
         uint8_t palette = voxel_space[v].voxel_id;
         if (palette == 0 ) continue;
 
@@ -409,7 +409,7 @@ void render_software() {
         corners[5] = (struct Vector){x+1,   y,     z};   // top-right-back
         corners[6] = (struct Vector){x,     y+1,   z};   // bottom-left-back
         corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
-        
+
         // Somehow optimize by projecting only one vertex, as a voxel's size is known
         float screen_x[8], screen_y[8];
         for (int i = 0; i < 8; i++) {
@@ -451,9 +451,9 @@ void render_software() {
                 uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
                 face_palette[i] = blue | (green << 5) | (red << 11);
             }
-            
+
         }
-        
+
         // Currently able to draw outside the resolution screen, need to fix
         for(int i = 0; i < 6; i++) {
             if(!((face_enable >> i) & 0b1))
@@ -471,7 +471,7 @@ void render_software() {
             draw_line(x1, y1, x2, y2, color);
             draw_line(x2, y2, x3, y3, color);
             draw_line(x3, y3, x0, y0, color);
-            
+
             int cx = (x0 + x1 + x2 + x3) >> 2;
             int cy = (y0 + y1 + y2 + y3) >> 2;
 
@@ -528,11 +528,11 @@ void render_software() {
                         }
                     }
                 }
-        
+
             }
 
             flood_fill(cx, cy, color);
-        
+
         }
         debug_end();
     }
@@ -543,7 +543,7 @@ void render_software() {
 
     //             uint8_t palette = *((uint8_t*)GRID_START + x + z*SIDE_LEN + y*SIDE_LEN*SIDE_LEN);
     //             if (palette == 0) continue;
-                
+
     //             // Rough instruction count: 403917 per voxel
     //             debug_start();
 
@@ -556,7 +556,7 @@ void render_software() {
     //             corners[5] = (struct Vector){x+1,   y,     z};   // top-right-back
     //             corners[6] = (struct Vector){x,     y+1,   z};   // bottom-left-back
     //             corners[7] = (struct Vector){x+1,   y+1,   z};   // bottom-right-back
-                
+
     //             // Somehow optimize by projecting only one vertex, as a voxel's size is known
     //             float screen_x[8], screen_y[8];
     //             for (int i = 0; i < 8; i++) {
@@ -598,9 +598,9 @@ void render_software() {
     //                 //     uint16_t red = ((palette_data[palette] & 0b1111100000000000) >> 11) * (-dot);
     //                 //     face_palette[i] = blue | (green << 5) | (red << 11);
     //                 // }
-                    
+
     //             }
-                
+
     //             // Currently able to draw outside the resolution screen, need to fix
     //             for(int i = 0; i < 6; i++) {
     //                 if(!((face_enable >> i) & 0b1))
@@ -618,7 +618,7 @@ void render_software() {
     //                 draw_line(x1, y1, x2, y2, color);
     //                 draw_line(x2, y2, x3, y3, color);
     //                 draw_line(x3, y3, x0, y0, color);
-                    
+
     //                 int cx = (x0 + x1 + x2 + x3) >> 2;
     //                 int cy = (y0 + y1 + y2 + y3) >> 2;
 
@@ -675,17 +675,17 @@ void render_software() {
     //                             }
     //                         }
     //                     }
-                
+
     //                 }
 
     //                 flood_fill(cx, cy, color);
-                
+
     //             }
     //             debug_end();
-            
+
     //         }
     //     }
     // }
 
- 
+
 }
