@@ -45,7 +45,7 @@ void render() {
             render_wait = 1;
         }
 
-        for (int palette_id = 0; palette_id < palette_size; ++palette_id) {
+        for (int palette_id = 1; palette_id < palette_size; ++palette_id) {
             GPU->shade_entry = (struct gpu_palette_entry){
                 .voxel_id = palette_id,
                 .color = palette_data[palette_id]
