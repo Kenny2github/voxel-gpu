@@ -41,9 +41,9 @@ extern struct gpu_voxel* voxel_space;
 extern unsigned int voxel_space_size;
 
 typedef struct v_pos {
-    int8_t x;
-    int8_t y;
-    int8_t z;
+    int16_t x;
+    int16_t y;
+    int16_t z;
 } v_pos;
 
 /**
