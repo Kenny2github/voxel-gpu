@@ -10,6 +10,7 @@ static volatile int render_wait = 0;
 unsigned char* pixel_buffer;
 unsigned char* char_buffer;
 unsigned int palette_size;
+int cur_start_pixel;
 
 void wait_for_vsync() {
 
@@ -35,31 +36,9 @@ void render() {
 
     for (int i = 0; i < H_RESOLUTION * V_RESOLUTION; i += NUM_SHADERS) {
         GPU->start_pixel = i;
+        cur_start_pixel = i;
         while (render_wait);
         render_wait = 1;
-
-        for (int voxel_id = 0; voxel_id < voxel_count; ++voxel_id) {
-            GPU->rasterize_voxel = voxel_space[voxel_id];
-            while (render_wait);
-            render_wait = 1;
-        }
-
-        for (int palette_id = 0; palette_id < palette_size; ++palette_id) {
-            GPU->shade_entry = (struct gpu_palette_entry){
-                .voxel_id = palette_id,
-                .color = palette_data[palette_id]
-            };
-            while (render_wait);
-            render_wait = 1;
-        }
-
-        for (int j = i; j < i + NUM_SHADERS; ++j) {
-            int row = j / H_RESOLUTION;
-            int col = j % H_RESOLUTION;
-            GPU->write_pixel = pixel_buffer + (row << 10 | col << 1);
-            while (render_wait);
-            render_wait = 1;
-        }
     }
     double end = fw_time + (200E6 - cur_time()) / 200E6;
     gpu_latency = end - start;
@@ -74,8 +53,44 @@ static void enable_gpu_interrupt(void) {
 }
 
 static void handle_gpu_interrupt(void) {
+    static int state = 0;
+    static int id = 0;
     if (!GPU->render_status) {
-        render_wait = 0;
+        switch (state) {
+            case 0: // RASTERIZE
+                GPU->rasterize_voxel = voxel_space[id++];
+                if (id == voxel_count) {
+                    id = 0;
+                    state = 1;
+                }
+                break;
+
+            case 1: // SHADE
+                GPU->shade_entry = (struct gpu_palette_entry){
+                    .voxel_id = id,
+                    .color = palette_data[id++]
+                };
+                if (id == palette_size) {
+                    id = 0;
+                    state = 2;
+                }
+                break;
+
+            case 2: // WRITE_PIXEL
+                int pixel_id = cur_start_pixel + id;
+                int row = pixel_id / H_RESOLUTION;
+                int col = pixel_id % H_RESOLUTION;
+                GPU->write_pixel = pixel_buffer + (row << 10 | col << 1);
+                if (++id == NUM_SHADERS) {
+                    id = 0;
+                    state = 0;
+                    render_wait = 0;
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }
 
