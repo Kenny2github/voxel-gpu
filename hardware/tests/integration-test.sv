@@ -140,7 +140,6 @@ module testbench #(
   logic        s1_waitrequest;
   logic        reset;
   logic        clock;
-  logic        irq;
   logic [31:0] m1_address;
   logic [15:0] m1_writedata;
   logic        m1_write;
@@ -191,15 +190,6 @@ module testbench #(
       s1_writedata = data;
       @(posedge clock);
       s1_write = 1'b0;
-    end
-  endtask
-
-  task clear_irq;
-    logic [31:0] _readdata;
-    begin
-      @(posedge irq);
-      read_s1(15, _readdata);
-      if (_readdata) $stop;
     end
   endtask
 
@@ -259,37 +249,37 @@ module testbench #(
     for (i = 0; i < DUT.H_RESOLUTION * DUT.V_RESOLUTION; i += DUT.NUM_SHADERS) begin
       // select chunk
       write_s1(3, i);
-      clear_irq();
+      @(posedge DUT.ready);
 
       write_s1(0, {10'd0, 10'd0, 10'd0, 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'(-1), 10'd2, 10'd2, 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'(-1), 10'd2, 10'(-2), 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'(-1), 10'(-2), 10'd2, 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'(-1), 10'(-2), 10'(-2), 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
 
       write_s1(0, {10'd1, 10'd2, 10'd2, 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'd1, 10'd2, 10'(-2), 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'd1, 10'(-2), 10'd2, 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
       write_s1(0, {10'd1, 10'(-2), 10'(-2), 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
 
 
       write_s1(1, {16'h001F, 14'd0, 2'd1});
-      clear_irq();
+      @(posedge DUT.ready);
 
       for (j = i; j < i + DUT.NUM_SHADERS; ++j) begin
         row = j / DUT.H_RESOLUTION;
         col = j % DUT.H_RESOLUTION;
         write_s1(2, OCRAM_BASE + {8'(row), 9'(col), 1'b0});
-        clear_irq();
+        @(posedge DUT.ready);
       end
     end
 

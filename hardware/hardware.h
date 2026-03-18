@@ -94,7 +94,6 @@ _Static_assert(
     offsetof(struct gpu_registers, camera) == 0x10 * 4, "Wrong camera offset"
 );
 extern volatile struct gpu_registers *const GPU;
-#define GPU_IRQ 77U
 
 extern volatile unsigned char *const DDR_BASE;
 #define DDR_END 0x3FFFFFFF

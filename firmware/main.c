@@ -1,13 +1,11 @@
 #include <stdlib.h>
 #include "hardware/hardware.h"
 #include "firmware/firmware.h"
-#include "firmware/interrupts.h"
 #include "firmware/timing.h"
 #include "firmware/palette.h"
 
 #define NUM_SHADERS 6
 
-static volatile int render_wait = 0;
 unsigned char* pixel_buffer;
 unsigned char* char_buffer;
 unsigned int palette_size;
@@ -27,8 +25,6 @@ void wait_for_vsync() {
 }
 
 void render() {
-    render_wait = 1;
-
     // Before render, update GPU camera settings
     update_camera();
 
@@ -36,30 +32,25 @@ void render() {
 
     for (int i = 0; i < H_RESOLUTION * V_RESOLUTION; i += NUM_SHADERS) {
         GPU->start_pixel = i;
-        while (render_wait);
-        render_wait = 1;
+        while (GPU->render_status);
 
         for (int voxel_id = 0; voxel_id < voxel_count; ++voxel_id) {
             GPU->rasterize_voxel = voxel_space[voxel_id];
-            while (render_wait);
-            render_wait = 1;
+            while (GPU->render_status);
         }
 
         for (int palette_id = 1; palette_id < palette_size; ++palette_id) {
             GPU->shade_entry = (struct gpu_palette_entry){
-                .voxel_id = palette_id,
-                .color = palette_data[palette_id]
+                .voxel_id = palette_id, .color = palette_data[palette_id]
             };
-            while (render_wait);
-            render_wait = 1;
+            while (GPU->render_status);
         }
 
         for (int j = i; j < i + NUM_SHADERS; ++j) {
             int row = j / H_RESOLUTION;
             int col = j % H_RESOLUTION;
             GPU->write_pixel = pixel_buffer + (row << 10 | col << 1);
-            while (render_wait);
-            render_wait = 1;
+            while (GPU->render_status);
         }
     }
     double end = fw_time + (200E6 - cur_time()) / 200E6;
@@ -67,17 +58,6 @@ void render() {
 
     /* GPU interrupt handled, swap buffers */
     wait_for_vsync();
-}
-
-static void enable_gpu_interrupt(void) {
-    /* do nothing */
-    ;
-}
-
-static void handle_gpu_interrupt(void) {
-    if (!GPU->render_status) {
-        render_wait = 0;
-    }
 }
 
 // static void fill_palette_buffer(void) {
@@ -108,6 +88,5 @@ void init_firmware() {
     pixel_buffer = PIXEL_BUF_CTRL->back_buffer;
     char_buffer = CHAR_BUF_CTRL->back_buffer;
 
-    config_interrupt(GPU_IRQ, enable_gpu_interrupt, handle_gpu_interrupt);
     enable_timer();
 }
