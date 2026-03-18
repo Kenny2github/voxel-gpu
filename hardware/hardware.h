@@ -257,7 +257,10 @@ assert_word_size(
     struct buf_ctrl_status_register, "Buffer control status register type"
 );
 PA_STRUCT buf_ctrl_registers {
-    unsigned char *buffer;
+    union {
+        unsigned char *buffer;
+        uint32_t swap;
+    };
     unsigned char *back_buffer;
     uint32_t x_resolution : 16;
     uint32_t y_resolution : 16;

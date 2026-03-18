@@ -2,8 +2,8 @@
 #define EXTERNAL_H
 
 static int hex_digits[10] = {
-    0x3F, // 0 
-    0x06, // 1 
+    0x3F, // 0
+    0x06, // 1
     0x5B, // 2
     0x4F, // 3
     0x66, // 4
@@ -15,5 +15,6 @@ static int hex_digits[10] = {
 };
 
 void display_hex(int pos, int digit);
+void reset_hex(void);
 
 #endif

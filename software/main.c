@@ -1,11 +1,8 @@
-#include <stdio.h>
-#include "hardware/hardware.h"
 #include "software/controls.h"
 #include "firmware/interrupts.h"
 #include "software/external.h"
 #include "firmware/firmware.h"
-#include "software/software_render.h"
-#include "model-headers/monkey.h"
+
 int main(void) {
     reset_hex();
 
