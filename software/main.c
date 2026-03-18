@@ -19,7 +19,7 @@ int main(void) {
     // set_camera_settings_software(90.0, 1);
 
     // Setting up camera
-    struct Vector camPos = {5, 0.5, 0.5};
+    struct Vector camPos = {20, 0.5, 0.5};
     struct Vector camLook = {-1, 0, 0};
     struct Vector camUp = {0, 1, 0};
     set_camera_default(camPos, camLook, camUp);

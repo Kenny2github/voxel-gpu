@@ -2,5 +2,5 @@
 
 const uint16_t palette_data[] = {
     0x0, // BLANK
-    0xFFFF, // WHITE
+    0x001F, // WHITE
 };

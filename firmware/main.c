@@ -34,7 +34,7 @@ void render() {
     double start = cur_time() / 200E6 * fw_time;
 
     for (int i = 0; i < H_RESOLUTION * V_RESOLUTION; i += NUM_SHADERS) {
-        GPU->start_pixel = pixel_buffer + i;
+        GPU->start_pixel = i;
         while (render_wait);
         render_wait = 1;
 

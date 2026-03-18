@@ -65,7 +65,7 @@ void enable_timer(void) {
 	frames = 0;
 	fw_time = 0;
 	gpu_latency = 0;
-	config_interrupt(PRIVATE_TIMER_IRQ, NULL, &handle_timer_interrupt);
+	config_interrupt(PRIVATE_TIMER_IRQ, &enable_timer_interrupt, &handle_timer_interrupt);
 }
 
 void disable_timer(void) {
