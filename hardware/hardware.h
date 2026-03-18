@@ -154,7 +154,7 @@ PA_STRUCT key_registers {
     struct key_bits_register edge;
 };
 extern volatile struct key_registers *const KEY;
-#define KEY_IRQ 1U
+#define KEY_IRQ 73U
 
 PA_STRUCT ps2_data {
     uint32_t data : 8;
@@ -179,7 +179,7 @@ PA_STRUCT ps2_registers {
 extern volatile struct ps2_registers *const PS2;
 #define PS2_IRQ 79U
 extern volatile struct ps2_registers *const PS2_DUAL;
-#define PS2_DUAL_IRQ 89U
+#define PS2_DUAL_IRQ 95U
 
 PA_STRUCT jtag_uart_data {
     uint32_t data : 8;
@@ -205,7 +205,7 @@ PA_STRUCT jtag_uart_registers {
 };
 extern volatile struct jtag_uart_registers *const JTAG_UART;
 extern volatile struct jtag_uart_registers *const JTAG_UART_2;
-#define JTAG_UART_IRQ 8U
+#define JTAG_UART_IRQ 80U
 
 PA_STRUCT timer_status_register {
     uint32_t to : 1;
@@ -239,8 +239,8 @@ PA_STRUCT timer_registers {
 };
 extern volatile struct timer_registers *const TIMER;
 extern volatile struct timer_registers *const TIMER_2;
-#define TIMER_IRQ 0U
-#define TIMER_2_IRQ 2U
+#define TIMER_IRQ 72U
+#define TIMER_2_IRQ 74U
 
 PA_STRUCT buf_ctrl_status_register {
     uint32_t s : 1;
