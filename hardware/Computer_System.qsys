@@ -2140,7 +2140,7 @@
    version="21.1"
    start="ARM_A9_HPS.f2h_irq0"
    end="gpu.irq">
-  <parameter name="irqNumber" value="16" />
+  <parameter name="irqNumber" value="5" />
  </connection>
  <connection
    kind="interrupt"
