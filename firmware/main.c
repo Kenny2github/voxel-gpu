@@ -31,7 +31,7 @@ void render() {
     // Before render, update GPU camera settings
     update_camera();
 
-    double start = cur_time() / 200E6 * fw_time;
+    double start = fw_time + (200E6 - cur_time()) / 200E6;
 
     for (int i = 0; i < H_RESOLUTION * V_RESOLUTION; i += NUM_SHADERS) {
         GPU->start_pixel = i;
@@ -61,7 +61,8 @@ void render() {
             render_wait = 1;
         }
     }
-    gpu_latency = cur_time() / 200E6 + fw_time - start;
+    double end = fw_time + (200E6 - cur_time()) / 200E6;
+    gpu_latency = end - start;
 
     /* GPU interrupt handled, swap buffers */
     wait_for_vsync();
