@@ -74,6 +74,9 @@ void set_voxel(v_pos pos, uint8_t palette) {
 // }
 
 void clear_grid(void) {
-    free(voxel_space);
+    if (voxel_space != NULL) {
+        free(voxel_space);
+        voxel_space = NULL;
+    }
     voxel_count = 0;
 }
