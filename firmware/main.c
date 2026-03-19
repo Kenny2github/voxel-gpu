@@ -28,7 +28,11 @@ void render() {
     // Before render, update GPU camera settings
     update_camera();
 
-    double start = fw_time + (200E6 - cur_time()) / 200E6;
+    float start = fw_time + (200E6f - cur_time()) / 200E6f;
+
+    int row = 0;
+    int col = 0;
+    unsigned char *pixel_ptr = pixel_buffer;
 
     for (int i = 0; i < H_RESOLUTION * V_RESOLUTION; i += NUM_SHADERS) {
         GPU->start_pixel = i;
@@ -46,14 +50,20 @@ void render() {
             while (GPU->render_status);
         }
 
-        for (int j = i; j < i + NUM_SHADERS; ++j) {
-            int row = j / H_RESOLUTION;
-            int col = j % H_RESOLUTION;
-            GPU->write_pixel = pixel_buffer + (row << 10 | col << 1);
+        for (int j = 0; j < NUM_SHADERS; ++j) {
+            GPU->write_pixel = pixel_ptr;
             while (GPU->render_status);
+
+            if (++col >= H_RESOLUTION) {
+                col = 0;
+                pixel_ptr = pixel_buffer + ((++row) << 10);
+            } else {
+                pixel_ptr += 2;
+            }
         }
     }
-    double end = fw_time + (200E6 - cur_time()) / 200E6;
+
+    float end = fw_time + (200E6f - cur_time()) / 200E6f;
     gpu_latency = end - start;
 
     /* GPU interrupt handled, swap buffers */

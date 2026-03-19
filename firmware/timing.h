@@ -5,7 +5,7 @@
 
 extern int frames;
 extern unsigned int fw_time;
-extern double gpu_latency;
+extern float gpu_latency;
 
 /**
  * Enables interrupts per second for A9 private timer
