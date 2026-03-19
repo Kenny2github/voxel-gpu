@@ -68,7 +68,7 @@ PA_STRUCT gpu_registers {
     uint32_t _reserved_0x10_0x3C[11];
     union {
         /**
-         * Status of render (read only); reading clears interrupt
+         * Status of render (read only)
          */
         enum render_status render_status;
         /**
@@ -94,7 +94,6 @@ _Static_assert(
     offsetof(struct gpu_registers, camera) == 0x10 * 4, "Wrong camera offset"
 );
 extern volatile struct gpu_registers *const GPU;
-#define GPU_IRQ 77U
 
 extern volatile unsigned char *const DDR_BASE;
 #define DDR_END 0x3FFFFFFF
@@ -257,7 +256,10 @@ assert_word_size(
     struct buf_ctrl_status_register, "Buffer control status register type"
 );
 PA_STRUCT buf_ctrl_registers {
-    unsigned char *buffer;
+    union {
+        unsigned char *buffer;
+        uint32_t swap;
+    };
     unsigned char *back_buffer;
     uint32_t x_resolution : 16;
     uint32_t y_resolution : 16;

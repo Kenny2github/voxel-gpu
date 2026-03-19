@@ -163,24 +163,6 @@ add_interface_port clock clock clk Input 1
 
 
 #
-# connection point irq
-#
-add_interface irq interrupt end
-set_interface_property irq associatedAddressablePoint ""
-set_interface_property irq associatedClock clock
-set_interface_property irq associatedReset reset
-set_interface_property irq bridgedReceiverOffset ""
-set_interface_property irq bridgesToReceiver ""
-set_interface_property irq ENABLED true
-set_interface_property irq EXPORT_OF ""
-set_interface_property irq PORT_NAME_MAP ""
-set_interface_property irq CMSIS_SVD_VARIABLES ""
-set_interface_property irq SVD_ADDRESS_GROUP ""
-
-add_interface_port irq irq irq Output 1
-
-
-#
 # connection point m1
 #
 add_interface m1 avalon start

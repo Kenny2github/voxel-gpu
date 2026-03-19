@@ -5,7 +5,7 @@
 
 int frames;
 unsigned int fw_time;
-double gpu_latency;
+float gpu_latency;
 
 static const uint8_t num_to_hex[10] = {
 	0x3F, // 0
@@ -31,7 +31,7 @@ static void write_gpu_latency() {
 	}
 
 	char buffer[SCREEN_CHAR_W];
-	int len = sprintf(buffer, "GPU latency: %e ms", gpu_latency * 1000);
+	int len = sprintf(buffer, "GPU latency: %0.3f ms", gpu_latency * 1000.0f);
 	int curr_x = 0, curr_y = 0;
 
 	for (int i = 0; i < len; ++i) {

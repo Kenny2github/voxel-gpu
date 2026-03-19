@@ -16,7 +16,6 @@ module voxel_gpu #(
     output logic        s1_waitrequest,  //      .waitrequest
     input  logic        reset,           // reset.reset
     input  logic        clock,           // clock.clk
-    output logic        irq,             //   irq.irq
     output logic [31:0] m1_address,      //    m1.address
     output logic [15:0] m1_writedata,    //      .writedata
     output logic        m1_write,        //      .write
@@ -30,12 +29,11 @@ module voxel_gpu #(
     RASTERIZE,
     SHADE,
     WRITE_OUT,
-    INTERRUPT,
     ERROR
   } state;
 
   logic ready;
-  assign ready = (state == IDLE) || (state == INTERRUPT);
+  assign ready = (state == IDLE);
 
   // GPU.*
   logic [31:0] rasterize_voxel, shade_entry, write_pixel, start_pixel;
@@ -309,18 +307,6 @@ module voxel_gpu #(
           end
         endcase
       end
-      if (s1_read) begin
-        case (s1_address)
-          8'h0f: begin
-            // reading from status register clears interrupt
-            if (state == INTERRUPT) begin
-              state <= IDLE;
-            end else begin
-              state <= ERROR;
-            end
-          end
-        endcase
-      end
       cycle_counter <= cycle_counter + 1;
       case (state)
         IDLE: begin
@@ -336,19 +322,16 @@ module voxel_gpu #(
         end
         RAYCAST: begin
           if (error) state <= ERROR;
-          else if (&raycast_valid) state <= INTERRUPT;
+          else if (&raycast_valid) state <= IDLE;
         end
         RASTERIZE: begin
-          if (&rasterizing_done) state <= INTERRUPT;
+          if (&rasterizing_done) state <= IDLE;
         end
         SHADE: begin
-          if (&shading_done) state <= INTERRUPT;
+          if (&shading_done) state <= IDLE;
         end
         WRITE_OUT: begin
-          if (!m1_waitrequest) state <= INTERRUPT;
-        end
-        INTERRUPT: begin
-          cycle_counter <= 0;
+          if (!m1_waitrequest) state <= IDLE;
         end
         ERROR: begin
           cycle_counter <= 0;
@@ -444,6 +427,5 @@ module voxel_gpu #(
   end
 
   assign s1_waitrequest = 1'b0;
-  assign irq = (state == INTERRUPT);
 
 endmodule

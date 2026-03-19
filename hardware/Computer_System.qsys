@@ -2143,13 +2143,6 @@
  <connection
    kind="interrupt"
    version="21.1"
-   start="ARM_A9_HPS.f2h_irq0"
-   end="gpu.irq">
-  <parameter name="irqNumber" value="5" />
- </connection>
- <connection
-   kind="interrupt"
-   version="21.1"
    start="ARM_A9_HPS.f2h_irq1"
    end="JTAG_UART_for_ARM_1.irq">
   <parameter name="irqNumber" value="8" />

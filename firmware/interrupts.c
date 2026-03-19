@@ -79,6 +79,10 @@ static void config_GIC(void) {
 // IRQ exception handler
 void __attribute__((__interrupt__)) __cs3_isr_irq(void) {
     int irq = MPCORE_GIC_CPUIF->icciar;
+    if (irq >= 1020) {
+        MPCORE_GIC_CPUIF->icceoir = irq;
+        return;
+    }
     int i;
     for (i = 0; i < num_irq_handlers; ++i) {
         if (irq == irq_handlers[i].irq) {
@@ -88,7 +92,7 @@ void __attribute__((__interrupt__)) __cs3_isr_irq(void) {
     }
     if (i >= num_irq_handlers)
         while (1);
-    
+
     MPCORE_GIC_CPUIF->icceoir = irq;
 }
 
