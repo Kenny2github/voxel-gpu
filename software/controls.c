@@ -19,7 +19,7 @@ void config_inputs(void) {
 
     // NOTE: May need to swap the IRQ IDs (and the related buffers) if needed, or simply swap the ports
     config_interrupt(PS2_DUAL_IRQ, config_mouse, mouse_input_handler);
-    config_interrupt(PS2_IRQ, config_keyboard, keyboard_input_handler);    
+    config_interrupt(PS2_IRQ, config_keyboard, keyboard_input_handler);
 }
 
 void config_mouse(void) {
@@ -147,7 +147,7 @@ void keyboard_input_handler() {
     }
 
     struct Vector applicable_vector = {0};
-    
+
     char hex[10];
     sprintf(hex, "%02X %02X %02X %d", data[0], data[1], data[2], presses);
     draw_string(hex, 10, 30);
@@ -280,7 +280,6 @@ float convert_mouse_val_to_rad(const int x, const float ratio) {
 
 void update_camera() {
     set_camera(camera);
-    set_camera_software(camera);
 }
 
 uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z) {
@@ -294,8 +293,8 @@ uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z) {
 
     if (cx >= 0 && cx < SIDE_LEN &&
         cy >= 0 && cy < SIDE_LEN &&
-        cz >= 0 && cz < SIDE_LEN) 
-    {       
+        cz >= 0 && cz < SIDE_LEN)
+    {
         *x = (uint8_t)cx;
         *y = (uint8_t)cy;
         *z = (uint8_t)cz;
