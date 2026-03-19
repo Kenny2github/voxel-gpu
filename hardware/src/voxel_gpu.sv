@@ -62,10 +62,10 @@ module voxel_gpu #(
   genvar i;
   generate
     for (i = 0; i < NUM_SHADERS; ++i) begin: shaders
-      logic [0:5] _error;
+      logic [0:3] _error;
       assign error[i] = |_error;
-      logic [0:2] _raycast_valid;
-      assign raycast_valid[i] = &_raycast_valid;
+      logic _raycast_valid;
+      assign raycast_valid[i] = _raycast_valid;
       logic [0:1] _coordinate_valid;
       assign coordinate_valid[i] = &_coordinate_valid;
       // compute row and column of shader
@@ -93,103 +93,37 @@ module voxel_gpu #(
       assign shader_col = (i + start_pixel) - (shader_row * H_RESOLUTION);
       // compute camera look direction
       logic signed [COORD_BITS+FRACT_BITS-1:0] cam_look_x, cam_look_y, cam_look_z;
-      logic signed [ROW_BITS+COL_BITS+FRACT_BITS:0] lerp2_x_val, lerp2_y_val, lerp2_z_val;
-      lerp2 #(
-          .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
-          .FBITS(FRACT_BITS)
-      ) lerp2_x (
-          .p0({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look0.x[COORD_BITS+FRACT_BITS-1]}},
-            cam.look0.x[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p1({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look1.x[COORD_BITS+FRACT_BITS-1]}},
-            cam.look1.x[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p2({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look2.x[COORD_BITS+FRACT_BITS-1]}},
-            cam.look2.x[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p3({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look3.x[COORD_BITS+FRACT_BITS-1]}},
-            cam.look3.x[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .x((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_col << FRACT_BITS)),
-          .y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_row << FRACT_BITS)),
-          .X((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((H_RESOLUTION-1) << FRACT_BITS)),
-          .Y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((V_RESOLUTION-1) << FRACT_BITS)),
-          .val(lerp2_x_val),
+      lerp2_vec3 #(
+        .WIDTH_IN(COORD_BITS+FRACT_BITS),
+        .WIDTH_CALC(ROW_BITS+COL_BITS+1+FRACT_BITS),
+        .WIDTH_OUT(COORD_BITS+FRACT_BITS),
+        .FBITS(FRACT_BITS),
+        .X(H_RESOLUTION),
+        .Y(V_RESOLUTION)
+      ) lerp2_look (
+          .p0_x(cam.look0.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p0_y(cam.look0.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p0_z(cam.look0.z[COORD_BITS+FRACT_BITS-1:0]),
+          .p1_x(cam.look1.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p1_y(cam.look1.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p1_z(cam.look1.z[COORD_BITS+FRACT_BITS-1:0]),
+          .p2_x(cam.look2.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p2_y(cam.look2.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p2_z(cam.look2.z[COORD_BITS+FRACT_BITS-1:0]),
+          .p3_x(cam.look3.x[COORD_BITS+FRACT_BITS-1:0]),
+          .p3_y(cam.look3.y[COORD_BITS+FRACT_BITS-1:0]),
+          .p3_z(cam.look3.z[COORD_BITS+FRACT_BITS-1:0]),
+          .x(shader_col),
+          .y(shader_row),
+          .val_x(cam_look_x),
+          .val_y(cam_look_y),
+          .val_z(cam_look_z),
           .start(raycast_start),
-          .done(_raycast_valid[0]),
+          .done(_raycast_valid),
           .error(_error[2]),
           .clock,
           .reset
       );
-      assign cam_look_x = lerp2_x_val[COORD_BITS+FRACT_BITS-1:0];
-      lerp2 #(
-          .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
-          .FBITS(FRACT_BITS)
-      ) lerp2_y (
-          .p0({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look0.y[COORD_BITS+FRACT_BITS-1]}},
-            cam.look0.y[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p1({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look1.y[COORD_BITS+FRACT_BITS-1]}},
-            cam.look1.y[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p2({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look2.y[COORD_BITS+FRACT_BITS-1]}},
-            cam.look2.y[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p3({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look3.y[COORD_BITS+FRACT_BITS-1]}},
-            cam.look3.y[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .x((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_col << FRACT_BITS)),
-          .y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_row << FRACT_BITS)),
-          .X((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((H_RESOLUTION-1) << FRACT_BITS)),
-          .Y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((V_RESOLUTION-1) << FRACT_BITS)),
-          .val(lerp2_y_val),
-          .start(raycast_start),
-          .done(_raycast_valid[1]),
-          .error(_error[3]),
-          .clock,
-          .reset
-      );
-      assign cam_look_y = lerp2_y_val[COORD_BITS+FRACT_BITS-1:0];
-      lerp2 #(
-          .WIDTH(ROW_BITS + COL_BITS + 1 + FRACT_BITS),
-          .FBITS(FRACT_BITS)
-      ) lerp2_z (
-          .p0({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look0.z[COORD_BITS+FRACT_BITS-1]}},
-            cam.look0.z[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p1({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look1.z[COORD_BITS+FRACT_BITS-1]}},
-            cam.look1.z[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p2({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look2.z[COORD_BITS+FRACT_BITS-1]}},
-            cam.look2.z[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .p3({
-            {(ROW_BITS + COL_BITS - COORD_BITS + 1) {cam.look3.z[COORD_BITS+FRACT_BITS-1]}},
-            cam.look3.z[COORD_BITS+FRACT_BITS-1:0]
-          }),
-          .x((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_col << FRACT_BITS)),
-          .y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'(shader_row << FRACT_BITS)),
-          .X((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((H_RESOLUTION-1) << FRACT_BITS)),
-          .Y((ROW_BITS + COL_BITS + 1 + FRACT_BITS)'((V_RESOLUTION-1) << FRACT_BITS)),
-          .val(lerp2_z_val),
-          .start(raycast_start),
-          .done(_raycast_valid[2]),
-          .error(_error[4]),
-          .clock,
-          .reset
-      );
-      assign cam_look_z = lerp2_z_val[COORD_BITS+FRACT_BITS-1:0];
       pixel_shader #(
           .INDEX(i),
           .INDEX_BITS(ROW_BITS + COL_BITS),
@@ -201,7 +135,7 @@ module voxel_gpu #(
           .cam_pos_y(cam.pos.y[COORD_BITS+FRACT_BITS-1:0]),
           .cam_pos_z(cam.pos.z[COORD_BITS+FRACT_BITS-1:0]),
           .reset(reset || coordinate_start),
-          .error(_error[5]),
+          .error(_error[3]),
           .rasterizing_done(rasterizing_done[i]),
           .shading_done(shading_done[i]),
           .*

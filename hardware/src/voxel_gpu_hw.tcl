@@ -31,6 +31,7 @@ set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file gpu.sv SYSTEM_VERILOG PATH gpu.sv
 add_fileset_file voxel_gpu.sv SYSTEM_VERILOG PATH voxel_gpu.sv TOP_LEVEL_FILE
 add_fileset_file div.sv SYSTEM_VERILOG PATH div.sv
+add_fileset_file lerp2_vec3.sv SYSTEM_VERILOG PATH lerp2_vec3.sv
 add_fileset_file lerp2.sv SYSTEM_VERILOG PATH lerp2.sv
 add_fileset_file pixel_shader.sv SYSTEM_VERILOG PATH pixel_shader.sv
 
