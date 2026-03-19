@@ -25,7 +25,7 @@ float cosf(float x) {
     float result = 1.0f;
     float term = 1.0f;
     float x_sq = x * x;
-    
+
     for (int n = 1; n <= 5; n++) {
         term *= -x_sq / ((2*n-1) * (2*n));
         result += term;
@@ -38,7 +38,7 @@ float sinf(float x) {
     float result = x;
     float term = x;
     float x_sq = x * x;
-    
+
     for (int n = 1; n <= 5; n++) {
         term *= -x_sq / ((2*n) * (2*n+1));
         result += term;
@@ -55,7 +55,7 @@ void cross_product(const struct Vector *a, const struct Vector *b, struct Vector
 
 void normalize(struct Vector *a) {
     if (!a) return;
-    
+
     float squared_norm = a->x * a->x + a->y * a->y + a->z * a->z;
     if(squared_norm == 0.0f)
         return;
@@ -182,12 +182,12 @@ int16_t min_vec_fixed(const struct Vector_16fixed a) {
 }
 
 
-inline int16_t convert_float_to_fixed(float a) {
-    return (int16_t)(a * (1 << FRAC_BITS));
+inline int32_t convert_float_to_fixed(float a) {
+    return (int32_t)(a * (1 << FRAC_BITS));
 }
 
-inline int16_t convert_int_to_fixed(int a) {
-    return (int16_t)(a << FRAC_BITS);
+inline int32_t convert_int_to_fixed(int a) {
+    return (int32_t)(a << FRAC_BITS);
 }
 
 // Fixed-point vector implementations
@@ -198,7 +198,7 @@ void cross_product_fixed(const struct Vector_16fixed *a, const struct Vector_16f
     int32_t x = ((int32_t)a->y * b->z - (int32_t)a->z * b->y) >> FRAC_BITS;
     int32_t y = ((int32_t)a->z * b->x - (int32_t)a->x * b->z) >> FRAC_BITS;
     int32_t z = ((int32_t)a->x * b->y - (int32_t)a->y * b->x) >> FRAC_BITS;
-    
+
     c->x = (int16_t)x;
     c->y = (int16_t)y;
     c->z = (int16_t)z;

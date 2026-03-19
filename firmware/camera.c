@@ -23,9 +23,9 @@ void set_camera_settings(float _fov_degrees, float _focal_length) {
 // TODO: Split set_camera component-wise for small optimization, minimizing calls
 void set_camera(struct Camera* cam) {
     GPU->camera.pos = (struct _vec3){
-        (uint32_t)convert_float_to_fixed(cam->pos.x),
-        (uint32_t)convert_float_to_fixed(cam->pos.y),
-        (uint32_t)convert_float_to_fixed(cam->pos.z)
+        convert_float_to_fixed(cam->pos.x),
+        convert_float_to_fixed(cam->pos.y),
+        convert_float_to_fixed(cam->pos.z)
     };
 
     /* right unit vector on the clipping plane */
@@ -44,30 +44,30 @@ void set_camera(struct Camera* cam) {
 
     /* top left */
     GPU->camera.look[0] = (struct _vec3){
-        (uint32_t)convert_float_to_fixed(look_x - right_x + up_x),
-        (uint32_t)convert_float_to_fixed(look_y - right_y + up_y),
-        (uint32_t)convert_float_to_fixed(look_z - right_z + up_z)
+        convert_float_to_fixed(look_x - right_x + up_x),
+        convert_float_to_fixed(look_y - right_y + up_y),
+        convert_float_to_fixed(look_z - right_z + up_z)
     };
 
     /* top right */
     GPU->camera.look[1] = (struct _vec3){
-        (uint32_t)convert_float_to_fixed(look_x + right_x + up_x),
-        (uint32_t)convert_float_to_fixed(look_y + right_y + up_y),
-        (uint32_t)convert_float_to_fixed(look_z + right_z + up_z)
+        convert_float_to_fixed(look_x + right_x + up_x),
+        convert_float_to_fixed(look_y + right_y + up_y),
+        convert_float_to_fixed(look_z + right_z + up_z)
     };
 
     /* bottom left */
     GPU->camera.look[2] = (struct _vec3){
-        (uint32_t)convert_float_to_fixed(look_x - right_x - up_x),
-        (uint32_t)convert_float_to_fixed(look_y - right_y - up_y),
-        (uint32_t)convert_float_to_fixed(look_z - right_z - up_z)
+        convert_float_to_fixed(look_x - right_x - up_x),
+        convert_float_to_fixed(look_y - right_y - up_y),
+        convert_float_to_fixed(look_z - right_z - up_z)
     };
 
     /* bottom right */
     GPU->camera.look[3] = (struct _vec3){
-        (uint32_t)convert_float_to_fixed(look_x + right_x - up_x),
-        (uint32_t)convert_float_to_fixed(look_y + right_y - up_y),
-        (uint32_t)convert_float_to_fixed(look_z + right_z - up_z)
+        convert_float_to_fixed(look_x + right_x - up_x),
+        convert_float_to_fixed(look_y + right_y - up_y),
+        convert_float_to_fixed(look_z + right_z - up_z)
     };
 
 }
