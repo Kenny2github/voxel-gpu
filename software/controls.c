@@ -95,13 +95,17 @@ void mouse_input_handler() {
 
     signedPos.x = ((int)(mousePackets[0] & 0b10000) << 4) | (mousePackets[1]);
     signedPos.y = (((int)(mousePackets[0] & 0b100000) << 3) | (mousePackets[2]));
+
+    char buffer[100];
+    int len = sprintf(buffer, "Mouse Displace: %03d %03d", signedPos.x, signedPos.y);
+    draw_string(buffer, len, 3);
     /*** Movement of Camera Look */
     // Horizontal motion should rotate lookAt vector based on up-vector
     float angle_x = convert_mouse_val_to_rad(signedPos.x, SENSITIVITY_HORIZONTAL);
     // volatile uint32_t* test_x_angle = (volatile uint32_t*)(0xC80000C0);
     // *test_x_angle = convert_float_to_fixed(angle_x);
     if(angle_x != 0.0f) {
-        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
+        struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->fixed_up);
         camera->look = transform_vector(&(rotate_horizontal_transform), camera->look);
         normalize(&(camera->look));
         cross_product(&(camera->look), &(camera->up), &(camera->right));
@@ -109,7 +113,7 @@ void mouse_input_handler() {
     }
 
     // Vertical motion should rotate lookAt vector based on right-vector
-    float angle_y = convert_mouse_val_to_rad(signedPos.y, SENSITIVITY_VERTICAL);
+    float angle_y = convert_mouse_val_to_rad(-signedPos.y, SENSITIVITY_VERTICAL);
     // volatile int32_t* test_y_angle = (volatile int32_t*)(0xC80000D0);
     // *test_y_angle = convert_float_to_fixed(angle_y);
     if(angle_y != 0.0f) {
@@ -202,7 +206,7 @@ void keyboard_input_handler() {
     }
 
 
-    if(applicable_vector.x || applicable_vector.y || applicable_vector.z) { // No movement
+    if(applicable_vector.x || applicable_vector.y || applicable_vector.z) { 
         applicable_vector = multiply_vector(applicable_vector, MOVEMENT_SPEED);
         camera->pos = add_vector(camera->pos, applicable_vector);
     }
@@ -255,7 +259,9 @@ void keyboard_input_handler() {
         }
     }
 
-    draw_string(buffer, len, 1);
+    draw_string(buffer, len, 2);
+    len = sprintf(buffer, "Camera Pos: %.2f %.2f %.2f", camera->pos.x, camera->pos.y, camera->pos.z);
+    draw_string(buffer, len, 5);
 
     if(angle_x != 0.0f) {
         struct AffineTransform3D rotate_horizontal_transform = rotate_transform(angle_x, camera->up);
@@ -283,23 +289,17 @@ void update_camera() {
     set_camera_software(camera);
 }
 
-uint8_t get_target_voxel(uint8_t *x, uint8_t *y, uint8_t *z) {
+uint8_t get_target_voxel(int16_t *x, int16_t *y, int16_t *z) {
     // Currently, just place 2 voxels ahead of where camera looking
-    struct Vector offset = multiply_vector(camera->look, 3.0f);
+    struct Vector offset = multiply_vector(camera->look, 30.0f);
     struct Vector target_pos = add_vector(camera->pos, offset);
 
     int cx = (int)target_pos.x;
     int cy = (int)target_pos.y;
     int cz = (int)target_pos.z;
 
-    if (cx >= 0 && cx < SIDE_LEN &&
-        cy >= 0 && cy < SIDE_LEN &&
-        cz >= 0 && cz < SIDE_LEN) 
-    {       
-        *x = (uint8_t)cx;
-        *y = (uint8_t)cy;
-        *z = (uint8_t)cz;
-        return 1;
-    }
-    return 0;
+    *x = (int16_t)cx;
+    *y = (int16_t)cy;
+    *z = (int16_t)cz;
+    return 1;
 }

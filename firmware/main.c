@@ -52,7 +52,6 @@ void render() {
 
         for (int j = 0; j < NUM_SHADERS; ++j) {
             GPU->write_pixel = pixel_ptr;
-            while (GPU->render_status);
 
             if (++col >= H_RESOLUTION) {
                 col = 0;
@@ -60,7 +59,10 @@ void render() {
             } else {
                 pixel_ptr += 2;
             }
+            
+            while (GPU->render_status);
         }
+        
     }
 
     float end = fw_time + (200E6f - cur_time()) / 200E6f;

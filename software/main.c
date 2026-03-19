@@ -29,31 +29,42 @@ int main(void) {
     // fill_voxel_range(firstPos, endPos, 0x0);
 
     set_voxel((v_pos){0,0,0}, 1);
-    set_voxel((v_pos){+2,+2,+2}, 2);
-    set_voxel((v_pos){+2,+2,-2}, 3);
-    set_voxel((v_pos){+2,-2,+2}, 1);
-    set_voxel((v_pos){+2,-2,-2}, 2);
-    set_voxel((v_pos){-2,+2,+2}, 3);
-    set_voxel((v_pos){-2,+2,-2}, 1);
-    set_voxel((v_pos){-2,-2,+2}, 2);
-    set_voxel((v_pos){-2,-2,-2}, 3);
+    // set_voxel((v_pos){+2,+2,+2}, 2);
+    // set_voxel((v_pos){+2,+2,-2}, 3);
+    // set_voxel((v_pos){+2,-2,+2}, 1);
+    // set_voxel((v_pos){+2,-2,-2}, 2);
+    // set_voxel((v_pos){-2,+2,+2}, 3);
+    // set_voxel((v_pos){-2,+2,-2}, 1);
+    // set_voxel((v_pos){-2,-2,+2}, 2);
+    // set_voxel((v_pos){-2,-2,-2}, 3);
     // set_voxel((v_pos){34, 32, 32}, 1);
     // load_monkey();
     // clear_screen_software();
     // wait_for_vsync_software(); // wait_for_vsync();
 
+    char hex[100];
+    int len = 0;
     while(1) {
+        
+        len = sprintf(hex, "Voxel Count: %d", voxel_count);
+        draw_string(hex, len, 7);
 
         if (enter_key_pressed)
         {
-            uint8_t target_x, target_y, target_z;
+            sprintf(hex, "Enter detected");
+            int16_t target_x, target_y, target_z;
 
             if (get_target_voxel(&target_x, &target_y, &target_z))
             {
                 v_pos new_voxel_pos = {target_x, target_y, target_z};
                 set_voxel(new_voxel_pos, 1);
+                
+                len = sprintf(hex, "Placed voxel at (%d %d %d)", target_x, target_y, target_z);
                 // printf("Voxel placed at: %d, %d, %d\n", target_x, target_y, target_z); // Comment out later
             }
+
+               
+            draw_string(hex, len, 30);
 
             enter_key_pressed = 0;
         }

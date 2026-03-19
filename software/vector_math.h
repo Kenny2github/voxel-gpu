@@ -79,9 +79,9 @@ int16_t max_vec_fixed(const struct Vector_16fixed a);
 float min_vec(const struct Vector a);
 int16_t min_vec_fixed(const struct Vector_16fixed a);
 
-int16_t convert_float_to_fixed(float a);
+int32_t convert_float_to_fixed(float a);
 
-int16_t convert_int_to_fixed(int a);
+int32_t convert_int_to_fixed(int a);
 
 // Fixed-point vector functions (16-bit with FRAC_BITS fraction bits)
 
