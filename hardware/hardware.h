@@ -68,7 +68,7 @@ PA_STRUCT gpu_registers {
     uint32_t _reserved_0x10_0x3C[11];
     union {
         /**
-         * Status of render (read only); reading clears interrupt
+         * Status of render (read only)
          */
         enum render_status render_status;
         /**
