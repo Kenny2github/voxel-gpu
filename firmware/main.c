@@ -56,6 +56,7 @@ void render() {
             if (++col >= H_RESOLUTION) {
                 col = 0;
                 pixel_ptr = pixel_buffer + ((++row) << 10);
+                if (row >= V_RESOLUTION) break;
             } else {
                 pixel_ptr += 2;
             }
