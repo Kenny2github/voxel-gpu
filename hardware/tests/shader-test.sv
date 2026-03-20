@@ -3,9 +3,9 @@ import gpu::*;
 
 module testbench #(
     parameter INDEX_BITS = 32,
-    parameter COORD_BITS = 8,
-    parameter PALETTE_BITS = 8,
-    parameter FRACT_BITS = 8,
+    parameter COORD_BITS = 10,
+    parameter PALETTE_BITS = 32 - (COORD_BITS * 3),
+    parameter FRACT_BITS = 10,
     parameter PIXEL_BITS = 8
 ) ();
 
@@ -25,6 +25,7 @@ module testbench #(
   logic [INDEX_BITS-1:0] pixel_index;
   logic rasterizing_done;
   logic shading_done;
+  logic error;
   wire [PIXEL_BITS-1:0] pixel;
   logic reset;
   logic clock;
@@ -36,6 +37,7 @@ module testbench #(
     clock <= 1'b0;
     forever begin
       #5 clock <= ~clock;
+      if (error) $stop;
     end
   end
 
