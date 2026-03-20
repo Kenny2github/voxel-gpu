@@ -30,14 +30,19 @@ module pixel_shader #(
   enum logic [3:0] {
     IDLE,
     ERROR,
+    DIV_LX,
+    DIV_LY,
+    DIV_LZ,
+    DIV_HX,
+    DIV_HY,
+    DIV_HZ,
     DIVIDE,
     MEASURE,
     STORE_VOXEL,
     DONE_RASTERIZING,
     STORE_PIXEL,
     DONE_SHADING
-  }
-      state, next_state;
+  } state;
   assign error = (state == ERROR);
 
   logic [PIXEL_BITS-1:0] _pixel;
@@ -53,7 +58,7 @@ module pixel_shader #(
   // toggle sign bit when comparing (i.e. shift into unsigned range) by adding s
   // assign s = (1 << (COORD_BITS + FRACT_BITS - 1));
   assign s = 0;
-  
+
   assign lx = {voxel_x, FRACT_BITS'(0)} - cam_pos_x;
   assign ly = {voxel_y, FRACT_BITS'(0)} - cam_pos_y;
   assign lz = {voxel_z, FRACT_BITS'(0)} - cam_pos_z;
@@ -70,155 +75,28 @@ module pixel_shader #(
 
   assign t = (t_min + s) > s ? t_min : t_max;
 
-  logic div_start;
-  logic [0:5] div_valid;
-  logic [0:5] ovf;
-  logic [0:5] done;
-  logic [0:5] valid;
-  logic [0:5] dbz;
-  assign div_valid = ovf | dbz | (valid & done);
+  logic div_reset, div_start, div_valid, div_done, dbz, ovf;
+  logic [COORD_BITS+FRACT_BITS-1:0] div_a, div_b, div_val;
 
   div #(
       .WIDTH(COORD_BITS + FRACT_BITS),
       .FBITS(FRACT_BITS)
-  ) divlx (
+  ) div_all (
       .clk(clock),
-      .rst(reset),
+      .rst(reset || div_reset),
       .start(div_start),
-      .valid(valid[0]),
+      .valid(div_valid),
       .busy(),
-      .done(done[0]),
-      .dbz(dbz[0]),
-      .ovf(ovf[0]),
-      .a(lx),
-      .b(cam_look_x),
-      .val(tlx)
-  );
-  div #(
-      .WIDTH(COORD_BITS + FRACT_BITS),
-      .FBITS(FRACT_BITS)
-  ) divly (
-      .clk(clock),
-      .rst(reset),
-      .start(div_start),
-      .valid(valid[1]),
-      .busy(),
-      .done(done[1]),
-      .dbz(dbz[1]),
-      .ovf(ovf[1]),
-      .a(ly),
-      .b(cam_look_y),
-      .val(tly)
-  );
-  div #(
-      .WIDTH(COORD_BITS + FRACT_BITS),
-      .FBITS(FRACT_BITS)
-  ) divlz (
-      .clk(clock),
-      .rst(reset),
-      .start(div_start),
-      .valid(valid[2]),
-      .busy(),
-      .done(done[2]),
-      .dbz(dbz[2]),
-      .ovf(ovf[2]),
-      .a(lz),
-      .b(cam_look_z),
-      .val(tlz)
-  );
-  div #(
-      .WIDTH(COORD_BITS + FRACT_BITS),
-      .FBITS(FRACT_BITS)
-  ) divhx (
-      .clk(clock),
-      .rst(reset),
-      .start(div_start),
-      .valid(valid[3]),
-      .busy(),
-      .done(done[3]),
-      .dbz(dbz[3]),
-      .ovf(ovf[3]),
-      .a(hx),
-      .b(cam_look_x),
-      .val(thx)
-  );
-  div #(
-      .WIDTH(COORD_BITS + FRACT_BITS),
-      .FBITS(FRACT_BITS)
-  ) divhy (
-      .clk(clock),
-      .rst(reset),
-      .start(div_start),
-      .valid(valid[4]),
-      .busy(),
-      .done(done[4]),
-      .dbz(dbz[4]),
-      .ovf(ovf[4]),
-      .a(hy),
-      .b(cam_look_y),
-      .val(thy)
-  );
-  div #(
-      .WIDTH(COORD_BITS + FRACT_BITS),
-      .FBITS(FRACT_BITS)
-  ) divhz (
-      .clk(clock),
-      .rst(reset),
-      .start(div_start),
-      .valid(valid[5]),
-      .busy(),
-      .done(done[5]),
-      .dbz(dbz[5]),
-      .ovf(ovf[5]),
-      .a(hz),
-      .b(cam_look_z),
-      .val(thz)
+      .done(div_done),
+      .dbz(dbz),
+      .ovf(ovf),
+      .a(div_a),
+      .b(div_b),
+      .val(div_val)
   );
 
-  always_ff @(posedge clock, posedge reset) begin
-    if (reset) begin
-      state <= IDLE;
-    end else begin
-      state <= next_state;
-    end
-  end
-
-  always_comb begin
-    case (state)
-      IDLE: begin
-        if (do_rasterize) next_state = DIVIDE;
-        else if (do_shade) next_state = STORE_PIXEL;
-        else next_state = IDLE;
-      end
-      ERROR: begin
-        if (do_rasterize) next_state = DIVIDE;
-        else if (do_shade) next_state = STORE_PIXEL;
-        else next_state = ERROR;
-      end
-      DIVIDE: begin
-        if (&div_valid) next_state = MEASURE;
-        else next_state = DIVIDE;
-      end
-      MEASURE: begin
-        next_state = STORE_VOXEL;
-      end
-      STORE_VOXEL: begin
-        next_state = DONE_RASTERIZING;
-      end
-      DONE_RASTERIZING: begin
-        next_state = IDLE;
-      end
-      STORE_PIXEL: begin
-        next_state = DONE_SHADING;
-      end
-      DONE_SHADING: begin
-        next_state = IDLE;
-      end
-    endcase
-  end
-
-  localparam PINF = (COORD_BITS + FRACT_BITS - 1)'('1); // 0111...
-  localparam MINF = ~PINF; // 1000...
+  localparam PINF = (COORD_BITS + FRACT_BITS - 1)'('1);  // 0111...
+  localparam MINF = ~PINF;  // 1000...
 
   always_ff @(posedge clock, posedge reset) begin
     if (reset) begin
@@ -228,84 +106,163 @@ module pixel_shader #(
       closest_t <= PINF;
       t_min <= PINF;
       t_max <= MINF;
+      tlx <= '0;
+      tly <= '0;
+      tlz <= '0;
+      thx <= '0;
+      thy <= '0;
+      thz <= '0;
+      state <= IDLE;
     end else begin
       case (state)
         IDLE: begin
           t_min <= PINF;
           t_max <= MINF;
           cycle_counter <= '0;
+          if (do_rasterize) state <= DIV_LX;
+          else if (do_shade) state <= STORE_PIXEL;
         end
         ERROR: begin
           t_min <= PINF;
           t_max <= MINF;
           cycle_counter <= '0;
+          if (do_rasterize) state <= DIV_LX;
+          else if (do_shade) state <= STORE_PIXEL;
+        end
+        DIV_LX: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          if (div_valid && div_done) begin
+            tlx   <= div_val;
+            state <= DIV_LY;
+          end else if (dbz || ovf) begin
+            tlx   <= (lx + s) < s ? MINF : PINF;
+            state <= DIV_LY;
+          end
+        end
+        DIV_LY: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          if (div_valid && div_done) begin
+            tly   <= div_val;
+            state <= DIV_LZ;
+          end else if (dbz || ovf) begin
+            tly   <= (ly + s) < s ? MINF : PINF;
+            state <= DIV_LZ;
+          end
+        end
+        DIV_LZ: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          if (div_valid && div_done) begin
+            tlz   <= div_val;
+            state <= DIV_HX;
+          end else if (dbz || ovf) begin
+            tlz   <= (lz + s) < s ? MINF : PINF;
+            state <= DIV_HX;
+          end
+        end
+        DIV_HX: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          if (div_valid && div_done) begin
+            thx   <= div_val;
+            state <= DIV_HY;
+          end else if (dbz || ovf) begin
+            thx   <= (hx + s) < s ? MINF : PINF;
+            state <= DIV_HY;
+          end
+        end
+        DIV_HY: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          if (div_valid && div_done) begin
+            thy   <= div_val;
+            state <= DIV_HZ;
+          end else if (dbz || ovf) begin
+            thy   <= (hy + s) < s ? MINF : PINF;
+            state <= DIV_HZ;
+          end
+        end
+        DIV_HZ: begin
+          cycle_counter <= cycle_counter + 8'd1;
+          if (div_valid && div_done) begin
+            thz   <= div_val;
+            state <= DIVIDE;
+          end else if (dbz || ovf) begin
+            thz   <= (hz + s) < s ? MINF : PINF;
+            state <= DIVIDE;
+          end
         end
         DIVIDE: begin
-          cycle_counter <= cycle_counter + 8'd1;
-          if ((dbz[0] | ovf[0]) | (dbz[3] | ovf[3])) begin
-            if ((lx + s) < s) begin  // max(min_A_B_x=-inf, min_A_B_y) = min_A_B_y
-              if ((dbz[1] | ovf[1]) | (dbz[4] | ovf[4])) begin
-                t_min <= (ly + s) < s ? MINF : PINF;
-              end else begin
-                t_min <= min_A_B_y;
-              end
-            end else begin // max(min_A_B_x=+inf, min_A_B_y) = +inf
-              t_min <= PINF;
-            end
-            if ((hx + s) < s) begin // min(max_A_B_x=-inf, max_A_B_y) = -inf
-              t_max <= MINF;
-            end else begin // min(max_A_B_x=+inf, max_A_B_y) = max_A_B_y
-              if ((dbz[1] | ovf[1]) | (dbz[4] | ovf[4])) begin
-                t_max <= (hy + s) < s ? MINF : PINF;
-              end else begin
-                t_max <= max_A_B_y;
-              end
-            end
-          end else if ((dbz[1] | ovf[1]) | (dbz[4] | ovf[4])) begin
-            // max(min_A_B_x!=inf, min_A_B_y=-inf) = min_A_B_x
-            // max(min_A_B_x!=inf, min_A_B_y=+inf) = +inf
-            t_min <= (ly + s) < s ? min_A_B_x : PINF;
-            // min(max_A_B_x!=inf, max_A_B_y=-inf) = -inf
-            // min(max_A_B_x!=inf, max_A_B_y=+inf) = max_A_B_x
-            t_max <= (hy + s) < s ? MINF : max_A_B_x;
-          end else begin
-            t_min <= (min_A_B_x + s) > (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
-            t_max <= (max_A_B_x + s) < (max_A_B_y + s) ? max_A_B_x : max_A_B_y;
-          end
+          t_min <= (min_A_B_x + s) > (min_A_B_y + s) ? min_A_B_x : min_A_B_y;
+          t_max <= (max_A_B_x + s) < (max_A_B_y + s) ? max_A_B_x : max_A_B_y;
+          state <= MEASURE;
         end
         MEASURE: begin
-          if ((dbz[2] | ovf[2]) | (dbz[5] | ovf[5])) begin
-            // max(t_min, min_A_B_z=-inf) = t_min
-            // max(t_min, min_A_B_z=+inf) = +inf
-            t_min <= (lz + s) < s ? t_min : PINF;
-            // min(t_max, max_A_B_z=-inf) = -inf
-            // min(t_max, max_A_B_z=+inf) = t_max
-            t_max <= (hz + s) < s ? MINF : t_max;
-          end else begin
-            t_min <= (t_min + s) > (min_A_B_z + s) ? t_min : min_A_B_z;
-            t_max <= (t_max + s) < (max_A_B_z + s) ? t_max : max_A_B_z;
-          end
+          t_min <= (t_min + s) > (min_A_B_z + s) ? t_min : min_A_B_z;
+          t_max <= (t_max + s) < (max_A_B_z + s) ? t_max : max_A_B_z;
+          state <= STORE_VOXEL;
         end
         STORE_VOXEL: begin
           if ((t + s) > s && (t_min + s) <= (t_max + s) && (t + s) < (closest_t + s)) begin  // intersection!
             closest_t <= t;
             closest_voxel <= voxel_id;
           end
+          state <= DONE_RASTERIZING;
+        end
+        DONE_RASTERIZING: begin
+          state <= IDLE;
         end
         STORE_PIXEL: begin
           if (voxel_id == closest_voxel) _pixel <= palette_entry;
+          state <= DONE_SHADING;
+        end
+        DONE_SHADING: begin
+          state <= IDLE;
         end
       endcase
     end
   end
 
   always_comb begin
+    div_reset = 1'b0;
     div_start = 1'b0;
+    div_a = '0;
+    div_b = '0;
     rasterizing_done = 1'b0;
     shading_done = 1'b0;
     case (state)
-      DIVIDE: begin
-        div_start = cycle_counter < 8'd2;
+      DIV_LX: begin
+        div_reset = cycle_counter < 8'd2;
+        div_start = cycle_counter < 8'd3;
+        div_a = lx;
+        div_b = cam_look_x;
+      end
+      DIV_LY: begin
+        div_reset = cycle_counter < 8'd2;
+        div_start = cycle_counter < 8'd3;
+        div_a = ly;
+        div_b = cam_look_y;
+      end
+      DIV_LZ: begin
+        div_reset = cycle_counter < 8'd2;
+        div_start = cycle_counter < 8'd3;
+        div_a = lz;
+        div_b = cam_look_z;
+      end
+      DIV_HX: begin
+        div_reset = cycle_counter < 8'd2;
+        div_start = cycle_counter < 8'd3;
+        div_a = hx;
+        div_b = cam_look_x;
+      end
+      DIV_HY: begin
+        div_reset = cycle_counter < 8'd2;
+        div_start = cycle_counter < 8'd3;
+        div_a = hy;
+        div_b = cam_look_y;
+      end
+      DIV_HZ: begin
+        div_reset = cycle_counter < 8'd2;
+        div_start = cycle_counter < 8'd3;
+        div_a = hz;
+        div_b = cam_look_z;
       end
       DONE_RASTERIZING: begin
         rasterizing_done = 1'b1;
