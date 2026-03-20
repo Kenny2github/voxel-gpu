@@ -4,7 +4,7 @@
 #include "firmware/timing.h"
 #include "firmware/palette.h"
 
-#define NUM_SHADERS 11
+#define NUM_SHADERS 17
 
 unsigned char* pixel_buffer;
 unsigned char* char_buffer;
