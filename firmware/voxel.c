@@ -25,7 +25,7 @@ void set_voxel(v_pos pos, uint8_t palette) {
     };
 }
 
-void init_voxel_lits(void) {
+void init_voxel_list(void) {
     voxel_count = 0;
     voxel_space_size = 256;
     voxel_space = calloc(voxel_space_size, sizeof(uint32_t));
