@@ -42,32 +42,39 @@ void set_camera(struct Camera* cam) {
     const float up_y = cam->up.y * clip_plane_y;
     const float up_z = cam->up.z * clip_plane_y;
 
+    const float look_x_minus_right_x = look_x - right_x;
+    const float look_y_minus_right_y = look_y - right_y;
+    const float look_z_minus_right_z = look_z - right_z;
+    const float look_x_plus_right_x = look_x + right_x;
+    const float look_y_plus_right_y = look_y + right_y;
+    const float look_z_plus_right_z = look_z + right_z;
+
     /* top left */
     GPU->camera.look[0] = (struct _vec3){
-        convert_float_to_fixed(look_x - right_x + up_x),
-        convert_float_to_fixed(look_y - right_y + up_y),
-        convert_float_to_fixed(look_z - right_z + up_z)
+        convert_float_to_fixed(look_x_minus_right_x + up_x),
+        convert_float_to_fixed(look_y_minus_right_y + up_y),
+        convert_float_to_fixed(look_z_minus_right_z + up_z)
     };
 
     /* top right */
     GPU->camera.look[1] = (struct _vec3){
-        convert_float_to_fixed(look_x + right_x + up_x),
-        convert_float_to_fixed(look_y + right_y + up_y),
-        convert_float_to_fixed(look_z + right_z + up_z)
+        convert_float_to_fixed(look_x_plus_right_x + up_x),
+        convert_float_to_fixed(look_y_plus_right_y + up_y),
+        convert_float_to_fixed(look_z_plus_right_z + up_z)
     };
 
     /* bottom left */
     GPU->camera.look[2] = (struct _vec3){
-        convert_float_to_fixed(look_x - right_x - up_x),
-        convert_float_to_fixed(look_y - right_y - up_y),
-        convert_float_to_fixed(look_z - right_z - up_z)
+        convert_float_to_fixed(look_x_minus_right_x - up_x),
+        convert_float_to_fixed(look_y_minus_right_y - up_y),
+        convert_float_to_fixed(look_z_minus_right_z - up_z)
     };
 
     /* bottom right */
     GPU->camera.look[3] = (struct _vec3){
-        convert_float_to_fixed(look_x + right_x - up_x),
-        convert_float_to_fixed(look_y + right_y - up_y),
-        convert_float_to_fixed(look_z + right_z - up_z)
+        convert_float_to_fixed(look_x_plus_right_x - up_x),
+        convert_float_to_fixed(look_y_plus_right_y - up_y),
+        convert_float_to_fixed(look_z_plus_right_z - up_z)
     };
 
 }
