@@ -10,6 +10,6 @@
 const uint16_t palette_data[] = {
     0x0, // BLANK
     0x7A84, // BROWN
-    0x07E0, // GREEN
-    0x1FE3, // LIGHT GREEN
+    0x05E0, // GREEN
+    0x3FE7, // LIGHT GREEN
 };
