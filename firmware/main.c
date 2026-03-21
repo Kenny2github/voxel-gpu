@@ -60,10 +60,9 @@ void render() {
             } else {
                 pixel_ptr += 2;
             }
-            
+
             while (GPU->render_status);
         }
-        
     }
 
     float end = fw_time + (200E6f - cur_time()) / 200E6f;
@@ -87,11 +86,9 @@ void init_firmware() {
 
     // fill_palette_buffer();
     palette_size = sizeof(palette_data) / sizeof(palette_data[0]);
-    clear_grid();
 
-    voxel_count = 0;
-    voxel_space_size = 256;
-    voxel_space = calloc(voxel_space_size, sizeof(uint32_t));
+    clear_voxel_list();
+    init_voxel_list();
 
     /* Initialize double-buffering pointers for pixel + character buffers */
     PIXEL_BUF_CTRL->back_buffer = SDRAM_BASE;
