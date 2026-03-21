@@ -3,7 +3,6 @@
 
 #include "firmware/firmware.h"
 
-
 void load_skyblock() {
 	set_voxel((v_pos){0, 0, 0}, 1);
 	set_voxel((v_pos){1, 0, 0}, 1);
@@ -85,11 +84,13 @@ void load_skyblock() {
 	set_voxel((v_pos){4, 2, 5}, 2);
 	set_voxel((v_pos){5, 2, 5}, 2);
 
+	set_voxel((v_pos){4, 3, 4}, 1);
 	set_voxel((v_pos){4, 4, 4}, 1);
-	set_voxel((v_pos){4, 5, 4}, 1);
-	set_voxel((v_pos){3, 6, 4}, 3);
-	set_voxel((v_pos){5, 6, 4}, 3);
-	set_voxel((v_pos){4, 6, 3}, 3);
-	set_voxel((v_pos){4, 6, 5}, 3);
-	set_voxel((v_pos){4, 7, 4}, 3);
+	set_voxel((v_pos){3, 5, 4}, 3);
+	set_voxel((v_pos){5, 5, 4}, 3);
+	set_voxel((v_pos){4, 5, 3}, 3);
+	set_voxel((v_pos){4, 5, 5}, 3);
+	set_voxel((v_pos){4, 6, 4}, 3);
 }
+
+#endif // SKYBLOCK_H

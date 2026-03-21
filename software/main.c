@@ -2,6 +2,7 @@
 #include "firmware/interrupts.h"
 #include "software/external.h"
 #include "firmware/firmware.h"
+// #include "model-headers/skyblock.h"
 
 int main(void) {
     reset_hex();
@@ -39,13 +40,14 @@ int main(void) {
     // set_voxel((v_pos){-2,-2,-2}, 3);
     // set_voxel((v_pos){34, 32, 32}, 1);
     // load_monkey();
+    // load_skyblock();
     // clear_screen_software();
     // wait_for_vsync_software(); // wait_for_vsync();
 
     char hex[100];
     int len = 0;
     while(1) {
-        
+
         len = sprintf(hex, "Voxel Count: %d", voxel_count);
         draw_string(hex, len, 7);
 
@@ -58,12 +60,12 @@ int main(void) {
             {
                 v_pos new_voxel_pos = {target_x, target_y, target_z};
                 set_voxel(new_voxel_pos, 1);
-                
+
                 len = sprintf(hex, "Placed voxel at (%d %d %d)", target_x, target_y, target_z);
                 // printf("Voxel placed at: %d, %d, %d\n", target_x, target_y, target_z); // Comment out later
             }
 
-               
+
             draw_string(hex, len, 30);
 
             enter_key_pressed = 0;
