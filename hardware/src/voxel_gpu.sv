@@ -48,6 +48,7 @@ module voxel_gpu #(
   localparam COL_BITS = $clog2(H_RESOLUTION);
   logic signed [COORD_BITS-1:0] voxel_x, voxel_y, voxel_z;
   logic [(32-COORD_BITS*3)-1:0] voxel_id;
+  logic reset_rasterize;
   assign {voxel_x, voxel_y, voxel_z, voxel_id} = (state == SHADE ? shade_entry : rasterize_voxel);
   logic [PIXEL_BITS-1:0] palette_entry;
   assign palette_entry = shade_entry[31-:PIXEL_BITS];
@@ -138,6 +139,7 @@ module voxel_gpu #(
           .error(_error[3]),
           .rasterizing_done(rasterizing_done[i]),
           .shading_done(shading_done[i]),
+          .reset_rasterize(reset_rasterize),
           .*
       );
     end: shaders
@@ -146,6 +148,7 @@ module voxel_gpu #(
   always_ff @(posedge clock or posedge reset) begin
     if (reset) begin
       state <= IDLE;
+      reset_rasterize <= '0;
       rasterize_voxel <= '0;
       shade_entry <= '0;
       write_pixel <= '0;
@@ -245,6 +248,7 @@ module voxel_gpu #(
       case (state)
         IDLE: begin
           cycle_counter <= 0;
+          reset_rasterize <= 0;
         end
         COORDINATE: begin
           if (error) begin
@@ -259,7 +263,10 @@ module voxel_gpu #(
           else if (&raycast_valid) state <= IDLE;
         end
         RASTERIZE: begin
-          if (&rasterizing_done) state <= IDLE;
+          if (&rasterizing_done) begin
+            reset_rasterize = 1;
+            state <= IDLE;
+          end
         end
         SHADE: begin
           if (&shading_done) state <= IDLE;

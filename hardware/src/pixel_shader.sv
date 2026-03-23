@@ -8,6 +8,7 @@ module pixel_shader #(
 ) (
     input logic do_rasterize,
     input logic do_shade,
+    input logic reset_rasterize,
     input logic signed [COORD_BITS-1:0] voxel_x,
     input logic signed [COORD_BITS-1:0] voxel_y,
     input logic signed [COORD_BITS-1:0] voxel_z,
@@ -207,7 +208,9 @@ module pixel_shader #(
           state <= DONE_RASTERIZING;
         end
         DONE_RASTERIZING: begin
-          state <= IDLE;
+          if(reset_rasterize) begin
+            state <= IDLE;
+          end
         end
         STORE_PIXEL: begin
           if (voxel_id == closest_voxel) _pixel <= palette_entry;
