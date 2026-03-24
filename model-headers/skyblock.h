@@ -36,7 +36,6 @@ void load_skyblock() {
 	set_voxel((v_pos){0, 1, 0}, 1);
 	set_voxel((v_pos){1, 1, 0}, 1);
 	set_voxel((v_pos){2, 1, 0}, 1);
-	set_voxel((v_pos){3, 1, 0}, 1);
 	set_voxel((v_pos){4, 1, 0}, 1);
 	set_voxel((v_pos){5, 1, 0}, 1);
 	set_voxel((v_pos){0, 1, 1}, 1);
@@ -59,7 +58,6 @@ void load_skyblock() {
 	set_voxel((v_pos){0, 2, 0}, 2);
 	set_voxel((v_pos){1, 2, 0}, 2);
 	set_voxel((v_pos){2, 2, 0}, 2);
-	set_voxel((v_pos){3, 2, 0}, 2);
 	set_voxel((v_pos){4, 2, 0}, 2);
 	set_voxel((v_pos){5, 2, 0}, 2);
 	set_voxel((v_pos){0, 2, 1}, 2);
@@ -86,11 +84,18 @@ void load_skyblock() {
 
 	set_voxel((v_pos){4, 3, 4}, 1);
 	set_voxel((v_pos){4, 4, 4}, 1);
-	set_voxel((v_pos){3, 5, 4}, 3);
-	set_voxel((v_pos){5, 5, 4}, 3);
-	set_voxel((v_pos){4, 5, 3}, 3);
-	set_voxel((v_pos){4, 5, 5}, 3);
-	set_voxel((v_pos){4, 6, 4}, 3);
+	set_voxel((v_pos){3, 5, 4}, 2);
+	set_voxel((v_pos){5, 5, 4}, 2);
+	set_voxel((v_pos){4, 5, 3}, 2);
+	set_voxel((v_pos){4, 5, 5}, 2);
+	set_voxel((v_pos){4, 6, 4}, 2);
+
+	set_voxel((v_pos){3, 2, 0}, 3);
+	set_voxel((v_pos){3, 2, -1}, 3);
+	set_voxel((v_pos){3, 1, -1}, 3);
+	set_voxel((v_pos){3, 0, -1}, 3);
+	set_voxel((v_pos){3, -1, -1}, 3);
+	set_voxel((v_pos){3, -2, -1}, 3);
 }
 
 #endif // SKYBLOCK_H
